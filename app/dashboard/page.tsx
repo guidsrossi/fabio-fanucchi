@@ -16,8 +16,12 @@ export default function DashboardPage() {
   const [professores, setProfessores] = useState<any[]>([]);
   const [estudantesVinculo, setEstudantesVinculo] = useState<any[]>([]);
   const [vinculosPorProfessor, setVinculosPorProfessor] = useState<any>({});
+  const [professorSelecionadoId, setProfessorSelecionadoId] = useState('');
+  const [novoEstudanteId, setNovoEstudanteId] = useState('');
   const [professorMensagem, setProfessorMensagem] = useState('');
   const [professorErro, setProfessorErro] = useState('');
+  const [estudanteMensagem, setEstudanteMensagem] = useState('');
+  const [estudanteErro, setEstudanteErro] = useState('');
   const [temaEscuro, setTemaEscuro] = useState(false);
 
   const [form, setForm] = useState({
@@ -30,6 +34,11 @@ export default function DashboardPage() {
   const [professorForm, setProfessorForm] = useState({
     nome: '',
     email: '',
+  });
+
+  const [estudanteForm, setEstudanteForm] = useState({
+    nome: '',
+    turma: '',
   });
 
   const [senhaForm, setSenhaForm] = useState({
@@ -97,6 +106,19 @@ export default function DashboardPage() {
     carregar();
   }, []);
 
+  useEffect(() => {
+    if (professores.length === 0) {
+      setProfessorSelecionadoId('');
+      return;
+    }
+
+    const professorAindaExiste = professores.some((professor: any) => professor.id === professorSelecionadoId);
+
+    if (!professorSelecionadoId || !professorAindaExiste) {
+      setProfessorSelecionadoId(professores[0].id);
+    }
+  }, [professores, professorSelecionadoId]);
+
   async function sair() {
     await fetch('/api/logout', { method: 'POST' });
     window.location.href = '/';
@@ -150,19 +172,33 @@ export default function DashboardPage() {
     }
   }
 
-  function alternarVinculoProfessor(professorId: string, estudanteId: string) {
-    const estudantesAtuais = vinculosPorProfessor[professorId] || [];
-    const jaSelecionado = estudantesAtuais.includes(estudanteId);
+  async function cadastrarEstudante(e: React.FormEvent) {
+    e.preventDefault();
+    setEstudanteMensagem('');
+    setEstudanteErro('');
 
-    setVinculosPorProfessor({
-      ...vinculosPorProfessor,
-      [professorId]: jaSelecionado
-        ? estudantesAtuais.filter((item: string) => item !== estudanteId)
-        : [...estudantesAtuais, estudanteId],
+    const response = await fetch('/api/estudantes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(estudanteForm),
     });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setEstudanteMensagem(`Estudante cadastrado. Senha inicial: ${data.senha_temporaria}`);
+      setEstudanteForm({ nome: '', turma: '' });
+      carregar();
+    } else {
+      setEstudanteErro(data.error || 'Erro ao cadastrar estudante');
+    }
   }
 
-  async function salvarVinculosProfessor(professorId: string) {
+  async function atualizarVinculosProfessor(
+    professorId: string,
+    estudantesIds: string[],
+    mensagemSucesso: string
+  ) {
     setProfessorMensagem('');
     setProfessorErro('');
 
@@ -171,30 +207,101 @@ export default function DashboardPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         professor_id: professorId,
-        estudantes: vinculosPorProfessor[professorId] || [],
+        estudantes: estudantesIds,
       }),
     });
 
     const data = await response.json();
 
     if (data.success) {
-      setProfessorMensagem('Vinculos do professor atualizados.');
+      setProfessorMensagem(mensagemSucesso);
+      setNovoEstudanteId('');
       carregar();
     } else {
       setProfessorErro(data.error || 'Erro ao salvar vinculos');
     }
   }
 
-  function estudantesDisponiveisParaProfessor(professorId: string) {
-    return estudantesVinculo
-      .filter((estudante: any) => !estudante.professor_id || estudante.professor_id === professorId)
-      .sort((a: any, b: any) => {
-        const turma = String(a.turma || '').localeCompare(String(b.turma || ''));
+  function ordenarEstudantesPorTurmaENome(lista: any[]) {
+    return [...lista].sort((a: any, b: any) => {
+      const turma = String(a.turma || '').localeCompare(String(b.turma || ''));
 
-        if (turma !== 0) return turma;
+      if (turma !== 0) return turma;
 
-        return String(a.nome || '').localeCompare(String(b.nome || ''));
-      });
+      return String(a.nome || '').localeCompare(String(b.nome || ''));
+    });
+  }
+
+  function turmasDisponiveis() {
+    return Array.from(
+      new Set(estudantesVinculo.map((estudante: any) => String(estudante.turma || '').trim()).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b));
+  }
+
+  function gerarEmailEstudante(nome: string) {
+    const partes = nome
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (partes.length === 0) return '';
+
+    const primeiroNome = partes[0];
+    const ultimoNome = partes.length > 1 ? partes[partes.length - 1] : '';
+    const usuario = [primeiroNome, ultimoNome].filter(Boolean).join('.');
+
+    return `${usuario}@escola.com`;
+  }
+
+  function estudantesDoProfessor(professorId: string) {
+    const estudantesIds = vinculosPorProfessor[professorId] || [];
+
+    return ordenarEstudantesPorTurmaENome(
+      estudantesVinculo.filter((estudante: any) => estudantesIds.includes(estudante.id))
+    );
+  }
+
+  function estudantesSemProfessor() {
+    return ordenarEstudantesPorTurmaENome(
+      estudantesVinculo.filter((estudante: any) => !estudante.professor_id)
+    );
+  }
+
+  function contarApoiosRecebidos(estudanteId: string) {
+    return apoios.filter((apoio: any) => String(apoio.estudante_id || '').trim() === estudanteId).length;
+  }
+
+  function adicionarEstudanteAoProfessor() {
+    if (!professorSelecionadoId || !novoEstudanteId) return;
+
+    const estudantesAtuais = vinculosPorProfessor[professorSelecionadoId] || [];
+    const proximosEstudantes = Array.from(new Set([...estudantesAtuais, novoEstudanteId]));
+
+    atualizarVinculosProfessor(
+      professorSelecionadoId,
+      proximosEstudantes,
+      'Estudante vinculado ao professor.'
+    );
+  }
+
+  function removerEstudanteDoProfessor(estudanteId: string) {
+    if (!professorSelecionadoId) return;
+
+    const estudantesAtuais = vinculosPorProfessor[professorSelecionadoId] || [];
+
+    atualizarVinculosProfessor(
+      professorSelecionadoId,
+      estudantesAtuais.filter((item: string) => item !== estudanteId),
+      'Vinculo removido do professor.'
+    );
+  }
+
+  function professorSelecionado() {
+    return professores.find((professor: any) => professor.id === professorSelecionadoId);
   }
 
   async function registrarApoio(e: React.FormEvent) {
@@ -380,65 +487,176 @@ export default function DashboardPage() {
                   O professor entra com a senha 123456 e troca a senha no primeiro acesso.
                 </p>
 
+                <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">
+                  <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">Cadastrar estudante</h3>
+
+                  {estudanteMensagem && (
+                    <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">
+                      {estudanteMensagem}
+                    </div>
+                  )}
+
+                  {estudanteErro && (
+                    <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+                      {estudanteErro}
+                    </div>
+                  )}
+
+                  <form onSubmit={cadastrarEstudante} className="grid gap-4 md:grid-cols-4">
+                    <input
+                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white md:col-span-1"
+                      placeholder="Nome do estudante"
+                      value={estudanteForm.nome}
+                      onChange={(e) => setEstudanteForm({ ...estudanteForm, nome: e.target.value })}
+                      required
+                    />
+
+                    <input
+                      className="rounded-xl border border-slate-200 bg-slate-100 p-3 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 md:col-span-1"
+                      value={gerarEmailEstudante(estudanteForm.nome)}
+                      placeholder="E-mail automatico"
+                      readOnly
+                    />
+
+                    <select
+                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white md:col-span-1"
+                      value={estudanteForm.turma}
+                      onChange={(e) => setEstudanteForm({ ...estudanteForm, turma: e.target.value })}
+                      disabled={turmasDisponiveis().length === 0}
+                      required
+                    >
+                      <option value="">
+                        {turmasDisponiveis().length === 0 ? 'Nenhuma turma cadastrada' : 'Selecione a turma'}
+                      </option>
+                      {turmasDisponiveis().map((turma) => (
+                        <option key={turma} value={turma}>
+                          {turma}
+                        </option>
+                      ))}
+                    </select>
+
+                    <button
+                      className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
+                      disabled={turmasDisponiveis().length === 0}
+                    >
+                      Cadastrar estudante
+                    </button>
+                  </form>
+
+                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                    O estudante entra com a senha 123456 e troca a senha no primeiro acesso.
+                  </p>
+                </div>
+
                 <div className="mt-8">
                   <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">Vincular professor com estudantes</h3>
 
-                  {estudantesVinculo.length === 0 && (
+                  {professores.length === 0 && (
+                    <p className="text-slate-500 dark:text-slate-400">Nenhum professor cadastrado.</p>
+                  )}
+
+                  {professores.length > 0 && estudantesVinculo.length === 0 && (
                     <p className="text-slate-500 dark:text-slate-400">
                       Cadastre estudantes para liberar as opcoes de vinculo.
                     </p>
                   )}
 
-                  <div className="grid gap-4">
-                    {professores.map((professor: any) => (
-                      <div key={professor.id} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
-                          <div>
-                            <p className="font-semibold text-slate-950 dark:text-white">{professor.nome}</p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">{professor.email}</p>
+                  {professores.length > 0 && (
+                    <div className="grid gap-4">
+                      <select
+                        className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+                        value={professorSelecionadoId}
+                        onChange={(e) => {
+                          setProfessorSelecionadoId(e.target.value);
+                          setNovoEstudanteId('');
+                        }}
+                      >
+                        {professores.map((professor: any) => (
+                          <option key={professor.id} value={professor.id}>
+                            {professor.nome} - {professor.email}
+                          </option>
+                        ))}
+                      </select>
+
+                      {professorSelecionado() && (
+                        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                          <div className="mb-4 flex flex-col gap-1">
+                            <p className="font-semibold text-slate-950 dark:text-white">
+                              {professorSelecionado()?.nome}
+                            </p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                              {professorSelecionado()?.email}
+                            </p>
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => salvarVinculosProfessor(professor.id)}
-                            className="rounded-xl bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-500"
-                          >
-                            Salvar vinculos
-                          </button>
-                        </div>
-
-                        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-                          {estudantesDisponiveisParaProfessor(professor.id).map((estudante: any) => (
-                            <label
-                              key={`${professor.id}-${estudante.id}`}
-                              className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 transition hover:border-blue-300 hover:shadow-sm dark:border-white/10 dark:bg-slate-900/70 dark:hover:border-blue-400"
-                            >
-                              <input
-                                className="mt-1 h-4 w-4 accent-blue-700"
-                                type="checkbox"
-                                checked={(vinculosPorProfessor[professor.id] || []).includes(estudante.id)}
-                                onChange={() => alternarVinculoProfessor(professor.id, estudante.id)}
-                              />
-                              <span>
-                                <span className="block font-medium text-slate-950 dark:text-white">{estudante.nome}</span>
-                                <span className="block text-sm text-slate-500 dark:text-slate-400">{estudante.turma}</span>
-                              </span>
-                            </label>
-                          ))}
-
-                          {estudantesDisponiveisParaProfessor(professor.id).length === 0 && (
-                            <p className="text-slate-500 dark:text-slate-400">
-                              Nao ha estudantes disponiveis para este professor.
+                          <div className="mb-5">
+                            <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+                              Estudantes associados
                             </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
 
-                    {professores.length === 0 && (
-                      <p className="text-slate-500 dark:text-slate-400">Nenhum professor cadastrado.</p>
-                    )}
-                  </div>
+                            <div className="grid gap-2">
+                              {estudantesDoProfessor(professorSelecionadoId).map((estudante: any) => (
+                                <div
+                                  key={`${professorSelecionadoId}-${estudante.id}`}
+                                  className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-slate-900/70 sm:flex-row sm:items-center sm:justify-between"
+                                >
+                                  <div>
+                                    <p className="font-medium text-slate-950 dark:text-white">{estudante.nome}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                                      {estudante.turma} | {contarApoiosRecebidos(estudante.id)} apoio(s) recebido(s)
+                                    </p>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => removerEstudanteDoProfessor(estudante.id)}
+                                    className="w-fit rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
+                                  >
+                                    Remover
+                                  </button>
+                                </div>
+                              ))}
+
+                              {estudantesDoProfessor(professorSelecionadoId).length === 0 && (
+                                <p className="text-slate-500 dark:text-slate-400">
+                                  Este professor ainda nao tem estudantes associados.
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                            <select
+                              className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+                              value={novoEstudanteId}
+                              onChange={(e) => setNovoEstudanteId(e.target.value)}
+                              disabled={estudantesSemProfessor().length === 0}
+                            >
+                              <option value="">
+                                {estudantesSemProfessor().length === 0
+                                  ? 'Nenhum estudante sem professor'
+                                  : 'Selecione um estudante sem professor'}
+                              </option>
+                              {estudantesSemProfessor().map((estudante: any) => (
+                                <option key={estudante.id} value={estudante.id}>
+                                  {estudante.nome} - {estudante.turma}
+                                </option>
+                              ))}
+                            </select>
+
+                            <button
+                              type="button"
+                              onClick={adicionarEstudanteAoProfessor}
+                              disabled={!novoEstudanteId}
+                              className="rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-600 dark:hover:bg-blue-500 dark:disabled:bg-white/10"
+                            >
+                              Adicionar estudante
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </section>
             )}
