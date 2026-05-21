@@ -22,6 +22,9 @@ export default function DashboardPage() {
   const [professorErro, setProfessorErro] = useState('');
   const [estudanteMensagem, setEstudanteMensagem] = useState('');
   const [estudanteErro, setEstudanteErro] = useState('');
+  const [perguntaMensagem, setPerguntaMensagem] = useState('');
+  const [perguntaErro, setPerguntaErro] = useState('');
+  const [perguntaEditandoId, setPerguntaEditandoId] = useState('');
   const [temaEscuro, setTemaEscuro] = useState(false);
 
   const [form, setForm] = useState({
@@ -39,6 +42,11 @@ export default function DashboardPage() {
   const [estudanteForm, setEstudanteForm] = useState({
     nome: '',
     turma: '',
+  });
+
+  const [perguntaForm, setPerguntaForm] = useState({
+    pergunta: '',
+    tipo: 'sim_nao',
   });
 
   const [senhaForm, setSenhaForm] = useState({
@@ -191,6 +199,82 @@ export default function DashboardPage() {
       carregar();
     } else {
       setEstudanteErro(data.error || 'Erro ao cadastrar estudante');
+    }
+  }
+
+  function perguntaEstaAtiva(pergunta: any) {
+    return !['nao', 'false', '0'].includes(String(pergunta.ativa || '').trim().toLowerCase());
+  }
+
+  function limparFormularioPergunta() {
+    setPerguntaForm({ pergunta: '', tipo: 'sim_nao' });
+    setPerguntaEditandoId('');
+  }
+
+  function editarPergunta(pergunta: any) {
+    setPerguntaMensagem('');
+    setPerguntaErro('');
+    setPerguntaEditandoId(pergunta.id);
+    setPerguntaForm({
+      pergunta: pergunta.pergunta || '',
+      tipo: pergunta.tipo || 'sim_nao',
+    });
+  }
+
+  async function salvarPergunta(e: React.FormEvent) {
+    e.preventDefault();
+    setPerguntaMensagem('');
+    setPerguntaErro('');
+
+    const perguntaAtual = perguntas.find((pergunta: any) => pergunta.id === perguntaEditandoId);
+    const response = await fetch('/api/perguntas', {
+      method: perguntaEditandoId ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: perguntaEditandoId,
+        ...perguntaForm,
+        ativa: perguntaAtual ? perguntaEstaAtiva(perguntaAtual) : true,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setPerguntaMensagem(perguntaEditandoId ? 'Pergunta atualizada.' : 'Pergunta cadastrada.');
+      limparFormularioPergunta();
+      carregar();
+    } else {
+      setPerguntaErro(data.error || 'Erro ao salvar pergunta');
+    }
+  }
+
+  async function alterarStatusPergunta(pergunta: any, ativa: boolean) {
+    setPerguntaMensagem('');
+    setPerguntaErro('');
+
+    const response = await fetch('/api/perguntas', {
+      method: ativa ? 'PUT' : 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: pergunta.id,
+        pergunta: pergunta.pergunta,
+        tipo: pergunta.tipo,
+        ativa,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setPerguntaMensagem(ativa ? 'Pergunta reativada.' : 'Pergunta desativada.');
+
+      if (perguntaEditandoId === pergunta.id && !ativa) {
+        limparFormularioPergunta();
+      }
+
+      carregar();
+    } else {
+      setPerguntaErro(data.error || 'Erro ao atualizar pergunta');
     }
   }
 
@@ -657,6 +741,116 @@ export default function DashboardPage() {
                       )}
                     </div>
                   )}
+                </div>
+
+                <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">
+                  <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">
+                    Gerenciar perguntas pre-definidas
+                  </h3>
+
+                  {perguntaMensagem && (
+                    <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">
+                      {perguntaMensagem}
+                    </div>
+                  )}
+
+                  {perguntaErro && (
+                    <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+                      {perguntaErro}
+                    </div>
+                  )}
+
+                  <form onSubmit={salvarPergunta} className="grid gap-4 md:grid-cols-[1fr_180px_auto]">
+                    <input
+                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+                      placeholder="Texto da pergunta"
+                      value={perguntaForm.pergunta}
+                      onChange={(e) => setPerguntaForm({ ...perguntaForm, pergunta: e.target.value })}
+                      required
+                    />
+
+                    <select
+                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+                      value={perguntaForm.tipo}
+                      onChange={(e) => setPerguntaForm({ ...perguntaForm, tipo: e.target.value })}
+                    >
+                      <option value="sim_nao">Sim/Nao</option>
+                      <option value="texto">Texto</option>
+                    </select>
+
+                    <div className="flex flex-wrap gap-3">
+                      <button className="rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
+                        {perguntaEditandoId ? 'Salvar pergunta' : 'Adicionar pergunta'}
+                      </button>
+
+                      {perguntaEditandoId && (
+                        <button
+                          type="button"
+                          onClick={limparFormularioPergunta}
+                          className="rounded-xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
+                        >
+                          Cancelar
+                        </button>
+                      )}
+                    </div>
+                  </form>
+
+                  <div className="mt-5 grid gap-3">
+                    {perguntas.map((pergunta: any) => (
+                      <div
+                        key={pergunta.id}
+                        className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03] lg:flex-row lg:items-center lg:justify-between"
+                      >
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-semibold text-slate-950 dark:text-white">{pergunta.pergunta}</p>
+                            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                              perguntaEstaAtiva(pergunta)
+                                ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-200'
+                                : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'
+                            }`}>
+                              {perguntaEstaAtiva(pergunta) ? 'Ativa' : 'Inativa'}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                            Tipo: {pergunta.tipo === 'sim_nao' ? 'Sim/Nao' : 'Texto'}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => editarPergunta(pergunta)}
+                            className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
+                          >
+                            Editar
+                          </button>
+
+                          {perguntaEstaAtiva(pergunta) ? (
+                            <button
+                              type="button"
+                              onClick={() => alterarStatusPergunta(pergunta, false)}
+                              className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
+                            >
+                              Desativar
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => alterarStatusPergunta(pergunta, true)}
+                              className="rounded-xl border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 transition hover:bg-green-50 dark:border-green-500/30 dark:text-green-200 dark:hover:bg-green-500/10"
+                            >
+                              Reativar
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    {perguntas.length === 0 && (
+                      <p className="text-slate-500 dark:text-slate-400">Nenhuma pergunta cadastrada.</p>
+                    )}
+                  </div>
                 </div>
               </section>
             )}

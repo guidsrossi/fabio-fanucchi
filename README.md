@@ -110,16 +110,18 @@ Essa aba guarda quais estudantes cada professor pode atender. A gestao altera es
 #### perguntas
 
 ```txt
-id | pergunta | tipo
+id | pergunta | tipo | ativa
 ```
 
 Exemplo:
 
 ```txt
-1 | O estudante participou do apoio? | sim_nao
-2 | Qual foi a principal dificuldade observada? | texto
-3 | O estudante precisa de novo apoio? | sim_nao
+1 | O estudante participou do apoio? | sim_nao | sim
+2 | Qual foi a principal dificuldade observada? | texto | sim
+3 | O estudante precisa de novo apoio? | sim_nao | sim
 ```
+
+A gestao pode cadastrar, editar, desativar e reativar essas perguntas pelo sistema. Perguntas com `ativa` igual a `nao` nao aparecem para novos registros de apoio, mas continuam preservadas nos apoios antigos.
 
 #### apoios
 
