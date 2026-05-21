@@ -1,0 +1,25 @@
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "autoprefixer": "^10.5.0",
+    "googleapis": "latest",
+    "jsonwebtoken": "latest",
+    "next": "latest",
+    "postcss": "^8.5.15",
+    "react": "latest",
+    "react-dom": "latest",
+    "tailwindcss": "^3.4.19",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.0"
+  }
+}
