@@ -37,7 +37,6 @@ Crie estas abas exatamente com estes nomes:
 
 ```txt
 usuarios
-estudantes
 professor_estudantes
 apoios
 perguntas
@@ -50,7 +49,7 @@ tutorias_mensais
 #### usuarios
 
 ```txt
-id | nome | email | senha | perfil | turma | precisa_trocar_senha
+id | nome | login | senha | perfil | turma | precisa_trocar_senha
 ```
 
 Perfis aceitos:
@@ -73,32 +72,20 @@ Use `sim` quando o usuario precisa trocar a senha no proximo acesso. Use `nao` q
 Exemplo:
 
 ```txt
-1 | Gestao Escolar | gestao@escola.com | 123456 | gestao | | nao
-2 | Prof. Joao | professor@escola.com | 123456 | professor | | sim
-3 | Maria Silva | estudante@escola.com | 123456 | estudante | 2A | nao
+1 | Gestao Escolar | Gestao Escolar | 123456 | gestao | | nao
+2 | Prof. Joao | Prof. Joao | 123456 | professor | | sim
+3 | Maria Silva | Maria Silva | 123456 | estudante | 2A | nao
 ```
 
 Quando a gestao cadastra um professor pelo sistema, ele entra automaticamente na aba `usuarios` assim:
 
 ```txt
-novo_id | Nome do Professor | email@escola.com | 123456 | professor | | sim
+novo_id | Nome do Professor | Nome do Professor | 123456 | professor | | sim
 ```
 
 Professor nao tem turma fixa na aba `usuarios`. O vinculo com estudantes atendidos fica na aba `professor_estudantes`.
 
 No primeiro login, o professor usa a senha `123456` e o sistema mostra a tela de troca obrigatoria de senha. Depois que ele troca, a coluna `precisa_trocar_senha` muda para `nao`.
-
-#### estudantes
-
-```txt
-id | nome | email | turma
-```
-
-Exemplo:
-
-```txt
-3 | Maria Silva | estudante@escola.com | 2A
-```
 
 #### professor_estudantes
 
@@ -115,6 +102,7 @@ Exemplo:
 ```
 
 Essa aba guarda quais estudantes cada professor pode atender. A gestao altera esses vinculos pelo checklist no sistema. Se um estudante ja estiver vinculado a um professor com `ativo` igual a `sim`, ele nao aparece no checklist dos outros professores. O professor so consegue listar e registrar apoio para estudantes vinculados a ele.
+Os estudantes sao os usuarios com `perfil` igual a `estudante`; nao existe mais uma aba separada de `estudantes`.
 
 #### perguntas
 
@@ -266,9 +254,9 @@ JWT_SECRET
 Depois de preencher a aba `usuarios`, use:
 
 ```txt
-gestao@escola.com / 123456
-professor@escola.com / 123456
-estudante@escola.com / 123456
+Gestao Escolar / 123456
+Prof. Joao / 123456
+Maria Silva / 123456
 ```
 
 Se o professor estiver com `precisa_trocar_senha` igual a `sim`, o primeiro acesso vai pedir uma nova senha.

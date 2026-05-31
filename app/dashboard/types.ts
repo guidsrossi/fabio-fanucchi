@@ -3,7 +3,7 @@ export type DashboardModuleId = 'apoio' | 'tutorias' | 'relatorios' | 'gestao';
 export type Usuario = {
   id: string;
   nome: string;
-  email: string;
+  login?: string;
   perfil: string;
   turma?: string;
   precisa_trocar_senha?: boolean;
@@ -12,7 +12,7 @@ export type Usuario = {
 export type Estudante = {
   id: string;
   nome: string;
-  email?: string;
+  login?: string;
   turma: string;
   professor_id?: string;
 };
@@ -20,7 +20,7 @@ export type Estudante = {
 export type Professor = {
   id: string;
   nome: string;
-  email: string;
+  login?: string;
 };
 
 export type Pergunta = {

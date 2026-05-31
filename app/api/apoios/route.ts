@@ -67,8 +67,10 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const estudantes = await getRows('estudantes');
-  const estudante = estudantes.find((item: any) => item.id === body.estudante_id);
+  const usuarios = await getRows('usuarios');
+  const estudante = usuarios.find(
+    (item: any) => item.id === body.estudante_id && item.perfil === 'estudante'
+  );
 
   if (!estudante) {
     return NextResponse.json({ success: false, error: 'Estudante nao encontrado' });

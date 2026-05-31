@@ -1,6 +1,8 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import LoadingOverlay from '../../components/LoadingOverlay';
+import { useLoadingAction } from '../../hooks/useLoadingAction';
 import { Apoio, Estudante, Pergunta, Professor, VinculosPorProfessor } from '../types';
 
 type Props = {
@@ -9,7 +11,7 @@ type Props = {
   estudantes: Estudante[];
   perguntas: Pergunta[];
   vinculosPorProfessor: VinculosPorProfessor;
-  onReload: () => void;
+  onReload: () => void | Promise<void>;
 };
 
 function ordenarEstudantesPorTurmaENome(lista: Estudante[]) {
@@ -24,25 +26,6 @@ function ordenarEstudantesPorTurmaENome(lista: Estudante[]) {
 
 function perguntaEstaAtiva(pergunta: Pergunta) {
   return !['nao', 'false', '0'].includes(String(pergunta.ativa || '').trim().toLowerCase());
-}
-
-function gerarEmailEstudante(nome: string) {
-  const partes = nome
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (partes.length === 0) return '';
-
-  const primeiroNome = partes[0];
-  const ultimoNome = partes.length > 1 ? partes[partes.length - 1] : '';
-  const usuario = [primeiroNome, ultimoNome].filter(Boolean).join('.');
-
-  return `${usuario}@escola.com`;
 }
 
 export default function GestaoEscolarModule({
@@ -65,7 +48,6 @@ export default function GestaoEscolarModule({
 
   const [professorForm, setProfessorForm] = useState({
     nome: '',
-    email: '',
   });
   const [estudanteForm, setEstudanteForm] = useState({
     nome: '',
@@ -75,6 +57,7 @@ export default function GestaoEscolarModule({
     pergunta: '',
     tipo: 'sim_nao',
   });
+  const { loading, loadingMessage, runWithLoading } = useLoadingAction();
 
   useEffect(() => {
     if (professores.length === 0) {
@@ -136,48 +119,62 @@ export default function GestaoEscolarModule({
 
   async function cadastrarProfessor(e: FormEvent) {
     e.preventDefault();
-    setProfessorMensagem('');
-    setProfessorErro('');
 
-    const response = await fetch('/api/professores', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(professorForm),
+    await runWithLoading('Cadastrando professor...', async () => {
+      setProfessorMensagem('');
+      setProfessorErro('');
+
+      try {
+        const response = await fetch('/api/professores', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(professorForm),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setProfessorMensagem(`Professor cadastrado. Senha inicial: ${data.senha_temporaria}`);
+          setProfessorForm({ nome: '' });
+          await onReload();
+          return;
+        }
+
+        setProfessorErro(data.error || 'Erro ao cadastrar professor');
+      } catch {
+        setProfessorErro('Erro ao cadastrar professor');
+      }
     });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setProfessorMensagem(`Professor cadastrado. Senha inicial: ${data.senha_temporaria}`);
-      setProfessorForm({ nome: '', email: '' });
-      onReload();
-      return;
-    }
-
-    setProfessorErro(data.error || 'Erro ao cadastrar professor');
   }
 
   async function cadastrarEstudante(e: FormEvent) {
     e.preventDefault();
-    setEstudanteMensagem('');
-    setEstudanteErro('');
 
-    const response = await fetch('/api/estudantes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(estudanteForm),
+    await runWithLoading('Cadastrando estudante...', async () => {
+      setEstudanteMensagem('');
+      setEstudanteErro('');
+
+      try {
+        const response = await fetch('/api/estudantes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(estudanteForm),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setEstudanteMensagem(`Estudante cadastrado. Senha inicial: ${data.senha_temporaria}`);
+          setEstudanteForm({ nome: '', turma: '' });
+          await onReload();
+          return;
+        }
+
+        setEstudanteErro(data.error || 'Erro ao cadastrar estudante');
+      } catch {
+        setEstudanteErro('Erro ao cadastrar estudante');
+      }
     });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setEstudanteMensagem(`Estudante cadastrado. Senha inicial: ${data.senha_temporaria}`);
-      setEstudanteForm({ nome: '', turma: '' });
-      onReload();
-      return;
-    }
-
-    setEstudanteErro(data.error || 'Erro ao cadastrar estudante');
   }
 
   async function atualizarVinculosProfessor(
@@ -185,49 +182,55 @@ export default function GestaoEscolarModule({
     estudantesIds: string[],
     mensagemSucesso: string
   ) {
-    setProfessorMensagem('');
-    setProfessorErro('');
+    await runWithLoading('Salvando vinculos...', async () => {
+      setProfessorMensagem('');
+      setProfessorErro('');
 
-    const response = await fetch('/api/professores', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        professor_id: professorId,
-        estudantes: estudantesIds,
-      }),
+      try {
+        const response = await fetch('/api/professores', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            professor_id: professorId,
+            estudantes: estudantesIds,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setProfessorMensagem(mensagemSucesso);
+          setNovoEstudanteId('');
+          await onReload();
+          return;
+        }
+
+        setProfessorErro(data.error || 'Erro ao salvar vinculos');
+      } catch {
+        setProfessorErro('Erro ao salvar vinculos');
+      }
     });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setProfessorMensagem(mensagemSucesso);
-      setNovoEstudanteId('');
-      onReload();
-      return;
-    }
-
-    setProfessorErro(data.error || 'Erro ao salvar vinculos');
   }
 
-  function adicionarEstudanteAoProfessor() {
+  async function adicionarEstudanteAoProfessor() {
     if (!professorSelecionadoId || !novoEstudanteId) return;
 
     const estudantesAtuais = vinculosPorProfessor[professorSelecionadoId] || [];
     const proximosEstudantes = Array.from(new Set([...estudantesAtuais, novoEstudanteId]));
 
-    atualizarVinculosProfessor(
+    await atualizarVinculosProfessor(
       professorSelecionadoId,
       proximosEstudantes,
       'Estudante vinculado ao professor.'
     );
   }
 
-  function removerEstudanteDoProfessor(estudanteId: string) {
+  async function removerEstudanteDoProfessor(estudanteId: string) {
     if (!professorSelecionadoId) return;
 
     const estudantesAtuais = vinculosPorProfessor[professorSelecionadoId] || [];
 
-    atualizarVinculosProfessor(
+    await atualizarVinculosProfessor(
       professorSelecionadoId,
       estudantesAtuais.filter((item) => item !== estudanteId),
       'Vinculo removido do professor.'
@@ -236,65 +239,85 @@ export default function GestaoEscolarModule({
 
   async function salvarPergunta(e: FormEvent) {
     e.preventDefault();
-    setPerguntaMensagem('');
-    setPerguntaErro('');
 
-    const perguntaAtual = perguntas.find((pergunta) => pergunta.id === perguntaEditandoId);
-    const response = await fetch('/api/perguntas', {
-      method: perguntaEditandoId ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: perguntaEditandoId,
-        ...perguntaForm,
-        ativa: perguntaAtual ? perguntaEstaAtiva(perguntaAtual) : true,
-      }),
-    });
+    await runWithLoading(
+      perguntaEditandoId ? 'Salvando pergunta...' : 'Adicionando pergunta...',
+      async () => {
+        setPerguntaMensagem('');
+        setPerguntaErro('');
 
-    const data = await response.json();
+        const perguntaAtual = perguntas.find((pergunta) => pergunta.id === perguntaEditandoId);
 
-    if (data.success) {
-      setPerguntaMensagem(perguntaEditandoId ? 'Pergunta atualizada.' : 'Pergunta cadastrada.');
-      limparFormularioPergunta();
-      onReload();
-      return;
-    }
+        try {
+          const response = await fetch('/api/perguntas', {
+            method: perguntaEditandoId ? 'PUT' : 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: perguntaEditandoId,
+              ...perguntaForm,
+              ativa: perguntaAtual ? perguntaEstaAtiva(perguntaAtual) : true,
+            }),
+          });
 
-    setPerguntaErro(data.error || 'Erro ao salvar pergunta');
+          const data = await response.json();
+
+          if (data.success) {
+            setPerguntaMensagem(perguntaEditandoId ? 'Pergunta atualizada.' : 'Pergunta cadastrada.');
+            limparFormularioPergunta();
+            await onReload();
+            return;
+          }
+
+          setPerguntaErro(data.error || 'Erro ao salvar pergunta');
+        } catch {
+          setPerguntaErro('Erro ao salvar pergunta');
+        }
+      }
+    );
   }
 
   async function alterarStatusPergunta(pergunta: Pergunta, ativa: boolean) {
-    setPerguntaMensagem('');
-    setPerguntaErro('');
+    await runWithLoading(ativa ? 'Reativando pergunta...' : 'Desativando pergunta...', async () => {
+      setPerguntaMensagem('');
+      setPerguntaErro('');
 
-    const response = await fetch('/api/perguntas', {
-      method: ativa ? 'PUT' : 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: pergunta.id,
-        pergunta: pergunta.pergunta,
-        tipo: pergunta.tipo,
-        ativa,
-      }),
-    });
+      try {
+        const response = await fetch('/api/perguntas', {
+          method: ativa ? 'PUT' : 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: pergunta.id,
+            pergunta: pergunta.pergunta,
+            tipo: pergunta.tipo,
+            ativa,
+          }),
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    if (data.success) {
-      setPerguntaMensagem(ativa ? 'Pergunta reativada.' : 'Pergunta desativada.');
+        if (data.success) {
+          setPerguntaMensagem(ativa ? 'Pergunta reativada.' : 'Pergunta desativada.');
 
-      if (perguntaEditandoId === pergunta.id && !ativa) {
-        limparFormularioPergunta();
+          if (perguntaEditandoId === pergunta.id && !ativa) {
+            limparFormularioPergunta();
+          }
+
+          await onReload();
+          return;
+        }
+
+        setPerguntaErro(data.error || 'Erro ao atualizar pergunta');
+      } catch {
+        setPerguntaErro('Erro ao atualizar pergunta');
       }
-
-      onReload();
-      return;
-    }
-
-    setPerguntaErro(data.error || 'Erro ao atualizar pergunta');
+    });
   }
 
   return (
-    <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
+    <>
+      <LoadingOverlay show={loading} message={loadingMessage} />
+
+      <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
       <div className="mb-5">
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
           Gestao escolar
@@ -316,31 +339,26 @@ export default function GestaoEscolarModule({
         </div>
       )}
 
-      <form onSubmit={cadastrarProfessor} className="grid gap-4 md:grid-cols-3">
+      <form onSubmit={cadastrarProfessor} className="grid gap-4 md:grid-cols-[1fr_auto]">
         <input
           className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
           placeholder="Nome do professor"
           value={professorForm.nome}
           onChange={(e) => setProfessorForm({ ...professorForm, nome: e.target.value })}
+          disabled={loading}
           required
         />
 
-        <input
-          className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-          type="email"
-          placeholder="E-mail"
-          value={professorForm.email}
-          onChange={(e) => setProfessorForm({ ...professorForm, email: e.target.value })}
-          required
-        />
-
-        <button className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-          Cadastrar professor
+        <button
+          disabled={loading}
+          className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
+        >
+          {loading ? 'Salvando...' : 'Cadastrar professor'}
         </button>
       </form>
 
       <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-        O professor entra com a senha 123456 e troca a senha no primeiro acesso.
+        O professor entra usando o proprio nome como login, com a senha 123456, e troca a senha no primeiro acesso.
       </p>
 
       <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">
@@ -360,27 +378,21 @@ export default function GestaoEscolarModule({
           </div>
         )}
 
-        <form onSubmit={cadastrarEstudante} className="grid gap-4 md:grid-cols-4">
+        <form onSubmit={cadastrarEstudante} className="grid gap-4 md:grid-cols-[1fr_220px_auto]">
           <input
             className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
             placeholder="Nome do estudante"
             value={estudanteForm.nome}
             onChange={(e) => setEstudanteForm({ ...estudanteForm, nome: e.target.value })}
+            disabled={loading}
             required
-          />
-
-          <input
-            className="rounded-xl border border-slate-200 bg-slate-100 p-3 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
-            value={gerarEmailEstudante(estudanteForm.nome)}
-            placeholder="E-mail automatico"
-            readOnly
           />
 
           <select
             className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
             value={estudanteForm.turma}
             onChange={(e) => setEstudanteForm({ ...estudanteForm, turma: e.target.value })}
-            disabled={turmasDisponiveis().length === 0}
+            disabled={loading || turmasDisponiveis().length === 0}
             required
           >
             <option value="">
@@ -395,14 +407,14 @@ export default function GestaoEscolarModule({
 
           <button
             className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
-            disabled={turmasDisponiveis().length === 0}
+            disabled={loading || turmasDisponiveis().length === 0}
           >
-            Cadastrar estudante
+            {loading ? 'Salvando...' : 'Cadastrar estudante'}
           </button>
         </form>
 
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          O estudante entra com a senha 123456 e troca a senha no primeiro acesso.
+          O estudante entra usando o proprio nome como login, com a senha 123456, e troca a senha no primeiro acesso.
         </p>
       </div>
 
@@ -426,6 +438,7 @@ export default function GestaoEscolarModule({
             <select
               className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
               value={professorSelecionadoId}
+              disabled={loading}
               onChange={(e) => {
                 setProfessorSelecionadoId(e.target.value);
                 setNovoEstudanteId('');
@@ -433,7 +446,7 @@ export default function GestaoEscolarModule({
             >
               {professores.map((professor) => (
                 <option key={professor.id} value={professor.id}>
-                  {professor.nome} - {professor.email}
+                  {professor.nome}
                 </option>
               ))}
             </select>
@@ -445,7 +458,7 @@ export default function GestaoEscolarModule({
                     {professorSelecionado()?.nome}
                   </p>
                   <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {professorSelecionado()?.email}
+                    Login: {professorSelecionado()?.login || professorSelecionado()?.nome}
                   </p>
                 </div>
 
@@ -471,8 +484,9 @@ export default function GestaoEscolarModule({
 
                         <button
                           type="button"
+                          disabled={loading}
                           onClick={() => removerEstudanteDoProfessor(estudante.id)}
-                          className="w-fit rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
+                          className="w-fit rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
                         >
                           Remover
                         </button>
@@ -492,7 +506,7 @@ export default function GestaoEscolarModule({
                     className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
                     value={novoEstudanteId}
                     onChange={(e) => setNovoEstudanteId(e.target.value)}
-                    disabled={estudantesSemProfessor().length === 0}
+                    disabled={loading || estudantesSemProfessor().length === 0}
                   >
                     <option value="">
                       {estudantesSemProfessor().length === 0
@@ -509,7 +523,7 @@ export default function GestaoEscolarModule({
                   <button
                     type="button"
                     onClick={adicionarEstudanteAoProfessor}
-                    disabled={!novoEstudanteId}
+                    disabled={loading || !novoEstudanteId}
                     className="rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-600 dark:hover:bg-blue-500 dark:disabled:bg-white/10"
                   >
                     Adicionar estudante
@@ -544,6 +558,7 @@ export default function GestaoEscolarModule({
             placeholder="Texto da pergunta"
             value={perguntaForm.pergunta}
             onChange={(e) => setPerguntaForm({ ...perguntaForm, pergunta: e.target.value })}
+            disabled={loading}
             required
           />
 
@@ -551,21 +566,26 @@ export default function GestaoEscolarModule({
             className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
             value={perguntaForm.tipo}
             onChange={(e) => setPerguntaForm({ ...perguntaForm, tipo: e.target.value })}
+            disabled={loading}
           >
             <option value="sim_nao">Sim/Nao</option>
             <option value="texto">Texto</option>
           </select>
 
           <div className="flex flex-wrap gap-3">
-            <button className="rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-              {perguntaEditandoId ? 'Salvar pergunta' : 'Adicionar pergunta'}
+            <button
+              disabled={loading}
+              className="rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
+            >
+              {loading ? 'Salvando...' : perguntaEditandoId ? 'Salvar pergunta' : 'Adicionar pergunta'}
             </button>
 
             {perguntaEditandoId && (
               <button
                 type="button"
+                disabled={loading}
                 onClick={limparFormularioPergunta}
-                className="rounded-xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
+                className="rounded-xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
               >
                 Cancelar
               </button>
@@ -600,8 +620,9 @@ export default function GestaoEscolarModule({
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
+                  disabled={loading}
                   onClick={() => editarPergunta(pergunta)}
-                  className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
                 >
                   Editar
                 </button>
@@ -609,16 +630,18 @@ export default function GestaoEscolarModule({
                 {perguntaEstaAtiva(pergunta) ? (
                   <button
                     type="button"
+                    disabled={loading}
                     onClick={() => alterarStatusPergunta(pergunta, false)}
-                    className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
+                    className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
                   >
                     Desativar
                   </button>
                 ) : (
                   <button
                     type="button"
+                    disabled={loading}
                     onClick={() => alterarStatusPergunta(pergunta, true)}
-                    className="rounded-xl border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 transition hover:bg-green-50 dark:border-green-500/30 dark:text-green-200 dark:hover:bg-green-500/10"
+                    className="rounded-xl border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-green-500/30 dark:text-green-200 dark:hover:bg-green-500/10"
                   >
                     Reativar
                   </button>
@@ -632,6 +655,7 @@ export default function GestaoEscolarModule({
           )}
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

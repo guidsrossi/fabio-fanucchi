@@ -1,6 +1,8 @@
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
+import LoadingOverlay from '../../components/LoadingOverlay';
+import { useLoadingAction } from '../../hooks/useLoadingAction';
 
 type LinhaTutoria = {
   id: string;
@@ -19,9 +21,9 @@ export default function TutoriasMensaisModule() {
   const [mes, setMes] = useState(mesAtualInput());
   const [linhas, setLinhas] = useState<LinhaTutoria[]>([]);
   const [carregando, setCarregando] = useState(false);
-  const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
+  const { loading: salvando, loadingMessage, runWithLoading } = useLoadingAction();
 
   const totalTutorias = useMemo(
     () => linhas.reduce((total, linha) => total + Number(linha.quantidade || 0), 0),
@@ -37,17 +39,22 @@ export default function TutoriasMensaisModule() {
     setErro('');
     setMensagem('');
 
-    const response = await fetch(`/api/tutorias-mensais?mes=${encodeURIComponent(mesReferencia)}`);
-    const data = await response.json();
+    try {
+      const response = await fetch(`/api/tutorias-mensais?mes=${encodeURIComponent(mesReferencia)}`);
+      const data = await response.json();
 
-    if (data.success) {
-      setLinhas(data.estudantes || []);
-    } else {
-      setErro(data.error || 'Erro ao carregar tutorias mensais');
+      if (data.success) {
+        setLinhas(data.estudantes || []);
+      } else {
+        setErro(data.error || 'Erro ao carregar tutorias mensais');
+        setLinhas([]);
+      }
+    } catch {
+      setErro('Erro ao carregar tutorias mensais');
       setLinhas([]);
+    } finally {
+      setCarregando(false);
     }
-
-    setCarregando(false);
   }
 
   useEffect(() => {
@@ -69,37 +76,45 @@ export default function TutoriasMensaisModule() {
 
   async function salvar(e: FormEvent) {
     e.preventDefault();
-    setSalvando(true);
-    setErro('');
-    setMensagem('');
 
-    const response = await fetch('/api/tutorias-mensais', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        mes,
-        registros: linhas.map((linha) => ({
-          estudante_id: linha.id,
-          quantidade: Number(linha.quantidade || 0),
-          observacao: linha.observacao || '',
-        })),
-      }),
+    if (carregando || linhas.length === 0) return;
+
+    await runWithLoading('Salvando tutorias mensais...', async () => {
+      setErro('');
+      setMensagem('');
+
+      try {
+        const response = await fetch('/api/tutorias-mensais', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mes,
+            registros: linhas.map((linha) => ({
+              estudante_id: linha.id,
+              quantidade: Number(linha.quantidade || 0),
+              observacao: linha.observacao || '',
+            })),
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          await carregarTutorias(mes);
+          setMensagem('Tutorias mensais salvas com sucesso.');
+        } else {
+          setErro(data.error || 'Erro ao salvar tutorias mensais');
+        }
+      } catch {
+        setErro('Erro ao salvar tutorias mensais');
+      }
     });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setMensagem('Tutorias mensais salvas com sucesso.');
-      await carregarTutorias(mes);
-    } else {
-      setErro(data.error || 'Erro ao salvar tutorias mensais');
-    }
-
-    setSalvando(false);
   }
 
   return (
     <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
+      <LoadingOverlay show={salvando} message={loadingMessage} />
+
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
@@ -120,6 +135,7 @@ export default function TutoriasMensaisModule() {
             className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
             value={mes}
             onChange={(e) => setMes(e.target.value)}
+            disabled={salvando}
             required
           />
         </label>
@@ -234,8 +250,9 @@ export default function TutoriasMensaisModule() {
 
           <button
             type="button"
+            disabled={salvando || carregando}
             onClick={() => carregarTutorias(mes)}
-            className="rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
+            className="rounded-xl border border-slate-200 px-5 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
           >
             Recarregar
           </button>

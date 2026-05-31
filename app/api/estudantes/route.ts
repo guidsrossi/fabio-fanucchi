@@ -8,23 +8,13 @@ function isGestao(perfil: string) {
   return perfil === 'gestao' || perfil === 'gestor';
 }
 
-function gerarEmailEstudante(nome: string) {
-  const partes = nome
+function normalizarLogin(valor: unknown) {
+  return String(valor || '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
     .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (partes.length === 0) return '';
-
-  const primeiroNome = partes[0];
-  const ultimoNome = partes.length > 1 ? partes[partes.length - 1] : '';
-  const usuario = [primeiroNome, ultimoNome].filter(Boolean).join('.');
-
-  return `${usuario}@escola.com`;
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
 }
 
 function estaAtivo(valor: unknown) {
@@ -52,13 +42,19 @@ export async function GET() {
   }
 
   const estudantesDoProfessor = await getEstudantesDoProfessor(user.id);
-  const estudantes = await getRows('estudantes');
+  const usuarios = await getRows('usuarios');
+  const estudantes = usuarios.filter((usuario: any) => usuario.perfil === 'estudante');
 
   return NextResponse.json({
     success: true,
-    estudantes: estudantes.filter((estudante: any) =>
-      estudantesDoProfessor.includes(String(estudante.id || '').trim())
-    ),
+    estudantes: estudantes
+      .filter((estudante: any) => estudantesDoProfessor.includes(String(estudante.id || '').trim()))
+      .map((estudante: any) => ({
+        id: estudante.id,
+        nome: estudante.nome,
+        login: estudante.login || estudante.nome,
+        turma: estudante.turma,
+      })),
   });
 }
 
@@ -72,7 +68,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const nome = String(body.nome || '').trim();
   const turma = String(body.turma || '').trim();
-  const email = gerarEmailEstudante(nome);
+  const login = nome;
 
   if (!nome || !turma) {
     return NextResponse.json({
@@ -82,14 +78,18 @@ export async function POST(req: Request) {
   }
 
   const usuarios = await getRows('usuarios');
-  const emailJaExiste = usuarios.some(
-    (usuario: any) => String(usuario.email || '').trim().toLowerCase() === email
+  const loginJaExiste = usuarios.some(
+    (usuario: any) =>
+      [usuario.login, usuario.nome]
+        .map((valor) => normalizarLogin(valor))
+        .filter(Boolean)
+        .includes(normalizarLogin(login))
   );
 
-  if (emailJaExiste) {
+  if (loginJaExiste) {
     return NextResponse.json({
       success: false,
-      error: 'Ja existe um usuario com este e-mail',
+      error: 'Ja existe um usuario com este login',
     });
   }
 
@@ -101,21 +101,19 @@ export async function POST(req: Request) {
   await appendRow('usuarios', [
     estudanteId,
     nome,
-    email,
+    login,
     SENHA_INICIAL_ESTUDANTE,
     'estudante',
     turma,
     'sim',
   ]);
 
-  await appendRow('estudantes', [estudanteId, nome, email, turma]);
-
   return NextResponse.json({
     success: true,
     estudante: {
       id: estudanteId,
       nome,
-      email,
+      login,
       turma,
       perfil: 'estudante',
       precisa_trocar_senha: true,

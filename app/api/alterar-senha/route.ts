@@ -47,7 +47,7 @@ export async function POST(req: Request) {
   await updateRow('usuarios', index + 2, [
     usuario.id,
     usuario.nome,
-    usuario.email,
+    usuario.login || usuario.nome,
     novaSenhaLimpa,
     usuario.perfil,
     usuario.turma || '',
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   const updatedUser = {
     id: usuario.id,
     nome: usuario.nome,
-    email: usuario.email,
+    login: usuario.login || usuario.nome,
     perfil: usuario.perfil,
     turma: usuario.turma || '',
     precisa_trocar_senha: false,

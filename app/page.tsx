@@ -1,14 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import LoadingOverlay from './components/LoadingOverlay';
+import { useLoadingAction } from './hooks/useLoadingAction';
 
 const ESCOLA = 'Escola Estadual Prof. Fabio Fanucchi';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [loginUsuario, setLoginUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [temaEscuro, setTemaEscuro] = useState(false);
+  const { loading, loadingMessage, runWithLoading } = useLoadingAction();
 
   useEffect(() => {
     const temaSalvo = localStorage.getItem('tema');
@@ -30,26 +33,34 @@ export default function LoginPage() {
 
   async function login(e: React.FormEvent) {
     e.preventDefault();
-    setErro('');
 
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, senha }),
+    await runWithLoading('Entrando...', async () => {
+      setErro('');
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ login: loginUsuario, senha }),
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          setErro(data.error || 'Erro ao entrar');
+          return;
+        }
+
+        window.location.href = '/dashboard';
+      } catch {
+        setErro('Erro ao entrar');
+      }
     });
-
-    const data = await response.json();
-
-    if (!data.success) {
-      setErro(data.error || 'Erro ao entrar');
-      return;
-    }
-
-    window.location.href = '/dashboard';
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
+      <LoadingOverlay show={loading} message={loadingMessage} />
       <div className="w-full max-w-md">
         <div className="mb-5 flex justify-end">
           <button
@@ -98,9 +109,9 @@ export default function LoginPage() {
             <input
               className="mb-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-950 transition dark:border-white/10 dark:bg-slate-900 dark:text-white"
               type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Digite seu login"
+              value={loginUsuario}
+              onChange={(e) => setLoginUsuario(e.target.value)}
+              placeholder="Digite seu nome"
             />
 
             <label className="mb-2 block font-medium text-slate-700 dark:text-slate-200">
@@ -114,8 +125,11 @@ export default function LoginPage() {
               placeholder="Digite sua senha"
             />
 
-            <button className="w-full rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-              Entrar
+            <button
+              disabled={loading}
+              className="w-full rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
+            >
+              {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
         </section>

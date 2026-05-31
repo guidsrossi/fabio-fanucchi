@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import LoadingOverlay from '../components/LoadingOverlay';
+import { useLoadingAction } from '../hooks/useLoadingAction';
 import ApoioEstudanteModule from './components/ApoioEstudanteModule';
 import GestaoEscolarModule from './components/GestaoEscolarModule';
 import ModuleSelector, {
@@ -33,6 +35,7 @@ export default function DashboardPage() {
   const [estudantesVinculo, setEstudantesVinculo] = useState<Estudante[]>([]);
   const [vinculosPorProfessor, setVinculosPorProfessor] = useState<VinculosPorProfessor>({});
   const [temaEscuro, setTemaEscuro] = useState(false);
+  const { loading, loadingMessage, runWithLoading } = useLoadingAction();
 
   useEffect(() => {
     const temaSalvo = localStorage.getItem('tema');
@@ -108,8 +111,10 @@ export default function DashboardPage() {
   }, []);
 
   async function sair() {
-    await fetch('/api/logout', { method: 'POST' });
-    window.location.href = '/';
+    await runWithLoading('Saindo...', async () => {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
   }
 
   function renderModule() {
@@ -157,6 +162,8 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen p-4 sm:p-6 lg:p-8">
+      <LoadingOverlay show={loading} message={loadingMessage} />
+
       <div className="mx-auto max-w-7xl">
         <header className="mb-6 rounded-[1.75rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 dark:shadow-black/20 sm:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -188,8 +195,9 @@ export default function DashboardPage() {
                 {temaEscuro ? 'Tema claro' : 'Tema dark'}
               </button>
               <button
+                disabled={loading}
                 onClick={sair}
-                className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white shadow-lg shadow-red-600/15 transition hover:bg-red-700"
+                className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white shadow-lg shadow-red-600/15 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-slate-300"
               >
                 Sair
               </button>

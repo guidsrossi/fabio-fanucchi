@@ -13,6 +13,15 @@ function estaAtivo(valor: unknown) {
   return !['nao', 'false', '0'].includes(String(valor || '').trim().toLowerCase());
 }
 
+function normalizarLogin(valor: unknown) {
+  return String(valor || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
+
 async function getVinculos() {
   try {
     return await getRows(ABA_VINCULOS);
@@ -29,7 +38,7 @@ export async function GET() {
   }
 
   const usuarios = await getRows('usuarios');
-  const estudantes = await getRows('estudantes');
+  const estudantes = usuarios.filter((usuario: any) => usuario.perfil === 'estudante');
   const vinculos = await getVinculos();
 
   const professores = usuarios
@@ -37,7 +46,7 @@ export async function GET() {
     .map((professor: any) => ({
       id: professor.id,
       nome: professor.nome,
-      email: professor.email,
+      login: professor.login || professor.nome,
     }));
 
   const vinculoAtivoPorEstudante = vinculos.reduce((acc: any, vinculo: any) => {
@@ -67,7 +76,7 @@ export async function GET() {
     estudantes: estudantes.map((estudante: any) => ({
       id: estudante.id,
       nome: estudante.nome,
-      email: estudante.email,
+      login: estudante.login || estudante.nome,
       turma: estudante.turma,
       professor_id: vinculoAtivoPorEstudante[String(estudante.id || '').trim()] || '',
     })),
@@ -84,24 +93,28 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const nome = String(body.nome || '').trim();
-  const email = String(body.email || '').trim().toLowerCase();
+  const login = nome;
 
-  if (!nome || !email) {
+  if (!nome) {
     return NextResponse.json({
       success: false,
-      error: 'Informe nome e e-mail do professor',
+      error: 'Informe o nome do professor',
     });
   }
 
   const usuarios = await getRows('usuarios');
-  const emailJaExiste = usuarios.some(
-    (usuario: any) => String(usuario.email || '').trim().toLowerCase() === email
+  const loginJaExiste = usuarios.some(
+    (usuario: any) =>
+      [usuario.login, usuario.nome]
+        .map((valor) => normalizarLogin(valor))
+        .filter(Boolean)
+        .includes(normalizarLogin(login))
   );
 
-  if (emailJaExiste) {
+  if (loginJaExiste) {
     return NextResponse.json({
       success: false,
-      error: 'Ja existe um usuario com este e-mail',
+      error: 'Ja existe um usuario com este login',
     });
   }
 
@@ -113,7 +126,7 @@ export async function POST(req: Request) {
   await appendRow('usuarios', [
     professorId,
     nome,
-    email,
+    login,
     SENHA_INICIAL_PROFESSOR,
     'professor',
     '',
@@ -125,7 +138,7 @@ export async function POST(req: Request) {
     professor: {
       id: professorId,
       nome,
-      email,
+      login,
       perfil: 'professor',
       precisa_trocar_senha: true,
     },
@@ -153,7 +166,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: false, error: 'Professor nao encontrado' });
   }
 
-  const estudantes = await getRows('estudantes');
+  const estudantes = usuarios.filter((usuario: any) => usuario.perfil === 'estudante');
   const estudantesExistentes = estudantes.map((estudante: any) => String(estudante.id || '').trim());
   const estudantesSelecionados = Array.from(
     new Set(

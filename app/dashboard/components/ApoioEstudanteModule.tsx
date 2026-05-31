@@ -1,6 +1,8 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import LoadingOverlay from '../../components/LoadingOverlay';
+import { useLoadingAction } from '../../hooks/useLoadingAction';
 import { Apoio, Estudante, Pergunta, Usuario, isGestao } from '../types';
 
 type Props = {
@@ -8,7 +10,7 @@ type Props = {
   apoios: Apoio[];
   estudantes: Estudante[];
   perguntas: Pergunta[];
-  onReload: () => void;
+  onReload: () => void | Promise<void>;
 };
 
 function statusClass(status: string) {
@@ -32,59 +34,77 @@ export default function ApoioEstudanteModule({
     feedback: '',
   });
   const [respostas, setRespostas] = useState<any>({});
+  const { loading, loadingMessage, runWithLoading } = useLoadingAction();
 
   async function registrarApoio(e: FormEvent) {
     e.preventDefault();
 
-    const payload = {
-      ...form,
-      respostas: perguntas.map((pergunta) => ({
-        pergunta_id: pergunta.id,
-        resposta: respostas[pergunta.id] || '',
-      })),
-    };
+    await runWithLoading('Salvando apoio...', async () => {
+      const payload = {
+        ...form,
+        respostas: perguntas.map((pergunta) => ({
+          pergunta_id: pergunta.id,
+          resposta: respostas[pergunta.id] || '',
+        })),
+      };
 
-    const response = await fetch('/api/apoios', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      try {
+        const response = await fetch('/api/apoios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Apoio registrado com sucesso!');
+          setForm({ estudante_id: '', turma: '', disciplina: '', feedback: '' });
+          setRespostas({});
+          await onReload();
+          return;
+        }
+
+        alert(data.error || 'Erro ao registrar apoio');
+      } catch {
+        alert('Erro ao registrar apoio');
+      }
     });
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert('Apoio registrado com sucesso!');
-      setForm({ estudante_id: '', turma: '', disciplina: '', feedback: '' });
-      setRespostas({});
-      onReload();
-      return;
-    }
-
-    alert(data.error || 'Erro ao registrar apoio');
   }
 
   async function validarApoio(apoioId: string, status: string) {
-    const observacao = prompt('Observacao do estudante (opcional):') || '';
+    await runWithLoading(
+      status === 'validado' ? 'Validando apoio...' : 'Recusando apoio...',
+      async () => {
+        const observacao = prompt('Observacao do estudante (opcional):') || '';
 
-    const response = await fetch('/api/validar-apoio', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apoio_id: apoioId, status, observacao }),
-    });
+        try {
+          const response = await fetch('/api/validar-apoio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ apoio_id: apoioId, status, observacao }),
+          });
 
-    const data = await response.json();
+          const data = await response.json();
 
-    if (data.success) {
-      alert('Apoio atualizado!');
-      onReload();
-      return;
-    }
+          if (data.success) {
+            alert('Apoio atualizado!');
+            await onReload();
+            return;
+          }
 
-    alert(data.error || 'Erro ao validar apoio');
+          alert(data.error || 'Erro ao validar apoio');
+        } catch {
+          alert('Erro ao validar apoio');
+        }
+      }
+    );
   }
 
   return (
     <div className="grid gap-6">
+      <LoadingOverlay show={loading} message={loadingMessage} />
+
       {user.perfil === 'professor' && (
         <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
           <div className="mb-5">
@@ -178,8 +198,11 @@ export default function ApoioEstudanteModule({
               required
             />
 
-            <button className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-              Salvar apoio
+            <button
+              disabled={loading}
+              className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
+            >
+              {loading ? 'Salvando...' : 'Salvar apoio'}
             </button>
           </form>
         </section>
@@ -245,16 +268,18 @@ export default function ApoioEstudanteModule({
                 <div className="mt-4 flex gap-3">
                   <button
                     type="button"
+                    disabled={loading}
                     onClick={() => validarApoio(apoio.id, 'validado')}
-                    className="rounded-xl bg-green-600 px-4 py-2 font-semibold text-white transition hover:bg-green-700"
+                    className="rounded-xl bg-green-600 px-4 py-2 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-slate-300"
                   >
                     Validar apoio
                   </button>
 
                   <button
                     type="button"
+                    disabled={loading}
                     onClick={() => validarApoio(apoio.id, 'recusado')}
-                    className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white transition hover:bg-red-700"
+                    className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-slate-300"
                   >
                     Recusar
                   </button>

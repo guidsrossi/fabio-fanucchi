@@ -6,26 +6,39 @@ function precisaTrocarSenha(valor: unknown) {
   return ['sim', 'true', '1', 'yes'].includes(String(valor || '').trim().toLowerCase());
 }
 
+function normalizarLogin(valor: unknown) {
+  return String(valor || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
+
 export async function POST(req: Request) {
-  const { email, senha } = await req.json();
-  const emailNormalizado = String(email || '').trim().toLowerCase();
+  const { login, senha } = await req.json();
+  const loginNormalizado = normalizarLogin(login);
 
   const usuarios = await getRows('usuarios');
   const user = usuarios.find(
-    (u: any) => String(u.email || '').trim().toLowerCase() === emailNormalizado && u.senha === senha
+    (u: any) =>
+      [u.login, u.nome]
+        .map((valor) => normalizarLogin(valor))
+        .filter(Boolean)
+        .includes(loginNormalizado) && u.senha === senha
   );
 
   if (!user) {
     return NextResponse.json({
       success: false,
-      error: 'E-mail ou senha invalidos',
+      error: 'Login ou senha invalidos',
     });
   }
 
   const userPayload = {
     id: user.id,
     nome: user.nome,
-    email: user.email,
+    login: user.login || user.nome,
     perfil: user.perfil,
     turma: user.turma || '',
     precisa_trocar_senha: precisaTrocarSenha(user.precisa_trocar_senha),

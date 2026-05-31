@@ -6,7 +6,7 @@ type Relatorio = {
   mes: string;
   filtros: {
     turmas: string[];
-    professores: Array<{ id: string; nome: string; email: string }>;
+    professores: Array<{ id: string; nome: string; login?: string }>;
     estudantes: Array<{ id: string; nome: string; turma: string }>;
     meses: string[];
   };
@@ -349,7 +349,7 @@ export default function RelatoriosTutoriasModule() {
                 Destaques de poucas tutorias
               </h3>
               <p className="mb-3 text-sm text-amber-700 dark:text-amber-200">
-                Estudantes com 0 ou 1 tutoria no mes selecionado.
+                Estudantes sem nenhuma tutoria no mes selecionado.
               </p>
               <div className="grid gap-2">
                 {relatorio.destaques.poucas.map((item) => (
@@ -368,7 +368,7 @@ export default function RelatoriosTutoriasModule() {
                 Destaques de muitas tutorias
               </h3>
               <p className="mb-3 text-sm text-blue-700 dark:text-blue-200">
-                Estudantes com {relatorio.indicadores.limiteMuitasTutorias} ou mais tutorias no mes.
+                Estudantes com 3 ou mais tutorias no mes.
               </p>
               <div className="grid gap-2">
                 {relatorio.destaques.muitas.map((item) => (

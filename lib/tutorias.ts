@@ -61,7 +61,8 @@ async function getRegistrosTutorias() {
 
 export async function getEstudantesDoProfessor(professorId: string) {
   const vinculos = await getVinculos();
-  const estudantes = await getRows('estudantes');
+  const usuarios = await getRows('usuarios');
+  const estudantes = usuarios.filter((usuario: any) => usuario.perfil === 'estudante');
   const estudantesIds = vinculos
     .filter((vinculo: any) => vinculo.professor_id === professorId && estaAtivo(vinculo.ativo))
     .map((vinculo: any) => String(vinculo.estudante_id || '').trim())
@@ -248,12 +249,12 @@ function filtrarRegistroPorContexto(registro: any, filtros: FiltrosRelatorioTuto
 
 export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) {
   const mesReferencia = normalizarMes(filtros.mes) || mesAtualReferencia();
-  const [registros, estudantes, usuarios, vinculos] = await Promise.all([
+  const [registros, usuarios, vinculos] = await Promise.all([
     getRegistrosTutorias(),
-    getRows('estudantes'),
     getRows('usuarios'),
     getVinculos(),
   ]);
+  const estudantes = usuarios.filter((usuario: any) => usuario.perfil === 'estudante');
   const estudantesPorId = criarMapaEstudantes(estudantes);
   const usuariosPorId = criarMapaUsuarios(usuarios);
   const professorAtualPorEstudante = criarMapaProfessorAtual(vinculos);
@@ -262,7 +263,7 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
     .map((professor: any) => ({
       id: professor.id,
       nome: professor.nome,
-      email: professor.email,
+      login: professor.login || professor.nome,
     }));
 
   const registrosFiltrados = registros
@@ -309,7 +310,7 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
 
   const totalGeral = estudantesResumo.reduce((total: number, estudante: any) => total + estudante.quantidade, 0);
   const mediaPorEstudante = estudantesResumo.length ? totalGeral / estudantesResumo.length : 0;
-  const limiteMuitasTutorias = Math.max(4, Math.ceil(mediaPorEstudante * 1.8));
+  const limiteMuitasTutorias = 3;
 
   const rankingMaior = [...estudantesResumo]
     .sort((a: any, b: any) => b.quantidade - a.quantidade || a.nome.localeCompare(b.nome))
@@ -362,7 +363,7 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
       totalGeral,
       mediaPorEstudante,
       estudantesNoFiltro: estudantesResumo.length,
-      comPoucasTutorias: estudantesResumo.filter((estudante: any) => estudante.quantidade <= 1).length,
+      comPoucasTutorias: estudantesResumo.filter((estudante: any) => estudante.quantidade === 0).length,
       comMuitasTutorias: estudantesResumo.filter(
         (estudante: any) => estudante.quantidade >= limiteMuitasTutorias
       ).length,
@@ -371,7 +372,7 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
     rankingMaior,
     rankingMenor,
     destaques: {
-      poucas: estudantesResumo.filter((estudante: any) => estudante.quantidade <= 1).slice(0, 8),
+      poucas: estudantesResumo.filter((estudante: any) => estudante.quantidade === 0).slice(0, 8),
       muitas: estudantesResumo
         .filter((estudante: any) => estudante.quantidade >= limiteMuitasTutorias)
         .slice(0, 8),
