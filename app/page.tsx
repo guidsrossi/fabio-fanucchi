@@ -93,14 +93,14 @@ export default function LoginPage() {
             )}
 
             <label className="mb-2 block font-medium text-slate-700 dark:text-slate-200">
-              E-mail
+              Login
             </label>
             <input
               className="mb-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-950 transition dark:border-white/10 dark:bg-slate-900 dark:text-white"
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Digite seu e-mail"
+              placeholder="Digite seu login"
             />
 
             <label className="mb-2 block font-medium text-slate-700 dark:text-slate-200">
