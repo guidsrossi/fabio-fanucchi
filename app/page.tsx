@@ -69,7 +69,7 @@ export default function LoginPage() {
               className="mx-auto h-24 w-24 rounded-3xl border border-slate-200 bg-white object-contain p-2 shadow-sm dark:border-white/10 dark:bg-white"
             />
             <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-              Sistema de Tutoria
+              Plataforma de Tutoria
             </p>
             <h1 className="mt-2 text-2xl font-bold leading-tight text-slate-950 dark:text-white">
               {ESCOLA}
@@ -82,7 +82,7 @@ export default function LoginPage() {
                 Entrar no sistema
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                Acesse para registrar, acompanhar e validar os apoios presenciais.
+                Acesse os modulos de apoio, tutorias mensais e acompanhamento escolar.
               </p>
             </div>
 

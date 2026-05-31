@@ -2,8 +2,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Escola Estadual Prof. Fabio Fanucchi | Sistema de Tutoria',
-  description: 'Sistema de apoio presencial de tutoria da Escola Estadual Prof. Fabio Fanucchi',
+  title: 'Escola Estadual Prof. Fabio Fanucchi | Plataforma de Tutoria',
+  description: 'Plataforma de tutoria e acompanhamento da Escola Estadual Prof. Fabio Fanucchi',
   icons: {
     icon: '/favicon.jpg',
     shortcut: '/favicon.jpg',

@@ -1,60 +1,38 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ApoioEstudanteModule from './components/ApoioEstudanteModule';
+import GestaoEscolarModule from './components/GestaoEscolarModule';
+import ModuleSelector, {
+  defaultModuleForUser,
+  moduleIsAvailable,
+} from './components/ModuleSelector';
+import PasswordChangePanel from './components/PasswordChangePanel';
+import RelatoriosTutoriasModule from './components/RelatoriosTutoriasModule';
+import TutoriasMensaisModule from './components/TutoriasMensaisModule';
+import {
+  Apoio,
+  DashboardModuleId,
+  Estudante,
+  Pergunta,
+  Professor,
+  Usuario,
+  VinculosPorProfessor,
+  isGestao,
+} from './types';
 
 const ESCOLA = 'Escola Estadual Prof. Fabio Fanucchi';
 
-function isGestao(perfil: string) {
-  return perfil === 'gestao' || perfil === 'gestor';
-}
-
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
-  const [apoios, setApoios] = useState<any[]>([]);
-  const [estudantes, setEstudantes] = useState<any[]>([]);
-  const [perguntas, setPerguntas] = useState<any[]>([]);
-  const [professores, setProfessores] = useState<any[]>([]);
-  const [estudantesVinculo, setEstudantesVinculo] = useState<any[]>([]);
-  const [vinculosPorProfessor, setVinculosPorProfessor] = useState<any>({});
-  const [professorSelecionadoId, setProfessorSelecionadoId] = useState('');
-  const [novoEstudanteId, setNovoEstudanteId] = useState('');
-  const [professorMensagem, setProfessorMensagem] = useState('');
-  const [professorErro, setProfessorErro] = useState('');
-  const [estudanteMensagem, setEstudanteMensagem] = useState('');
-  const [estudanteErro, setEstudanteErro] = useState('');
-  const [perguntaMensagem, setPerguntaMensagem] = useState('');
-  const [perguntaErro, setPerguntaErro] = useState('');
-  const [perguntaEditandoId, setPerguntaEditandoId] = useState('');
+  const [user, setUser] = useState<Usuario | null>(null);
+  const [activeModule, setActiveModule] = useState<DashboardModuleId>('apoio');
+  const [apoios, setApoios] = useState<Apoio[]>([]);
+  const [estudantes, setEstudantes] = useState<Estudante[]>([]);
+  const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
+  const [professores, setProfessores] = useState<Professor[]>([]);
+  const [estudantesVinculo, setEstudantesVinculo] = useState<Estudante[]>([]);
+  const [vinculosPorProfessor, setVinculosPorProfessor] = useState<VinculosPorProfessor>({});
   const [temaEscuro, setTemaEscuro] = useState(false);
-
-  const [form, setForm] = useState({
-    estudante_id: '',
-    turma: '',
-    disciplina: '',
-    feedback: '',
-  });
-
-  const [professorForm, setProfessorForm] = useState({
-    nome: '',
-    email: '',
-  });
-
-  const [estudanteForm, setEstudanteForm] = useState({
-    nome: '',
-    turma: '',
-  });
-
-  const [perguntaForm, setPerguntaForm] = useState({
-    pergunta: '',
-    tipo: 'sim_nao',
-  });
-
-  const [senhaForm, setSenhaForm] = useState({
-    novaSenha: '',
-    confirmarSenha: '',
-  });
-
-  const [respostas, setRespostas] = useState<any>({});
 
   useEffect(() => {
     const temaSalvo = localStorage.getItem('tema');
@@ -82,358 +60,91 @@ export default function DashboardPage() {
       return;
     }
 
-    setUser(me.user);
+    const usuario = me.user as Usuario;
+    setUser(usuario);
+    setActiveModule((moduloAtual) =>
+      moduleIsAvailable(usuario, moduloAtual) ? moduloAtual : defaultModuleForUser(usuario)
+    );
 
-    if (me.user.precisa_trocar_senha) {
+    if (usuario.precisa_trocar_senha) {
       setApoios([]);
       setEstudantes([]);
       setPerguntas([]);
+      setProfessores([]);
+      setEstudantesVinculo([]);
+      setVinculosPorProfessor({});
       return;
     }
 
-    const apoiosResp = await fetch('/api/apoios').then((r) => r.json());
-    setApoios(apoiosResp.apoios || []);
+    const [apoiosResp, perguntasResp] = await Promise.all([
+      fetch('/api/apoios').then((r) => r.json()),
+      fetch('/api/perguntas').then((r) => r.json()),
+    ]);
 
-    const perguntasResp = await fetch('/api/perguntas').then((r) => r.json());
+    setApoios(apoiosResp.apoios || []);
     setPerguntas(perguntasResp.perguntas || []);
 
-    if (isGestao(me.user.perfil)) {
+    if (isGestao(usuario.perfil)) {
       const professoresResp = await fetch('/api/professores').then((r) => r.json());
+
       setProfessores(professoresResp.professores || []);
       setEstudantesVinculo(professoresResp.estudantes || []);
       setVinculosPorProfessor(professoresResp.vinculosPorProfessor || {});
+      setEstudantes([]);
+      return;
     }
 
-    if (me.user.perfil === 'professor') {
+    if (usuario.perfil === 'professor') {
       const estudantesResp = await fetch('/api/estudantes').then((r) => r.json());
       setEstudantes(estudantesResp.estudantes || []);
+      return;
     }
+
+    setEstudantes([]);
   }
 
   useEffect(() => {
     carregar();
   }, []);
 
-  useEffect(() => {
-    if (professores.length === 0) {
-      setProfessorSelecionadoId('');
-      return;
-    }
-
-    const professorAindaExiste = professores.some((professor: any) => professor.id === professorSelecionadoId);
-
-    if (!professorSelecionadoId || !professorAindaExiste) {
-      setProfessorSelecionadoId(professores[0].id);
-    }
-  }, [professores, professorSelecionadoId]);
-
   async function sair() {
     await fetch('/api/logout', { method: 'POST' });
     window.location.href = '/';
   }
 
-  async function alterarSenha(e: React.FormEvent) {
-    e.preventDefault();
+  function renderModule() {
+    if (!user) return null;
 
-    if (senhaForm.novaSenha !== senhaForm.confirmarSenha) {
-      alert('As senhas digitadas nao conferem');
-      return;
+    if (activeModule === 'tutorias' && user.perfil === 'professor') {
+      return <TutoriasMensaisModule />;
     }
 
-    const response = await fetch('/api/alterar-senha', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ novaSenha: senhaForm.novaSenha }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert('Senha alterada com sucesso!');
-      setSenhaForm({ novaSenha: '', confirmarSenha: '' });
-      setUser(data.user);
-      carregar();
-    } else {
-      alert(data.error || 'Erro ao alterar senha');
+    if (activeModule === 'relatorios' && isGestao(user.perfil)) {
+      return <RelatoriosTutoriasModule />;
     }
-  }
 
-  async function cadastrarProfessor(e: React.FormEvent) {
-    e.preventDefault();
-    setProfessorMensagem('');
-    setProfessorErro('');
-
-    const response = await fetch('/api/professores', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(professorForm),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setProfessorMensagem(`Professor cadastrado. Senha inicial: ${data.senha_temporaria}`);
-      setProfessorForm({ nome: '', email: '' });
-      carregar();
-    } else {
-      setProfessorErro(data.error || 'Erro ao cadastrar professor');
+    if (activeModule === 'gestao' && isGestao(user.perfil)) {
+      return (
+        <GestaoEscolarModule
+          apoios={apoios}
+          professores={professores}
+          estudantes={estudantesVinculo}
+          perguntas={perguntas}
+          vinculosPorProfessor={vinculosPorProfessor}
+          onReload={carregar}
+        />
+      );
     }
-  }
 
-  async function cadastrarEstudante(e: React.FormEvent) {
-    e.preventDefault();
-    setEstudanteMensagem('');
-    setEstudanteErro('');
-
-    const response = await fetch('/api/estudantes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(estudanteForm),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setEstudanteMensagem(`Estudante cadastrado. Senha inicial: ${data.senha_temporaria}`);
-      setEstudanteForm({ nome: '', turma: '' });
-      carregar();
-    } else {
-      setEstudanteErro(data.error || 'Erro ao cadastrar estudante');
-    }
-  }
-
-  function perguntaEstaAtiva(pergunta: any) {
-    return !['nao', 'false', '0'].includes(String(pergunta.ativa || '').trim().toLowerCase());
-  }
-
-  function limparFormularioPergunta() {
-    setPerguntaForm({ pergunta: '', tipo: 'sim_nao' });
-    setPerguntaEditandoId('');
-  }
-
-  function editarPergunta(pergunta: any) {
-    setPerguntaMensagem('');
-    setPerguntaErro('');
-    setPerguntaEditandoId(pergunta.id);
-    setPerguntaForm({
-      pergunta: pergunta.pergunta || '',
-      tipo: pergunta.tipo || 'sim_nao',
-    });
-  }
-
-  async function salvarPergunta(e: React.FormEvent) {
-    e.preventDefault();
-    setPerguntaMensagem('');
-    setPerguntaErro('');
-
-    const perguntaAtual = perguntas.find((pergunta: any) => pergunta.id === perguntaEditandoId);
-    const response = await fetch('/api/perguntas', {
-      method: perguntaEditandoId ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: perguntaEditandoId,
-        ...perguntaForm,
-        ativa: perguntaAtual ? perguntaEstaAtiva(perguntaAtual) : true,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setPerguntaMensagem(perguntaEditandoId ? 'Pergunta atualizada.' : 'Pergunta cadastrada.');
-      limparFormularioPergunta();
-      carregar();
-    } else {
-      setPerguntaErro(data.error || 'Erro ao salvar pergunta');
-    }
-  }
-
-  async function alterarStatusPergunta(pergunta: any, ativa: boolean) {
-    setPerguntaMensagem('');
-    setPerguntaErro('');
-
-    const response = await fetch('/api/perguntas', {
-      method: ativa ? 'PUT' : 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: pergunta.id,
-        pergunta: pergunta.pergunta,
-        tipo: pergunta.tipo,
-        ativa,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setPerguntaMensagem(ativa ? 'Pergunta reativada.' : 'Pergunta desativada.');
-
-      if (perguntaEditandoId === pergunta.id && !ativa) {
-        limparFormularioPergunta();
-      }
-
-      carregar();
-    } else {
-      setPerguntaErro(data.error || 'Erro ao atualizar pergunta');
-    }
-  }
-
-  async function atualizarVinculosProfessor(
-    professorId: string,
-    estudantesIds: string[],
-    mensagemSucesso: string
-  ) {
-    setProfessorMensagem('');
-    setProfessorErro('');
-
-    const response = await fetch('/api/professores', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        professor_id: professorId,
-        estudantes: estudantesIds,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      setProfessorMensagem(mensagemSucesso);
-      setNovoEstudanteId('');
-      carregar();
-    } else {
-      setProfessorErro(data.error || 'Erro ao salvar vinculos');
-    }
-  }
-
-  function ordenarEstudantesPorTurmaENome(lista: any[]) {
-    return [...lista].sort((a: any, b: any) => {
-      const turma = String(a.turma || '').localeCompare(String(b.turma || ''));
-
-      if (turma !== 0) return turma;
-
-      return String(a.nome || '').localeCompare(String(b.nome || ''));
-    });
-  }
-
-  function turmasDisponiveis() {
-    return Array.from(
-      new Set(estudantesVinculo.map((estudante: any) => String(estudante.turma || '').trim()).filter(Boolean))
-    ).sort((a, b) => a.localeCompare(b));
-  }
-
-  function gerarEmailEstudante(nome: string) {
-    const partes = nome
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '')
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
-
-    if (partes.length === 0) return '';
-
-    const primeiroNome = partes[0];
-    const ultimoNome = partes.length > 1 ? partes[partes.length - 1] : '';
-    const usuario = [primeiroNome, ultimoNome].filter(Boolean).join('.');
-
-    return `${usuario}@escola.com`;
-  }
-
-  function estudantesDoProfessor(professorId: string) {
-    const estudantesIds = vinculosPorProfessor[professorId] || [];
-
-    return ordenarEstudantesPorTurmaENome(
-      estudantesVinculo.filter((estudante: any) => estudantesIds.includes(estudante.id))
+    return (
+      <ApoioEstudanteModule
+        user={user}
+        apoios={apoios}
+        estudantes={estudantes}
+        perguntas={perguntas}
+        onReload={carregar}
+      />
     );
-  }
-
-  function estudantesSemProfessor() {
-    return ordenarEstudantesPorTurmaENome(
-      estudantesVinculo.filter((estudante: any) => !estudante.professor_id)
-    );
-  }
-
-  function contarApoiosRecebidos(estudanteId: string) {
-    return apoios.filter((apoio: any) => String(apoio.estudante_id || '').trim() === estudanteId).length;
-  }
-
-  function adicionarEstudanteAoProfessor() {
-    if (!professorSelecionadoId || !novoEstudanteId) return;
-
-    const estudantesAtuais = vinculosPorProfessor[professorSelecionadoId] || [];
-    const proximosEstudantes = Array.from(new Set([...estudantesAtuais, novoEstudanteId]));
-
-    atualizarVinculosProfessor(
-      professorSelecionadoId,
-      proximosEstudantes,
-      'Estudante vinculado ao professor.'
-    );
-  }
-
-  function removerEstudanteDoProfessor(estudanteId: string) {
-    if (!professorSelecionadoId) return;
-
-    const estudantesAtuais = vinculosPorProfessor[professorSelecionadoId] || [];
-
-    atualizarVinculosProfessor(
-      professorSelecionadoId,
-      estudantesAtuais.filter((item: string) => item !== estudanteId),
-      'Vinculo removido do professor.'
-    );
-  }
-
-  function professorSelecionado() {
-    return professores.find((professor: any) => professor.id === professorSelecionadoId);
-  }
-
-  async function registrarApoio(e: React.FormEvent) {
-    e.preventDefault();
-
-    const payload = {
-      ...form,
-      respostas: perguntas.map((p: any) => ({
-        pergunta_id: p.id,
-        resposta: respostas[p.id] || '',
-      })),
-    };
-
-    const response = await fetch('/api/apoios', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert('Apoio registrado com sucesso!');
-      setForm({ estudante_id: '', turma: '', disciplina: '', feedback: '' });
-      setRespostas({});
-      carregar();
-    } else {
-      alert(data.error || 'Erro ao registrar apoio');
-    }
-  }
-
-  async function validarApoio(apoio_id: string, status: string) {
-    const observacao = prompt('Observacao do estudante (opcional):') || '';
-
-    const response = await fetch('/api/validar-apoio', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ apoio_id, status, observacao }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert('Apoio atualizado!');
-      carregar();
-    } else {
-      alert(data.error || 'Erro ao validar apoio');
-    }
   }
 
   if (!user) {
@@ -460,7 +171,7 @@ export default function DashboardPage() {
                   {ESCOLA}
                 </p>
                 <h1 className="text-2xl font-bold text-slate-950 dark:text-white">
-                  Sistema de Tutoria Presencial
+                  Plataforma de Tutoria Escolar
                 </h1>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   Logado como {user.nome} - {user.perfil}
@@ -486,549 +197,21 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {user.precisa_trocar_senha && (
-          <section className="mb-6 rounded-[1.5rem] border border-white/70 bg-white/90 p-6 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80">
-            <h2 className="mb-2 text-xl font-bold text-slate-950 dark:text-white">Troque sua senha para continuar</h2>
-            <p className="mb-4 text-slate-500 dark:text-slate-400">
-              Sua conta comecou com senha temporaria. Cadastre uma nova senha no primeiro acesso.
-            </p>
-
-            <form onSubmit={alterarSenha} className="grid gap-4 max-w-md">
-              <input
-                className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                type="password"
-                minLength={6}
-                placeholder="Nova senha"
-                value={senhaForm.novaSenha}
-                onChange={(e) => setSenhaForm({ ...senhaForm, novaSenha: e.target.value })}
-                required
-              />
-
-              <input
-                className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                type="password"
-                minLength={6}
-                placeholder="Confirmar nova senha"
-                value={senhaForm.confirmarSenha}
-                onChange={(e) => setSenhaForm({ ...senhaForm, confirmarSenha: e.target.value })}
-                required
-              />
-
-              <button className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-                Salvar nova senha
-              </button>
-            </form>
-          </section>
-        )}
-
-        {!user.precisa_trocar_senha && (
+        {user.precisa_trocar_senha ? (
+          <PasswordChangePanel
+            onChanged={(usuarioAtualizado) => {
+              setUser(usuarioAtualizado);
+              carregar();
+            }}
+          />
+        ) : (
           <>
-            {isGestao(user.perfil) && (
-              <section className="mb-6 rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
-                <div className="mb-5">
-                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-                    Gestao escolar
-                  </p>
-                  <h2 className="text-xl font-bold text-slate-950 dark:text-white">Cadastrar professor</h2>
-                </div>
-
-                {professorMensagem && (
-                  <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">
-                    {professorMensagem}
-                  </div>
-                )}
-
-                {professorErro && (
-                  <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
-                    {professorErro}
-                  </div>
-                )}
-
-                <form onSubmit={cadastrarProfessor} className="grid gap-4 md:grid-cols-3">
-                  <input
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white md:col-span-1"
-                    placeholder="Nome do professor"
-                    value={professorForm.nome}
-                    onChange={(e) => setProfessorForm({ ...professorForm, nome: e.target.value })}
-                    required
-                  />
-
-                  <input
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white md:col-span-1"
-                    type="email"
-                    placeholder="E-mail"
-                    value={professorForm.email}
-                    onChange={(e) => setProfessorForm({ ...professorForm, email: e.target.value })}
-                    required
-                  />
-
-                  <button className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-                    Cadastrar
-                  </button>
-                </form>
-
-                <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-                  O professor entra com a senha 123456 e troca a senha no primeiro acesso.
-                </p>
-
-                <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">
-                  <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">Cadastrar estudante</h3>
-
-                  {estudanteMensagem && (
-                    <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">
-                      {estudanteMensagem}
-                    </div>
-                  )}
-
-                  {estudanteErro && (
-                    <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
-                      {estudanteErro}
-                    </div>
-                  )}
-
-                  <form onSubmit={cadastrarEstudante} className="grid gap-4 md:grid-cols-4">
-                    <input
-                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white md:col-span-1"
-                      placeholder="Nome do estudante"
-                      value={estudanteForm.nome}
-                      onChange={(e) => setEstudanteForm({ ...estudanteForm, nome: e.target.value })}
-                      required
-                    />
-
-                    <input
-                      className="rounded-xl border border-slate-200 bg-slate-100 p-3 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 md:col-span-1"
-                      value={gerarEmailEstudante(estudanteForm.nome)}
-                      placeholder="E-mail automatico"
-                      readOnly
-                    />
-
-                    <select
-                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white md:col-span-1"
-                      value={estudanteForm.turma}
-                      onChange={(e) => setEstudanteForm({ ...estudanteForm, turma: e.target.value })}
-                      disabled={turmasDisponiveis().length === 0}
-                      required
-                    >
-                      <option value="">
-                        {turmasDisponiveis().length === 0 ? 'Nenhuma turma cadastrada' : 'Selecione a turma'}
-                      </option>
-                      {turmasDisponiveis().map((turma) => (
-                        <option key={turma} value={turma}>
-                          {turma}
-                        </option>
-                      ))}
-                    </select>
-
-                    <button
-                      className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
-                      disabled={turmasDisponiveis().length === 0}
-                    >
-                      Cadastrar estudante
-                    </button>
-                  </form>
-
-                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-                    O estudante entra com a senha 123456 e troca a senha no primeiro acesso.
-                  </p>
-                </div>
-
-                <div className="mt-8">
-                  <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">Vincular professor com estudantes</h3>
-
-                  {professores.length === 0 && (
-                    <p className="text-slate-500 dark:text-slate-400">Nenhum professor cadastrado.</p>
-                  )}
-
-                  {professores.length > 0 && estudantesVinculo.length === 0 && (
-                    <p className="text-slate-500 dark:text-slate-400">
-                      Cadastre estudantes para liberar as opcoes de vinculo.
-                    </p>
-                  )}
-
-                  {professores.length > 0 && (
-                    <div className="grid gap-4">
-                      <select
-                        className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                        value={professorSelecionadoId}
-                        onChange={(e) => {
-                          setProfessorSelecionadoId(e.target.value);
-                          setNovoEstudanteId('');
-                        }}
-                      >
-                        {professores.map((professor: any) => (
-                          <option key={professor.id} value={professor.id}>
-                            {professor.nome} - {professor.email}
-                          </option>
-                        ))}
-                      </select>
-
-                      {professorSelecionado() && (
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                          <div className="mb-4 flex flex-col gap-1">
-                            <p className="font-semibold text-slate-950 dark:text-white">
-                              {professorSelecionado()?.nome}
-                            </p>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                              {professorSelecionado()?.email}
-                            </p>
-                          </div>
-
-                          <div className="mb-5">
-                            <p className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-                              Estudantes associados
-                            </p>
-
-                            <div className="grid gap-2">
-                              {estudantesDoProfessor(professorSelecionadoId).map((estudante: any) => (
-                                <div
-                                  key={`${professorSelecionadoId}-${estudante.id}`}
-                                  className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-slate-900/70 sm:flex-row sm:items-center sm:justify-between"
-                                >
-                                  <div>
-                                    <p className="font-medium text-slate-950 dark:text-white">{estudante.nome}</p>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                                      {estudante.turma} | {contarApoiosRecebidos(estudante.id)} apoio(s) recebido(s)
-                                    </p>
-                                  </div>
-
-                                  <button
-                                    type="button"
-                                    onClick={() => removerEstudanteDoProfessor(estudante.id)}
-                                    className="w-fit rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
-                                  >
-                                    Remover
-                                  </button>
-                                </div>
-                              ))}
-
-                              {estudantesDoProfessor(professorSelecionadoId).length === 0 && (
-                                <p className="text-slate-500 dark:text-slate-400">
-                                  Este professor ainda nao tem estudantes associados.
-                                </p>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-                            <select
-                              className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                              value={novoEstudanteId}
-                              onChange={(e) => setNovoEstudanteId(e.target.value)}
-                              disabled={estudantesSemProfessor().length === 0}
-                            >
-                              <option value="">
-                                {estudantesSemProfessor().length === 0
-                                  ? 'Nenhum estudante sem professor'
-                                  : 'Selecione um estudante sem professor'}
-                              </option>
-                              {estudantesSemProfessor().map((estudante: any) => (
-                                <option key={estudante.id} value={estudante.id}>
-                                  {estudante.nome} - {estudante.turma}
-                                </option>
-                              ))}
-                            </select>
-
-                            <button
-                              type="button"
-                              onClick={adicionarEstudanteAoProfessor}
-                              disabled={!novoEstudanteId}
-                              className="rounded-xl bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-600 dark:hover:bg-blue-500 dark:disabled:bg-white/10"
-                            >
-                              Adicionar estudante
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">
-                  <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">
-                    Gerenciar perguntas pre-definidas
-                  </h3>
-
-                  {perguntaMensagem && (
-                    <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">
-                      {perguntaMensagem}
-                    </div>
-                  )}
-
-                  {perguntaErro && (
-                    <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
-                      {perguntaErro}
-                    </div>
-                  )}
-
-                  <form onSubmit={salvarPergunta} className="grid gap-4 md:grid-cols-[1fr_180px_auto]">
-                    <input
-                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                      placeholder="Texto da pergunta"
-                      value={perguntaForm.pergunta}
-                      onChange={(e) => setPerguntaForm({ ...perguntaForm, pergunta: e.target.value })}
-                      required
-                    />
-
-                    <select
-                      className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                      value={perguntaForm.tipo}
-                      onChange={(e) => setPerguntaForm({ ...perguntaForm, tipo: e.target.value })}
-                    >
-                      <option value="sim_nao">Sim/Nao</option>
-                      <option value="texto">Texto</option>
-                    </select>
-
-                    <div className="flex flex-wrap gap-3">
-                      <button className="rounded-xl bg-blue-700 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-                        {perguntaEditandoId ? 'Salvar pergunta' : 'Adicionar pergunta'}
-                      </button>
-
-                      {perguntaEditandoId && (
-                        <button
-                          type="button"
-                          onClick={limparFormularioPergunta}
-                          className="rounded-xl border border-slate-200 px-4 py-3 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
-                        >
-                          Cancelar
-                        </button>
-                      )}
-                    </div>
-                  </form>
-
-                  <div className="mt-5 grid gap-3">
-                    {perguntas.map((pergunta: any) => (
-                      <div
-                        key={pergunta.id}
-                        className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03] lg:flex-row lg:items-center lg:justify-between"
-                      >
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="font-semibold text-slate-950 dark:text-white">{pergunta.pergunta}</p>
-                            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                              perguntaEstaAtiva(pergunta)
-                                ? 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-200'
-                                : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'
-                            }`}>
-                              {perguntaEstaAtiva(pergunta) ? 'Ativa' : 'Inativa'}
-                            </span>
-                          </div>
-                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                            Tipo: {pergunta.tipo === 'sim_nao' ? 'Sim/Nao' : 'Texto'}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => editarPergunta(pergunta)}
-                            className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:text-slate-200 dark:hover:border-blue-400"
-                          >
-                            Editar
-                          </button>
-
-                          {perguntaEstaAtiva(pergunta) ? (
-                            <button
-                              type="button"
-                              onClick={() => alterarStatusPergunta(pergunta, false)}
-                              className="rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
-                            >
-                              Desativar
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => alterarStatusPergunta(pergunta, true)}
-                              className="rounded-xl border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 transition hover:bg-green-50 dark:border-green-500/30 dark:text-green-200 dark:hover:bg-green-500/10"
-                            >
-                              Reativar
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-
-                    {perguntas.length === 0 && (
-                      <p className="text-slate-500 dark:text-slate-400">Nenhuma pergunta cadastrada.</p>
-                    )}
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {user.perfil === 'professor' && (
-              <section className="mb-6 rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
-                <div className="mb-5">
-                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-                    Area do professor
-                  </p>
-                  <h2 className="text-xl font-bold text-slate-950 dark:text-white">Registrar apoio presencial</h2>
-                </div>
-
-                <form onSubmit={registrarApoio} className="grid gap-4">
-                  <select
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                    value={form.estudante_id}
-                    onChange={(e) => {
-                      const estudante = estudantes.find((aluno) => aluno.id === e.target.value);
-                      setForm({
-                        ...form,
-                        estudante_id: e.target.value,
-                        turma: estudante?.turma || '',
-                      });
-                    }}
-                    required
-                  >
-                    <option value="">Selecione o estudante</option>
-                    {estudantes.map((estudante: any) => (
-                      <option key={estudante.id} value={estudante.id}>
-                        {estudante.nome} - {estudante.turma}
-                      </option>
-                    ))}
-                  </select>
-
-                  <input
-                    className="rounded-xl border border-slate-200 bg-slate-100 p-3 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
-                    placeholder="Turma"
-                    value={form.turma}
-                    readOnly
-                    required
-                  />
-
-                  <input
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                    placeholder="Disciplina/Aula"
-                    value={form.disciplina}
-                    onChange={(e) => setForm({ ...form, disciplina: e.target.value })}
-                    required
-                  />
-
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-                    <h3 className="mb-3 font-bold text-slate-950 dark:text-white">Perguntas pre-definidas</h3>
-
-                    {perguntas.map((pergunta: any) => (
-                      <div key={pergunta.id} className="mb-4">
-                        <label className="mb-1 block font-medium text-slate-700 dark:text-slate-200">{pergunta.pergunta}</label>
-
-                        {pergunta.tipo === 'sim_nao' ? (
-                          <select
-                            className="w-full rounded-xl border border-slate-200 bg-white p-2 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                            value={respostas[pergunta.id] || ''}
-                            onChange={(e) =>
-                              setRespostas({ ...respostas, [pergunta.id]: e.target.value })
-                            }
-                          >
-                            <option value="">Selecione</option>
-                            <option value="Sim">Sim</option>
-                            <option value="Nao">Nao</option>
-                          </select>
-                        ) : (
-                          <input
-                            className="w-full rounded-xl border border-slate-200 bg-white p-2 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                            value={respostas[pergunta.id] || ''}
-                            onChange={(e) =>
-                              setRespostas({ ...respostas, [pergunta.id]: e.target.value })
-                            }
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-
-                  <textarea
-                    className="min-h-32 rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-                    placeholder="Feedback para o estudante"
-                    value={form.feedback}
-                    onChange={(e) => setForm({ ...form, feedback: e.target.value })}
-                    required
-                  />
-
-                  <button className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 dark:bg-blue-500 dark:hover:bg-blue-400">
-                    Salvar apoio
-                  </button>
-                </form>
-              </section>
-            )}
-
-            <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
-              <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
-                {isGestao(user.perfil) && 'Todos os apoios realizados'}
-                {user.perfil === 'professor' && 'Meus apoios realizados'}
-                {user.perfil === 'estudante' && 'Meus apoios recebidos'}
-              </h2>
-
-              <div className="grid gap-4">
-                {apoios.map((apoio: any) => (
-                  <div key={apoio.id} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 transition hover:border-blue-200 hover:shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:hover:border-blue-400/60">
-                    <div className="flex flex-col justify-between gap-4 sm:flex-row">
-                      <div>
-                        <h3 className="font-bold text-slate-950 dark:text-white">
-                          {apoio.estudante_nome} - {apoio.turma}
-                        </h3>
-                        <p className="text-slate-600 dark:text-slate-300">
-                          Professor: {apoio.professor_nome}
-                        </p>
-                        <p className="text-slate-600 dark:text-slate-300">
-                          Aula: {apoio.disciplina} | Data: {apoio.data}
-                        </p>
-                      </div>
-
-                      <span className={`h-fit w-fit rounded-full px-3 py-1 text-sm font-semibold ${
-                        apoio.status_validacao === 'validado'
-                          ? 'bg-green-100 text-green-700'
-                          : apoio.status_validacao === 'recusado'
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}>
-                        {apoio.status_validacao}
-                      </span>
-                    </div>
-
-                    <p className="mt-3 text-slate-700 dark:text-slate-200">
-                      <strong>Feedback:</strong> {apoio.feedback}
-                    </p>
-
-                    {apoio.respostas?.length > 0 && (
-                      <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-slate-900/70">
-                        <strong>Respostas:</strong>
-                        {apoio.respostas.map((resposta: any, index: number) => (
-                          <p key={index} className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                            {resposta.pergunta}: <b>{resposta.resposta}</b>
-                          </p>
-                        ))}
-                      </div>
-                    )}
-
-                    {apoio.observacao_estudante && (
-                      <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
-                        <strong>Observacao do estudante:</strong> {apoio.observacao_estudante}
-                      </p>
-                    )}
-
-                    {user.perfil === 'estudante' && apoio.status_validacao === 'pendente' && (
-                      <div className="flex gap-3 mt-4">
-                        <button
-                          onClick={() => validarApoio(apoio.id, 'validado')}
-                          className="rounded-xl bg-green-600 px-4 py-2 font-semibold text-white transition hover:bg-green-700"
-                        >
-                          Validar apoio
-                        </button>
-
-                        <button
-                          onClick={() => validarApoio(apoio.id, 'recusado')}
-                          className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white transition hover:bg-red-700"
-                        >
-                          Recusar
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {apoios.length === 0 && (
-                  <p className="text-slate-500 dark:text-slate-400">Nenhum apoio encontrado.</p>
-                )}
-              </div>
-            </section>
+            <ModuleSelector
+              activeModule={activeModule}
+              user={user}
+              onChange={setActiveModule}
+            />
+            {renderModule()}
           </>
         )}
       </div>

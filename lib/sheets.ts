@@ -76,3 +76,35 @@ export async function updateRow(sheetName: string, rowNumber: number, values: an
     },
   });
 }
+
+export async function ensureSheet(sheetName: string) {
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId,
+  });
+
+  const sheetExists = spreadsheet.data.sheets?.some(
+    (sheet) => sheet.properties?.title === sheetName
+  );
+
+  if (sheetExists) return;
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          addSheet: {
+            properties: {
+              title: sheetName,
+            },
+          },
+        },
+      ],
+    },
+  });
+}
+
+export async function ensureSheetWithHeaders(sheetName: string, headers: string[]) {
+  await ensureSheet(sheetName);
+  await updateRow(sheetName, 1, headers);
+}

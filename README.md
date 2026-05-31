@@ -1,11 +1,19 @@
-# Sistema de Tutoria Presencial com Google Planilhas
+# Plataforma de Tutoria Escolar com Google Planilhas
 
 Projeto em Next.js para Vercel usando Google Planilhas como banco de dados.
 
+## Modulos
+
+- Dashboard principal: lista os modulos disponiveis conforme o perfil logado.
+- Apoio ao estudante: mantem os registros, validacoes e historico da funcionalidade original.
+- Registro de tutorias mensais: permite que professores lancem a quantidade mensal de tutorias por estudante.
+- Relatorios e graficos: dashboard da gestao com totais, medias, rankings, filtros e graficos de acompanhamento.
+- Gestao escolar: cadastros, vinculos professor/estudante e perguntas pre-definidas.
+
 ## Perfis
 
-- Gestao: visualiza todos os apoios e cadastra novos professores.
-- Professor: registra apoio presencial.
+- Gestao: visualiza todos os apoios, administra cadastros e acompanha relatorios consolidados de tutorias.
+- Professor: registra apoio presencial e registra as tutorias mensais dos estudantes vinculados.
 - Estudante: valida apoio recebido.
 
 ## Como rodar
@@ -34,6 +42,7 @@ professor_estudantes
 apoios
 perguntas
 respostas
+tutorias_mensais
 ```
 
 ### 2. Cabecalhos das abas
@@ -133,6 +142,68 @@ id | estudante_id | professor_id | turma | disciplina | data | feedback | status
 
 ```txt
 id | apoio_id | pergunta_id | resposta
+```
+
+#### tutorias_mensais
+
+```txt
+id | mes | estudante_id | professor_id | turma | quantidade | observacao | atualizado_em
+```
+
+Exemplo:
+
+```txt
+1 | 2026-05 | 3 | 2 | 2A | 4 | Recuperacao de atividades | 2026-05-31T12:00:00.000Z
+```
+
+Essa aba guarda o consolidado mensal informado pelo professor para cada estudante vinculado. O campo `mes` usa o formato `AAAA-MM`. Quando o professor salva novamente o mesmo estudante no mesmo mes, o registro e atualizado.
+
+O sistema cria a aba `tutorias_mensais` e seus cabecalhos automaticamente se a Service Account tiver permissao de editor na planilha.
+
+## Rotas principais
+
+### Interface
+
+```txt
+/                 Login
+/dashboard        Dashboard principal com modulos por perfil
+```
+
+### APIs
+
+```txt
+POST /api/login
+POST /api/logout
+GET  /api/me
+GET  /api/apoios
+POST /api/apoios
+POST /api/validar-apoio
+GET  /api/estudantes
+POST /api/estudantes
+GET  /api/professores
+POST /api/professores
+PUT  /api/professores
+GET  /api/perguntas
+POST /api/perguntas
+PUT  /api/perguntas
+DELETE /api/perguntas
+GET  /api/tutorias-mensais
+POST /api/tutorias-mensais
+PUT  /api/tutorias-mensais
+```
+
+`GET /api/tutorias-mensais` muda o retorno conforme o perfil:
+
+- Professor: retorna os estudantes vinculados e as quantidades do mes selecionado.
+- Gestao: retorna relatorio consolidado com filtros, indicadores, rankings e dados para graficos.
+
+Filtros aceitos para gestao:
+
+```txt
+mes=2026-05
+turma=2A
+professor_id=2
+estudante_id=3
 ```
 
 ### 3. Crie uma Service Account
