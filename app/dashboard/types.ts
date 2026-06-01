@@ -50,6 +50,16 @@ export type Apoio = {
 
 export type VinculosPorProfessor = Record<string, string[]>;
 
+function normalizarTexto(valor: unknown) {
+  return String(valor || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+}
+
 export function isGestao(perfil: string) {
-  return perfil === 'gestao' || perfil === 'gestor';
+  const perfilNormalizado = normalizarTexto(perfil);
+
+  return perfilNormalizado === 'gestao' || perfilNormalizado === 'gestor';
 }

@@ -111,7 +111,7 @@ function RankingList({ title, items }: { title: string; items: ItemEstudante[] }
 
 export default function RelatoriosTutoriasModule() {
   const [filtros, setFiltros] = useState({
-    mes: mesAtualInput(),
+    mes: '',
     turma: '',
     professor_id: '',
     estudante_id: '',
@@ -124,23 +124,32 @@ export default function RelatoriosTutoriasModule() {
     setCarregando(true);
     setErro('');
 
-    const params = new URLSearchParams();
-    params.set('mes', filtros.mes);
-    if (filtros.turma) params.set('turma', filtros.turma);
-    if (filtros.professor_id) params.set('professor_id', filtros.professor_id);
-    if (filtros.estudante_id) params.set('estudante_id', filtros.estudante_id);
+    try {
+      const params = new URLSearchParams();
+      if (filtros.mes) params.set('mes', filtros.mes);
+      if (filtros.turma) params.set('turma', filtros.turma);
+      if (filtros.professor_id) params.set('professor_id', filtros.professor_id);
+      if (filtros.estudante_id) params.set('estudante_id', filtros.estudante_id);
 
-    const response = await fetch(`/api/tutorias-mensais?${params.toString()}`);
-    const data = await response.json();
+      const response = await fetch(`/api/tutorias-mensais?${params.toString()}`);
+      const data = await response.json();
 
-    if (data.success) {
-      setRelatorio(data.relatorio);
-    } else {
-      setErro(data.error || 'Erro ao carregar relatorio de tutorias');
+      if (data.success) {
+        setRelatorio(data.relatorio);
+
+        if (!filtros.mes && data.relatorio?.mes) {
+          setFiltros((atuais) => ({ ...atuais, mes: data.relatorio.mes }));
+        }
+      } else {
+        setErro(data.error || 'Erro ao carregar relatorio de tutorias');
+        setRelatorio(null);
+      }
+    } catch {
+      setErro('Erro ao carregar relatorio de tutorias');
       setRelatorio(null);
+    } finally {
+      setCarregando(false);
     }
-
-    setCarregando(false);
   }
 
   useEffect(() => {
@@ -178,7 +187,7 @@ export default function RelatoriosTutoriasModule() {
           <input
             type="month"
             className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
-            value={filtros.mes}
+            value={filtros.mes || relatorio?.mes || mesAtualInput()}
             onChange={(e) => setFiltros({ ...filtros, mes: e.target.value })}
           />
         </label>

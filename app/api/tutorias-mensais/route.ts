@@ -17,9 +17,10 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const mes = normalizarMes(searchParams.get('mes')) || mesAtualReferencia();
+  const mesParam = searchParams.get('mes');
 
   if (user.perfil === 'professor') {
+    const mes = normalizarMes(mesParam) || mesAtualReferencia();
     const estudantes = await listarTutoriasDoProfessor(user.id, mes);
 
     return NextResponse.json({
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
 
   if (isGestao(user.perfil)) {
     const relatorio = await gerarRelatorioTutorias({
-      mes,
+      mes: normalizarMes(mesParam),
       turma: searchParams.get('turma') || '',
       professorId: searchParams.get('professor_id') || '',
       estudanteId: searchParams.get('estudante_id') || '',

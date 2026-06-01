@@ -34,6 +34,43 @@ export function normalizarMes(valor: unknown) {
   return '';
 }
 
+export function normalizarMesRegistro(valor: unknown) {
+  const texto = String(valor || '').trim();
+
+  if (!texto) return '';
+
+  const mesIso = normalizarMes(texto);
+  if (mesIso) return mesIso;
+
+  const anoMesComBarra = texto.match(/^(\d{4})[/-](0?[1-9]|1[0-2])$/);
+  if (anoMesComBarra) {
+    return `${anoMesComBarra[1]}-${anoMesComBarra[2].padStart(2, '0')}`;
+  }
+
+  const mesAno = texto.match(/^(0?[1-9]|1[0-2])[/-](\d{4})$/);
+  if (mesAno) {
+    return `${mesAno[2]}-${mesAno[1].padStart(2, '0')}`;
+  }
+
+  const dataBrasileira = texto.match(/^\d{1,2}[/-](0?[1-9]|1[0-2])[/-](\d{4})$/);
+  if (dataBrasileira) {
+    return `${dataBrasileira[2]}-${dataBrasileira[1].padStart(2, '0')}`;
+  }
+
+  const dataIso = texto.match(/^(\d{4})[/-](0?[1-9]|1[0-2])[/-]\d{1,2}/);
+  if (dataIso) {
+    return `${dataIso[1]}-${dataIso[2].padStart(2, '0')}`;
+  }
+
+  const serialExcel = Number(texto.replace(',', '.'));
+  if (Number.isFinite(serialExcel) && serialExcel > 59 && serialExcel < 60000) {
+    const data = new Date(Date.UTC(1899, 11, 30 + Math.floor(serialExcel)));
+    return `${data.getUTCFullYear()}-${String(data.getUTCMonth() + 1).padStart(2, '0')}`;
+  }
+
+  return '';
+}
+
 export function quantidadeSegura(valor: unknown) {
   const numero = Number(valor);
 
@@ -109,10 +146,10 @@ function hidratarRegistro(registro: any, estudantesPorId: any, usuariosPorId: an
 
   return {
     id: registro.id,
-    mes: registro.mes,
-    estudante_id: registro.estudante_id,
+    mes: normalizarMesRegistro(registro.mes) || registro.mes,
+    estudante_id: String(registro.estudante_id || '').trim(),
     estudante_nome: estudante?.nome || 'Estudante nao encontrado',
-    professor_id: registro.professor_id,
+    professor_id: String(registro.professor_id || '').trim(),
     professor_nome: professor?.nome || 'Professor nao encontrado',
     turma: registro.turma || estudante?.turma || '',
     quantidade: quantidadeSegura(registro.quantidade),
@@ -129,7 +166,9 @@ export async function listarTutoriasDoProfessor(professorId: string, mes: string
   ]);
 
   const registrosDoMes = registros.filter(
-    (registro: any) => registro.mes === mesReferencia && registro.professor_id === professorId
+    (registro: any) =>
+      normalizarMesRegistro(registro.mes) === mesReferencia &&
+      String(registro.professor_id || '').trim() === professorId
   );
 
   return estudantes.map((estudante: any) => {
@@ -195,8 +234,8 @@ export async function salvarTutoriasDoProfessor(
       .map((registro: any, index: number) => ({ registro, index }))
       .filter(
         ({ registro }: any) =>
-          registro.mes === mesReferencia &&
-          registro.professor_id === professorId &&
+          normalizarMesRegistro(registro.mes) === mesReferencia &&
+          String(registro.professor_id || '').trim() === professorId &&
           String(registro.estudante_id || '').trim() === estudanteId
       )
       .map(({ index }: any) => index);
@@ -239,21 +278,33 @@ export async function salvarTutoriasDoProfessor(
 
 function filtrarRegistroPorContexto(registro: any, filtros: FiltrosRelatorioTutorias, estudantesPorId: any) {
   const estudante = estudantesPorId[String(registro.estudante_id || '').trim()];
+  const professorId = String(registro.professor_id || '').trim();
+  const estudanteId = String(registro.estudante_id || '').trim();
 
   if (filtros.turma && String(registro.turma || estudante?.turma || '') !== filtros.turma) return false;
-  if (filtros.professorId && registro.professor_id !== filtros.professorId) return false;
-  if (filtros.estudanteId && registro.estudante_id !== filtros.estudanteId) return false;
+  if (filtros.professorId && professorId !== filtros.professorId) return false;
+  if (filtros.estudanteId && estudanteId !== filtros.estudanteId) return false;
 
   return true;
 }
 
+function encontrarMesMaisRecente(registros: any[]) {
+  return (
+    registros
+      .map((registro: any) => normalizarMesRegistro(registro.mes))
+      .filter(Boolean)
+      .sort()
+      .pop() || ''
+  );
+}
+
 export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) {
-  const mesReferencia = normalizarMes(filtros.mes) || mesAtualReferencia();
   const [registros, usuarios, vinculos] = await Promise.all([
     getRegistrosTutorias(),
     getRows('usuarios'),
     getVinculos(),
   ]);
+  const mesReferencia = normalizarMes(filtros.mes) || encontrarMesMaisRecente(registros) || mesAtualReferencia();
   const estudantes = usuarios.filter((usuario: any) => usuario.perfil === 'estudante');
   const estudantesPorId = criarMapaEstudantes(estudantes);
   const usuariosPorId = criarMapaUsuarios(usuarios);
@@ -267,7 +318,7 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
     }));
 
   const registrosFiltrados = registros
-    .filter((registro: any) => registro.mes === mesReferencia)
+    .filter((registro: any) => normalizarMesRegistro(registro.mes) === mesReferencia)
     .filter((registro: any) => filtrarRegistroPorContexto(registro, filtros, estudantesPorId))
     .map((registro: any) => hidratarRegistro(registro, estudantesPorId, usuariosPorId));
 
@@ -322,7 +373,7 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
   const comparativoMeses = registros
     .filter((registro: any) => filtrarRegistroPorContexto(registro, filtros, estudantesPorId))
     .reduce((acc: any, registro: any) => {
-      const mes = registro.mes || 'Sem mes';
+      const mes = normalizarMesRegistro(registro.mes) || 'Sem mes';
       acc[mes] = (acc[mes] || 0) + quantidadeSegura(registro.quantidade);
       return acc;
     }, {});
@@ -355,7 +406,14 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
           turma: estudante.turma,
         }))
         .sort((a: any, b: any) => a.nome.localeCompare(b.nome)),
-      meses: Array.from(new Set([...registros.map((registro: any) => registro.mes).filter(Boolean), mesReferencia]))
+      meses: Array.from(
+        new Set([
+          ...registros
+            .map((registro: any) => normalizarMesRegistro(registro.mes))
+            .filter(Boolean),
+          mesReferencia,
+        ])
+      )
         .sort()
         .reverse(),
     },
