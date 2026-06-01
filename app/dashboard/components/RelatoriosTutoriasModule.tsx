@@ -109,6 +109,72 @@ function RankingList({ title, items }: { title: string; items: ItemEstudante[] }
   );
 }
 
+function DestaqueCard({
+  title,
+  description,
+  items,
+  variant,
+  onOpen,
+}: {
+  title: string;
+  description: string;
+  items: ItemEstudante[];
+  variant: 'poucas' | 'muitas';
+  onOpen: () => void;
+}) {
+  const preview = items.slice(0, 8);
+  const classes =
+    variant === 'poucas'
+      ? {
+          card: 'border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10',
+          title: 'text-amber-900 dark:text-amber-100',
+          text: 'text-amber-700 dark:text-amber-200',
+          row: 'text-amber-900 dark:text-amber-100',
+          empty: 'text-amber-800 dark:text-amber-100',
+          button: 'bg-amber-100 text-amber-900 hover:bg-amber-200 dark:bg-amber-400/10 dark:text-amber-100 dark:hover:bg-amber-400/20',
+        }
+      : {
+          card: 'border-blue-200 bg-blue-50 dark:border-blue-500/30 dark:bg-blue-500/10',
+          title: 'text-blue-900 dark:text-blue-100',
+          text: 'text-blue-700 dark:text-blue-200',
+          row: 'text-blue-900 dark:text-blue-100',
+          empty: 'text-blue-800 dark:text-blue-100',
+          button: 'bg-blue-100 text-blue-900 hover:bg-blue-200 dark:bg-blue-400/10 dark:text-blue-100 dark:hover:bg-blue-400/20',
+        };
+
+  return (
+    <div className={`rounded-2xl border p-4 ${classes.card}`}>
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 className={`font-bold ${classes.title}`}>{title}</h3>
+          <p className={`mt-1 text-sm ${classes.text}`}>{description}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onOpen}
+          className={`rounded-full px-3 py-1.5 text-sm font-bold transition ${classes.button}`}
+        >
+          Ver todos ({items.length})
+        </button>
+      </div>
+
+      <div className="grid gap-2">
+        {preview.map((item) => (
+          <p key={`${variant}-${item.id}`} className={`text-sm ${classes.row}`}>
+            {item.nome} - {item.turma} ({item.quantidade})
+          </p>
+        ))}
+        {items.length > preview.length && (
+          <p className={`text-sm font-semibold ${classes.text}`}>
+            Mostrando {preview.length} de {items.length}. Clique em Ver todos para abrir a lista completa.
+          </p>
+        )}
+        {items.length === 0 && <p className={`text-sm ${classes.empty}`}>Nenhum destaque.</p>}
+      </div>
+    </div>
+  );
+}
+
 export default function RelatoriosTutoriasModule() {
   const [filtros, setFiltros] = useState({
     mes: '',
@@ -117,6 +183,7 @@ export default function RelatoriosTutoriasModule() {
     estudante_id: '',
   });
   const [relatorio, setRelatorio] = useState<Relatorio | null>(null);
+  const [destaqueAberto, setDestaqueAberto] = useState<'poucas' | 'muitas' | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
 
@@ -166,8 +233,27 @@ export default function RelatoriosTutoriasModule() {
     () => (relatorio?.graficos.porTurma || []).reduce((total, item) => total + Number(item.total || 0), 0),
     [relatorio]
   );
+  const destaqueModal =
+    relatorio && destaqueAberto
+      ? {
+          title:
+            destaqueAberto === 'poucas'
+              ? 'Destaques de poucas tutorias'
+              : 'Destaques de muitas tutorias',
+          description:
+            destaqueAberto === 'poucas'
+              ? 'Todos os estudantes sem nenhuma tutoria no mes selecionado.'
+              : `Todos os estudantes com ${relatorio.indicadores.limiteMuitasTutorias} ou mais tutorias no mes.`,
+          items: relatorio.destaques[destaqueAberto],
+          badge:
+            destaqueAberto === 'poucas'
+              ? 'bg-amber-100 text-amber-800 dark:bg-amber-400/10 dark:text-amber-100'
+              : 'bg-blue-100 text-blue-800 dark:bg-blue-400/10 dark:text-blue-100',
+        }
+      : null;
 
   return (
+    <>
     <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
       <div className="mb-5">
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
@@ -353,46 +439,82 @@ export default function RelatoriosTutoriasModule() {
           </div>
 
           <div className="grid gap-5 xl:grid-cols-2">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-500/10">
-              <h3 className="mb-3 font-bold text-amber-900 dark:text-amber-100">
-                Destaques de poucas tutorias
-              </h3>
-              <p className="mb-3 text-sm text-amber-700 dark:text-amber-200">
-                Estudantes sem nenhuma tutoria no mes selecionado.
-              </p>
-              <div className="grid gap-2">
-                {relatorio.destaques.poucas.map((item) => (
-                  <p key={`poucas-${item.id}`} className="text-sm text-amber-900 dark:text-amber-100">
-                    {item.nome} - {item.turma} ({item.quantidade})
-                  </p>
-                ))}
-                {relatorio.destaques.poucas.length === 0 && (
-                  <p className="text-sm text-amber-800 dark:text-amber-100">Nenhum destaque.</p>
-                )}
+            <DestaqueCard
+              title="Destaques de poucas tutorias"
+              description="Estudantes sem nenhuma tutoria no mes selecionado."
+              items={relatorio.destaques.poucas}
+              variant="poucas"
+              onOpen={() => setDestaqueAberto('poucas')}
+            />
+
+            <DestaqueCard
+              title="Destaques de muitas tutorias"
+              description={`Estudantes com ${relatorio.indicadores.limiteMuitasTutorias} ou mais tutorias no mes.`}
+              items={relatorio.destaques.muitas}
+              variant="muitas"
+              onOpen={() => setDestaqueAberto('muitas')}
+            />
+          </div>
+        </div>
+      )}
+
+    </section>
+
+      {destaqueModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+          <div className="max-h-[85vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-white/70 bg-white shadow-2xl dark:border-white/10 dark:bg-slate-950">
+            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 p-5 dark:border-white/10">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
+                  {relatorio.mes}
+                </p>
+                <h3 className="text-lg font-bold text-slate-950 dark:text-white">{destaqueModal.title}</h3>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{destaqueModal.description}</p>
               </div>
+              <button
+                type="button"
+                onClick={() => setDestaqueAberto(null)}
+                className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+              >
+                Fechar
+              </button>
             </div>
 
-            <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-500/30 dark:bg-blue-500/10">
-              <h3 className="mb-3 font-bold text-blue-900 dark:text-blue-100">
-                Destaques de muitas tutorias
-              </h3>
-              <p className="mb-3 text-sm text-blue-700 dark:text-blue-200">
-                Estudantes com 3 ou mais tutorias no mes.
-              </p>
+            <div className="max-h-[60vh] overflow-y-auto p-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <p className="font-semibold text-slate-700 dark:text-slate-200">
+                  {destaqueModal.items.length} estudante(s) encontrado(s)
+                </p>
+              </div>
+
               <div className="grid gap-2">
-                {relatorio.destaques.muitas.map((item) => (
-                  <p key={`muitas-${item.id}`} className="text-sm text-blue-900 dark:text-blue-100">
-                    {item.nome} - {item.turma} ({item.quantidade})
-                  </p>
+                {destaqueModal.items.map((item) => (
+                  <div
+                    key={`modal-${destaqueAberto}-${item.id}`}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/[0.03]"
+                  >
+                    <div>
+                      <p className="font-semibold text-slate-950 dark:text-white">{item.nome}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {item.turma} | {item.professor_nome}
+                      </p>
+                    </div>
+                    <strong className={`rounded-full px-3 py-1 ${destaqueModal.badge}`}>
+                      {item.quantidade}
+                    </strong>
+                  </div>
                 ))}
-                {relatorio.destaques.muitas.length === 0 && (
-                  <p className="text-sm text-blue-800 dark:text-blue-100">Nenhum destaque.</p>
+
+                {destaqueModal.items.length === 0 && (
+                  <p className="rounded-xl bg-slate-50 p-4 text-slate-500 dark:bg-white/[0.03] dark:text-slate-400">
+                    Nenhum estudante encontrado para este destaque.
+                  </p>
                 )}
               </div>
             </div>
           </div>
         </div>
       )}
-    </section>
+    </>
   );
 }

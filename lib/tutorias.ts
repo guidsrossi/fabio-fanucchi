@@ -430,10 +430,9 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
     rankingMaior,
     rankingMenor,
     destaques: {
-      poucas: estudantesResumo.filter((estudante: any) => estudante.quantidade === 0).slice(0, 8),
+      poucas: estudantesResumo.filter((estudante: any) => estudante.quantidade === 0),
       muitas: estudantesResumo
-        .filter((estudante: any) => estudante.quantidade >= limiteMuitasTutorias)
-        .slice(0, 8),
+        .filter((estudante: any) => estudante.quantidade >= limiteMuitasTutorias),
     },
     graficos: {
       comparativoMeses: Object.entries(comparativoMeses)
