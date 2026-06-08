@@ -62,6 +62,15 @@ function formatarMes(mes: string) {
   });
 }
 
+function escaparHtml(valor: unknown) {
+  return String(valor || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function graficoPizza(items: Array<{ total: number }>) {
   const total = items.reduce((soma, item) => soma + Number(item.total || 0), 0);
 
@@ -115,12 +124,14 @@ function DestaqueCard({
   items,
   variant,
   onOpen,
+  onGeneratePdf,
 }: {
   title: string;
   description: string;
   items: ItemEstudante[];
   variant: 'poucas' | 'muitas';
   onOpen: () => void;
+  onGeneratePdf?: () => void;
 }) {
   const preview = items.slice(0, 8);
   const classes =
@@ -149,13 +160,24 @@ function DestaqueCard({
           <h3 className={`font-bold ${classes.title}`}>{title}</h3>
           <p className={`mt-1 text-sm ${classes.text}`}>{description}</p>
         </div>
-        <button
-          type="button"
-          onClick={onOpen}
-          className={`rounded-full px-3 py-1.5 text-sm font-bold transition ${classes.button}`}
-        >
-          Ver todos ({items.length})
-        </button>
+        <div className="flex flex-wrap gap-2">
+          {onGeneratePdf && (
+            <button
+              type="button"
+              onClick={onGeneratePdf}
+              className={`rounded-full px-3 py-1.5 text-sm font-bold transition ${classes.button}`}
+            >
+              Gerar PDF
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onOpen}
+            className={`rounded-full px-3 py-1.5 text-sm font-bold transition ${classes.button}`}
+          >
+            Ver todos ({items.length})
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-2">
@@ -251,6 +273,135 @@ export default function RelatoriosTutoriasModule() {
               : 'bg-blue-100 text-blue-800 dark:bg-blue-400/10 dark:text-blue-100',
         }
       : null;
+
+  function gerarPdfPoucasTutorias() {
+    if (!relatorio) return;
+
+    const itens = relatorio.destaques.poucas;
+    const linhas = itens
+      .map(
+        (item) => `
+          <tr>
+            <td>${escaparHtml(item.nome)}</td>
+            <td>${escaparHtml(item.turma || 'Sem sala')}</td>
+            <td>${escaparHtml(item.professor_nome || 'Sem tutor vinculado')}</td>
+          </tr>
+        `
+      )
+      .join('');
+    const conteudoVazio = `
+      <tr>
+        <td colspan="3" class="empty">Nenhum estudante encontrado para este destaque.</td>
+      </tr>
+    `;
+    const janela = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700');
+
+    if (!janela) {
+      setErro('Nao foi possivel abrir a janela de impressao. Verifique o bloqueador de pop-ups.');
+      return;
+    }
+
+    janela.document.write(`
+      <!doctype html>
+      <html lang="pt-BR">
+        <head>
+          <meta charset="utf-8" />
+          <title>Destaques de poucas tutorias - ${escaparHtml(relatorio.mes)}</title>
+          <style>
+            * { box-sizing: border-box; }
+            body {
+              margin: 0;
+              padding: 32px;
+              color: #0f172a;
+              font-family: Arial, Helvetica, sans-serif;
+              background: #ffffff;
+            }
+            header {
+              margin-bottom: 24px;
+              border-bottom: 2px solid #f59e0b;
+              padding-bottom: 16px;
+            }
+            .eyebrow {
+              margin: 0 0 6px;
+              color: #92400e;
+              font-size: 12px;
+              font-weight: 700;
+              letter-spacing: 0.12em;
+              text-transform: uppercase;
+            }
+            h1 {
+              margin: 0;
+              font-size: 24px;
+              line-height: 1.2;
+            }
+            .meta {
+              margin: 8px 0 0;
+              color: #475569;
+              font-size: 14px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              font-size: 13px;
+            }
+            th {
+              background: #fffbeb;
+              color: #78350f;
+              font-size: 12px;
+              letter-spacing: 0.06em;
+              text-align: left;
+              text-transform: uppercase;
+            }
+            th, td {
+              border: 1px solid #e2e8f0;
+              padding: 10px 12px;
+              vertical-align: top;
+            }
+            tr:nth-child(even) td { background: #f8fafc; }
+            .empty {
+              color: #64748b;
+              padding: 18px;
+              text-align: center;
+            }
+            footer {
+              margin-top: 20px;
+              color: #64748b;
+              font-size: 12px;
+            }
+            @media print {
+              body { padding: 20mm; }
+            }
+          </style>
+        </head>
+        <body>
+          <header>
+            <p class="eyebrow">Relatorio de tutorias mensais</p>
+            <h1>Destaques de poucas tutorias</h1>
+            <p class="meta">Mes: ${escaparHtml(relatorio.mes)} | Total: ${itens.length} estudante(s)</p>
+          </header>
+          <table>
+            <thead>
+              <tr>
+                <th>Nome do aluno</th>
+                <th>Sala</th>
+                <th>Tutor</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${linhas || conteudoVazio}
+            </tbody>
+          </table>
+          <footer>Gerado em ${escaparHtml(new Date().toLocaleDateString('pt-BR'))}</footer>
+          <script>
+            window.addEventListener('load', () => {
+              window.print();
+            });
+          </script>
+        </body>
+      </html>
+    `);
+    janela.document.close();
+  }
 
   return (
     <>
@@ -445,6 +596,7 @@ export default function RelatoriosTutoriasModule() {
               items={relatorio.destaques.poucas}
               variant="poucas"
               onOpen={() => setDestaqueAberto('poucas')}
+              onGeneratePdf={gerarPdfPoucasTutorias}
             />
 
             <DestaqueCard
@@ -471,13 +623,24 @@ export default function RelatoriosTutoriasModule() {
                 <h3 className="text-lg font-bold text-slate-950 dark:text-white">{destaqueModal.title}</h3>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{destaqueModal.description}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => setDestaqueAberto(null)}
-                className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
-              >
-                Fechar
-              </button>
+              <div className="flex flex-wrap gap-2">
+                {destaqueAberto === 'poucas' && (
+                  <button
+                    type="button"
+                    onClick={gerarPdfPoucasTutorias}
+                    className="rounded-full bg-amber-100 px-4 py-2 text-sm font-bold text-amber-900 transition hover:bg-amber-200 dark:bg-amber-400/10 dark:text-amber-100 dark:hover:bg-amber-400/20"
+                  >
+                    Gerar PDF
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setDestaqueAberto(null)}
+                  className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                >
+                  Fechar
+                </button>
+              </div>
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto p-5">
