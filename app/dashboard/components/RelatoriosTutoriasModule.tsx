@@ -294,14 +294,7 @@ export default function RelatoriosTutoriasModule() {
         <td colspan="3" class="empty">Nenhum estudante encontrado para este destaque.</td>
       </tr>
     `;
-    const janela = window.open('', '_blank', 'noopener,noreferrer,width=900,height=700');
-
-    if (!janela) {
-      setErro('Nao foi possivel abrir a janela de impressao. Verifique o bloqueador de pop-ups.');
-      return;
-    }
-
-    janela.document.write(`
+    const htmlRelatorio = `
       <!doctype html>
       <html lang="pt-BR">
         <head>
@@ -392,15 +385,30 @@ export default function RelatoriosTutoriasModule() {
             </tbody>
           </table>
           <footer>Gerado em ${escaparHtml(new Date().toLocaleDateString('pt-BR'))}</footer>
-          <script>
-            window.addEventListener('load', () => {
-              window.print();
-            });
-          </script>
         </body>
       </html>
-    `);
-    janela.document.close();
+    `;
+    const janela = window.open('', '_blank', 'width=900,height=700');
+
+    if (!janela) {
+      setErro('Nao foi possivel abrir a janela de impressao. Verifique o bloqueador de pop-ups.');
+      return;
+    }
+
+    try {
+      janela.document.open();
+      janela.document.write(htmlRelatorio);
+      janela.document.close();
+      janela.focus();
+      setErro('');
+
+      window.setTimeout(() => {
+        janela.print();
+      }, 250);
+    } catch {
+      janela.close();
+      setErro('Nao foi possivel gerar a janela de impressao do PDF.');
+    }
   }
 
   return (
