@@ -77,6 +77,35 @@ export async function updateRow(sheetName: string, rowNumber: number, values: an
   });
 }
 
+export async function appendRows(sheetName: string, values: any[][]) {
+  if (!values.length) return;
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `${sheetName}!A:Z`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: { values },
+  });
+}
+
+export async function batchUpdateRows(
+  sheetName: string,
+  rows: Array<{ rowNumber: number; values: any[] }>
+) {
+  if (!rows.length) return;
+
+  await sheets.spreadsheets.values.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      valueInputOption: 'USER_ENTERED',
+      data: rows.map(({ rowNumber, values }) => ({
+        range: `${sheetName}!A${rowNumber}:${columnName(values.length || 1)}${rowNumber}`,
+        values: [values],
+      })),
+    },
+  });
+}
+
 export async function ensureSheet(sheetName: string) {
   const spreadsheet = await sheets.spreadsheets.get({
     spreadsheetId,

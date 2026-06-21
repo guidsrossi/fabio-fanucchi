@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { appendRow, getRows } from '@/lib/sheets';
 import { getUserFromCookie } from '@/lib/auth';
+import { isProfessor } from '@/lib/permissions';
 
 const SENHA_INICIAL_ESTUDANTE = '123456';
 
@@ -37,7 +38,7 @@ async function getEstudantesDoProfessor(professorId: string) {
 export async function GET() {
   const user: any = await getUserFromCookie();
 
-  if (!user || user.perfil !== 'professor') {
+  if (!user || !isProfessor(user.perfil)) {
     return NextResponse.json({ success: false, error: 'Acesso negado' });
   }
 

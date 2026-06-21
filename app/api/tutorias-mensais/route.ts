@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromCookie } from '@/lib/auth';
-import { isGestao } from '@/lib/permissions';
+import { isGestao, isProfessor } from '@/lib/permissions';
 import {
   gerarRelatorioTutorias,
   listarTutoriasDoProfessor,
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const mesParam = searchParams.get('mes');
 
-  if (user.perfil === 'professor') {
+  if (isProfessor(user.perfil)) {
     const mes = normalizarMes(mesParam) || mesAtualReferencia();
     const estudantes = await listarTutoriasDoProfessor(user.id, mes);
 
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
 async function salvar(req: NextRequest) {
   const user: any = await getUserFromCookie();
 
-  if (!user || user.perfil !== 'professor') {
+  if (!user || !isProfessor(user.perfil)) {
     return NextResponse.json({ success: false, error: 'Acesso negado' });
   }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { DashboardModuleId, Usuario, isGestao } from '../types';
+import { DashboardModuleId, Usuario, isCoordenador, isGestao, isProfessor } from '../types';
 
 type Props = {
   activeModule: DashboardModuleId;
@@ -13,7 +13,8 @@ const baseButton =
 
 export function moduleIsAvailable(user: Usuario, moduleId: DashboardModuleId) {
   if (moduleId === 'apoio') return !isGestao(user.perfil);
-  if (moduleId === 'tutorias') return user.perfil === 'professor';
+  if (moduleId === 'tutorias') return isProfessor(user.perfil);
+  if (moduleId === 'conselho') return isCoordenador(user.perfil);
   if (moduleId === 'relatorios' || moduleId === 'gestao') return isGestao(user.perfil);
 
   return true;
@@ -45,7 +46,14 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
       title: 'Registro de tutorias mensais',
       description: 'Lancamento mensal de quantidades por estudante.',
       roles: 'Professor',
-      enabled: user.perfil === 'professor',
+      enabled: isProfessor(user.perfil),
+    },
+    {
+      id: 'conselho',
+      title: 'Conselho de classe',
+      description: 'Marcações por turma, ano e bimestre, com geração de PDF.',
+      roles: 'Coordenador',
+      enabled: isCoordenador(user.perfil),
     },
     {
       id: 'relatorios',
@@ -81,7 +89,7 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
         </h2>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         {modules.map((module) => {
           const active = module.id === activeModule;
           const enabled = module.enabled && module.id !== 'futuras';

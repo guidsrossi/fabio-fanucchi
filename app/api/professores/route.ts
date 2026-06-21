@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { appendRow, getRows, updateRow } from '@/lib/sheets';
 import { getUserFromCookie } from '@/lib/auth';
+import { isProfessor } from '@/lib/permissions';
 
 const SENHA_INICIAL_PROFESSOR = '123456';
 const ABA_VINCULOS = 'professor_estudantes';
@@ -42,11 +43,12 @@ export async function GET() {
   const vinculos = await getVinculos();
 
   const professores = usuarios
-    .filter((usuario: any) => usuario.perfil === 'professor')
+    .filter((usuario: any) => isProfessor(usuario.perfil))
     .map((professor: any) => ({
       id: professor.id,
       nome: professor.nome,
       login: professor.login || professor.nome,
+      perfil: professor.perfil,
     }));
 
   const vinculoAtivoPorEstudante = vinculos.reduce((acc: any, vinculo: any) => {
@@ -93,6 +95,9 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const nome = String(body.nome || '').trim();
+  const perfil = String(body.perfil || '').trim().toLowerCase() === 'coordenador'
+    ? 'coordenador'
+    : 'professor';
   const login = nome;
 
   if (!nome) {
@@ -128,7 +133,7 @@ export async function POST(req: Request) {
     nome,
     login,
     SENHA_INICIAL_PROFESSOR,
-    'professor',
+    perfil,
     '',
     'sim',
   ]);
@@ -139,7 +144,7 @@ export async function POST(req: Request) {
       id: professorId,
       nome,
       login,
-      perfil: 'professor',
+      perfil,
       precisa_trocar_senha: true,
     },
     senha_temporaria: SENHA_INICIAL_PROFESSOR,
@@ -159,7 +164,7 @@ export async function PUT(req: Request) {
 
   const usuarios = await getRows('usuarios');
   const professor = usuarios.find(
-    (usuario: any) => usuario.id === professorId && usuario.perfil === 'professor'
+    (usuario: any) => usuario.id === professorId && isProfessor(usuario.perfil)
   );
 
   if (!professor) {

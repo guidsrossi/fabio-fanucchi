@@ -48,6 +48,7 @@ export default function GestaoEscolarModule({
 
   const [professorForm, setProfessorForm] = useState({
     nome: '',
+    perfil: 'professor',
   });
   const [estudanteForm, setEstudanteForm] = useState({
     nome: '',
@@ -134,8 +135,10 @@ export default function GestaoEscolarModule({
         const data = await response.json();
 
         if (data.success) {
-          setProfessorMensagem(`Professor cadastrado. Senha inicial: ${data.senha_temporaria}`);
-          setProfessorForm({ nome: '' });
+          setProfessorMensagem(
+            `${professorForm.perfil === 'coordenador' ? 'Coordenador' : 'Professor'} cadastrado. Senha inicial: ${data.senha_temporaria}`
+          );
+          setProfessorForm({ nome: '', perfil: 'professor' });
           await onReload();
           return;
         }
@@ -339,7 +342,7 @@ export default function GestaoEscolarModule({
         </div>
       )}
 
-      <form onSubmit={cadastrarProfessor} className="grid gap-4 md:grid-cols-[1fr_auto]">
+      <form onSubmit={cadastrarProfessor} className="grid gap-4 md:grid-cols-[1fr_220px_auto]">
         <input
           className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
           placeholder="Nome do professor"
@@ -349,16 +352,26 @@ export default function GestaoEscolarModule({
           required
         />
 
+        <select
+          className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+          value={professorForm.perfil}
+          onChange={(e) => setProfessorForm({ ...professorForm, perfil: e.target.value })}
+          disabled={loading}
+        >
+          <option value="professor">Professor</option>
+          <option value="coordenador">Coordenador</option>
+        </select>
+
         <button
           disabled={loading}
           className="rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
         >
-          {loading ? 'Salvando...' : 'Cadastrar professor'}
+          {loading ? 'Salvando...' : 'Cadastrar usuário'}
         </button>
       </form>
 
       <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-        O professor entra usando o proprio nome como login, com a senha 123456, e troca a senha no primeiro acesso.
+        Professor e coordenador entram usando o próprio nome como login, com a senha 123456, e trocam a senha no primeiro acesso.
       </p>
 
       <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">

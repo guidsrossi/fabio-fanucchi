@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { appendRow, getRows } from '@/lib/sheets';
 import { getUserFromCookie } from '@/lib/auth';
+import { isProfessor } from '@/lib/permissions';
 
 function estaAtivo(valor: unknown) {
   return !['nao', 'false', '0'].includes(String(valor || '').trim().toLowerCase());
@@ -48,7 +49,7 @@ export async function GET() {
     };
   });
 
-  if (user.perfil === 'professor') {
+  if (isProfessor(user.perfil)) {
     lista = lista.filter((a: any) => a.professor_id === user.id);
   }
 
@@ -62,7 +63,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const user: any = await getUserFromCookie();
 
-  if (!user || user.perfil !== 'professor') {
+  if (!user || !isProfessor(user.perfil)) {
     return NextResponse.json({ success: false, error: 'Acesso negado' });
   }
 

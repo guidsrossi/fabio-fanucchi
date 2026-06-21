@@ -1,4 +1,4 @@
-export type DashboardModuleId = 'apoio' | 'tutorias' | 'relatorios' | 'gestao';
+export type DashboardModuleId = 'apoio' | 'tutorias' | 'conselho' | 'relatorios' | 'gestao';
 
 export type Usuario = {
   id: string;
@@ -21,6 +21,7 @@ export type Professor = {
   id: string;
   nome: string;
   login?: string;
+  perfil?: string;
 };
 
 export type Pergunta = {
@@ -62,4 +63,14 @@ export function isGestao(perfil: string) {
   const perfilNormalizado = normalizarTexto(perfil);
 
   return perfilNormalizado === 'gestao' || perfilNormalizado === 'gestor';
+}
+
+export function isCoordenador(perfil: string) {
+  return normalizarTexto(perfil) === 'coordenador';
+}
+
+export function isProfessor(perfil: string) {
+  const perfilNormalizado = normalizarTexto(perfil);
+
+  return perfilNormalizado === 'professor' || perfilNormalizado === 'coordenador';
 }

@@ -1,5 +1,6 @@
 import { appendRow, ensureSheetWithHeaders, getRows, updateRow } from '@/lib/sheets';
 import { estaAtivo } from '@/lib/permissions';
+import { isProfessor } from '@/lib/permissions';
 
 export const ABA_TUTORIAS_MENSAIS = 'tutorias_mensais';
 const ABA_VINCULOS = 'professor_estudantes';
@@ -310,7 +311,7 @@ export async function gerarRelatorioTutorias(filtros: FiltrosRelatorioTutorias) 
   const usuariosPorId = criarMapaUsuarios(usuarios);
   const professorAtualPorEstudante = criarMapaProfessorAtual(vinculos);
   const professores = usuarios
-    .filter((usuario: any) => usuario.perfil === 'professor')
+    .filter((usuario: any) => isProfessor(usuario.perfil))
     .map((professor: any) => ({
       id: professor.id,
       nome: professor.nome,

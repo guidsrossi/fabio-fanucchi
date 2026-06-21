@@ -3,7 +3,7 @@
 import { FormEvent, useState } from 'react';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import { useLoadingAction } from '../../hooks/useLoadingAction';
-import { Apoio, Estudante, Pergunta, Usuario, isGestao } from '../types';
+import { Apoio, Estudante, Pergunta, Usuario, isGestao, isProfessor } from '../types';
 
 type Props = {
   user: Usuario;
@@ -105,7 +105,7 @@ export default function ApoioEstudanteModule({
     <div className="grid gap-6">
       <LoadingOverlay show={loading} message={loadingMessage} />
 
-      {user.perfil === 'professor' && (
+      {isProfessor(user.perfil) && (
         <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
           <div className="mb-5">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
@@ -211,7 +211,7 @@ export default function ApoioEstudanteModule({
       <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
         <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
           {isGestao(user.perfil) && 'Todos os apoios realizados'}
-          {user.perfil === 'professor' && 'Meus apoios realizados'}
+          {isProfessor(user.perfil) && 'Meus apoios realizados'}
           {user.perfil === 'estudante' && 'Meus apoios recebidos'}
         </h2>
 

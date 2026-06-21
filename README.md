@@ -9,11 +9,13 @@ Projeto em Next.js para Vercel usando Google Planilhas como banco de dados.
 - Registro de tutorias mensais: permite que professores lancem a quantidade mensal de tutorias por estudante.
 - Relatorios e graficos: dashboard da gestao com totais, medias, rankings, filtros e graficos de acompanhamento.
 - Gestao escolar: cadastros, vinculos professor/estudante e perguntas pre-definidas.
+- Conselho de classe: matriz por ano, bimestre e turma, com categorias A/E/D/T e PDF em paisagem.
 
 ## Perfis
 
 - Gestao: visualiza todos os apoios, administra cadastros e acompanha relatorios consolidados de tutorias.
 - Professor: registra apoio presencial e registra as tutorias mensais dos estudantes vinculados.
+- Coordenador: possui os mesmos acessos do professor e tambem o modulo de conselho de classe.
 - Estudante: valida apoio recebido.
 
 ## Como rodar
@@ -42,6 +44,7 @@ apoios
 perguntas
 respostas
 tutorias_mensais
+conselhos_classe
 ```
 
 ### 2. Cabecalhos das abas
@@ -57,6 +60,7 @@ Perfis aceitos:
 ```txt
 gestao
 professor
+coordenador
 estudante
 ```
 
@@ -84,6 +88,7 @@ novo_id | Nome do Professor | Nome do Professor | 123456 | professor | | sim
 ```
 
 Professor nao tem turma fixa na aba `usuarios`. O vinculo com estudantes atendidos fica na aba `professor_estudantes`.
+O coordenador tambem nao tem turma fixa e pode receber vinculos da mesma forma que um professor.
 
 No primeiro login, o professor usa a senha `123456` e o sistema mostra a tela de troca obrigatoria de senha. Depois que ele troca, a coluna `precisa_trocar_senha` muda para `nao`.
 
@@ -148,6 +153,16 @@ Essa aba guarda o consolidado mensal informado pelo professor para cada estudant
 
 O sistema cria a aba `tutorias_mensais` e seus cabecalhos automaticamente se a Service Account tiver permissao de editor na planilha.
 
+#### conselhos_classe
+
+```txt
+id | ano | bimestre | turma | estudante_id | marcacoes_json | situacao | frequencia | observacao | atualizado_por | atualizado_em
+```
+
+`marcacoes_json` guarda a categoria de cada componente curricular (`A`, `E`, `D` ou `T`). `situacao` aceita `azul`, `rosa`, `verde` ou `sem_classificacao`. A aba e criada automaticamente no primeiro acesso do coordenador ao modulo.
+
+As fichas digitalizadas do primeiro bimestre de 2026 ficam arquivadas em `private/conselho/2026-1`. A classificacao visual das 14 turmas foi pre-carregada e a imagem original permanece disponivel para conferencia das anotacoes manuscritas somente para o coordenador autenticado.
+
 ## Rotas principais
 
 ### Interface
@@ -178,6 +193,8 @@ DELETE /api/perguntas
 GET  /api/tutorias-mensais
 POST /api/tutorias-mensais
 PUT  /api/tutorias-mensais
+GET  /api/conselho
+POST /api/conselho
 ```
 
 `GET /api/tutorias-mensais` muda o retorno conforme o perfil:

@@ -5,6 +5,7 @@ import LoadingOverlay from '../components/LoadingOverlay';
 import { useLoadingAction } from '../hooks/useLoadingAction';
 import ApoioEstudanteModule from './components/ApoioEstudanteModule';
 import GestaoEscolarModule from './components/GestaoEscolarModule';
+import ConselhoClasseModule from './components/ConselhoClasseModule';
 import ModuleSelector, {
   defaultModuleForUser,
   moduleIsAvailable,
@@ -20,7 +21,9 @@ import {
   Professor,
   Usuario,
   VinculosPorProfessor,
+  isCoordenador,
   isGestao,
+  isProfessor,
 } from './types';
 
 const ESCOLA = 'Escola Estadual Prof. Fabio Fanucchi';
@@ -97,7 +100,7 @@ export default function DashboardPage() {
       return;
     }
 
-    if (usuario.perfil === 'professor') {
+    if (isProfessor(usuario.perfil)) {
       const estudantesResp = await fetch('/api/estudantes').then((r) => r.json());
       setEstudantes(estudantesResp.estudantes || []);
       return;
@@ -120,8 +123,12 @@ export default function DashboardPage() {
   function renderModule() {
     if (!user) return null;
 
-    if (activeModule === 'tutorias' && user.perfil === 'professor') {
+    if (activeModule === 'tutorias' && isProfessor(user.perfil)) {
       return <TutoriasMensaisModule />;
+    }
+
+    if (activeModule === 'conselho' && isCoordenador(user.perfil)) {
+      return <ConselhoClasseModule />;
     }
 
     if (activeModule === 'relatorios' && isGestao(user.perfil)) {
