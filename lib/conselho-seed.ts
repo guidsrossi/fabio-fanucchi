@@ -1,4 +1,4 @@
-import type { SituacaoConselho } from '@/lib/conselho';
+import type { SituacaoConselho } from '@/lib/conselho-regras';
 
 // Classificação visual transcrita das faixas coloridas das fichas entregues.
 // A posição acompanha a lista alfabética de estudantes de cada turma.

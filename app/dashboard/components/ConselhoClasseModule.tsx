@@ -5,9 +5,12 @@ import jsPDF from 'jspdf';
 import { useEffect, useMemo, useState } from 'react';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import { useLoadingAction } from '../../hooks/useLoadingAction';
+import {
+  calcularSituacaoPorMarcacoes,
+  type SituacaoConselho as Situacao,
+} from '@/lib/conselho-regras';
 
 type Categoria = '' | 'A' | 'E' | 'D' | 'T';
-type Situacao = 'sem_classificacao' | 'azul' | 'rosa' | 'verde';
 
 type Componente = { codigo: string; nome: string };
 type EstudanteConselho = {
@@ -36,11 +39,26 @@ const CLASSES_SITUACAO: Record<Situacao, string> = {
   verde: 'bg-emerald-100/90 dark:bg-emerald-950/45',
 };
 
+const ROTULOS_SITUACAO: Record<Situacao, string> = {
+  sem_classificacao: '-',
+  azul: 'Azul',
+  rosa: 'Rosa',
+  verde: 'Verde',
+};
+
 function corPdf(situacao: Situacao): [number, number, number] {
   if (situacao === 'azul') return [165, 243, 252];
   if (situacao === 'rosa') return [252, 207, 232];
   if (situacao === 'verde') return [187, 247, 208];
   return [255, 255, 255];
+}
+
+function situacaoDaLinha(estudante: EstudanteConselho): Situacao {
+  const situacaoCalculada = calcularSituacaoPorMarcacoes(estudante.marcacoes);
+
+  return situacaoCalculada === 'sem_classificacao'
+    ? estudante.situacao
+    : situacaoCalculada;
 }
 
 export default function ConselhoClasseModule() {
@@ -77,7 +95,19 @@ export default function ConselhoClasseModule() {
 
         setTurmas(data.turmas || []);
         setComponentes(data.componentes || []);
-        setEstudantes(data.estudantes || []);
+        setEstudantes(
+          (data.estudantes || []).map((estudante: EstudanteConselho) => {
+            const situacaoCalculada = calcularSituacaoPorMarcacoes(estudante.marcacoes || {});
+
+            return {
+              ...estudante,
+              situacao:
+                situacaoCalculada === 'sem_classificacao'
+                  ? estudante.situacao
+                  : situacaoCalculada,
+            };
+          })
+        );
         setFonteDigitalizada(data.fonte_digitalizada || '');
         setAlterado(Boolean(data.preenchimento_inicial));
         if (data.preenchimento_inicial) {
@@ -116,7 +146,10 @@ export default function ConselhoClasseModule() {
     if (proxima) marcacoes[codigo] = proxima;
     else delete marcacoes[codigo];
 
-    atualizarEstudante(estudante.id, { marcacoes });
+    atualizarEstudante(estudante.id, {
+      marcacoes,
+      situacao: calcularSituacaoPorMarcacoes(marcacoes),
+    });
   }
 
   async function salvar() {
@@ -135,7 +168,7 @@ export default function ConselhoClasseModule() {
             registros: estudantes.map((estudante) => ({
               estudante_id: estudante.id,
               marcacoes: estudante.marcacoes,
-              situacao: estudante.situacao,
+              situacao: situacaoDaLinha(estudante),
               frequencia: estudante.frequencia,
               observacao: estudante.observacao,
             })),
@@ -182,7 +215,7 @@ export default function ConselhoClasseModule() {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.text('A = Assiduidade   E = Engajamento   D = Dificuldade   T = Todos', 14, 25);
-    doc.text('Azul = notas vermelhas   Rosa = notas vermelhas + faltas   Verde = notas satisfatórias', 180, 25);
+    doc.text('Azul = dificuldade   Rosa = dificuldade + assiduidade   Verde = outras marcacoes', 180, 25);
 
     autoTable(doc, {
       startY: 29,
@@ -210,7 +243,9 @@ export default function ConselhoClasseModule() {
       },
       didParseCell: (data) => {
         if (data.section !== 'body') return;
-        data.cell.styles.fillColor = corPdf(estudantes[data.row.index]?.situacao || 'sem_classificacao');
+        data.cell.styles.fillColor = corPdf(
+          estudantes[data.row.index] ? situacaoDaLinha(estudantes[data.row.index]) : 'sem_classificacao'
+        );
       },
       didDrawPage: () => {
         doc.setFontSize(7);
@@ -281,9 +316,9 @@ export default function ConselhoClasseModule() {
             {sigla} — {descricao}
           </span>
         ))}
-        <span className="rounded-full bg-cyan-100 px-3 py-1.5 text-cyan-900">Azul — notas vermelhas</span>
-        <span className="rounded-full bg-pink-100 px-3 py-1.5 text-pink-900">Rosa — notas + faltas</span>
-        <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-emerald-900">Verde — satisfatório</span>
+        <span className="rounded-full bg-cyan-100 px-3 py-1.5 text-cyan-900">Azul — dificuldade</span>
+        <span className="rounded-full bg-pink-100 px-3 py-1.5 text-pink-900">Rosa — dificuldade + assiduidade</span>
+        <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-emerald-900">Verde — outras marcações</span>
       </div>
 
       {fonteDigitalizada && (
@@ -312,7 +347,7 @@ export default function ConselhoClasseModule() {
           <thead className="sticky top-0 z-20 bg-amber-300 text-slate-950">
             <tr>
               <th className="sticky left-0 z-30 min-w-72 border border-slate-500 bg-amber-300 p-2 text-left">Nome do aluno</th>
-              <th className="w-24 border border-slate-500 p-2">Situação</th>
+              <th className="w-20 border border-slate-500 p-2">Cor auto</th>
               {componentes.map((componente) => (
                 <th key={componente.codigo} title={componente.nome} className="w-12 border border-slate-500 p-2">
                   {componente.codigo}
@@ -323,23 +358,18 @@ export default function ConselhoClasseModule() {
             </tr>
           </thead>
           <tbody>
-            {estudantes.map((estudante) => (
-              <tr key={estudante.id} className={CLASSES_SITUACAO[estudante.situacao]}>
-                <th className={`sticky left-0 z-10 border border-slate-300 p-2 text-left font-semibold dark:border-white/10 ${CLASSES_SITUACAO[estudante.situacao]}`}>
+            {estudantes.map((estudante) => {
+              const situacao = situacaoDaLinha(estudante);
+
+              return (
+              <tr key={estudante.id} className={CLASSES_SITUACAO[situacao]}>
+                <th className={`sticky left-0 z-10 border border-slate-300 p-2 text-left font-semibold dark:border-white/10 ${CLASSES_SITUACAO[situacao]}`}>
                   {estudante.nome}
                 </th>
-                <td className="border border-slate-300 p-1 dark:border-white/10">
-                  <select
-                    aria-label={`Situação de ${estudante.nome}`}
-                    value={estudante.situacao}
-                    onChange={(event) => atualizarEstudante(estudante.id, { situacao: event.target.value as Situacao })}
-                    className="w-24 rounded-lg border border-slate-300 bg-white/80 p-1.5 dark:border-white/10 dark:bg-slate-900/80"
-                  >
-                    <option value="sem_classificacao">—</option>
-                    <option value="azul">Azul</option>
-                    <option value="rosa">Rosa</option>
-                    <option value="verde">Verde</option>
-                  </select>
+                <td className="border border-slate-300 p-1 text-center dark:border-white/10">
+                  <span className="inline-flex h-8 min-w-16 items-center justify-center rounded-lg border border-slate-300 bg-white/75 px-2 text-[0.7rem] font-bold text-slate-700 dark:border-white/10 dark:bg-slate-900/70 dark:text-slate-100">
+                    {ROTULOS_SITUACAO[situacao]}
+                  </span>
                 </td>
                 {componentes.map((componente) => {
                   const categoria = estudante.marcacoes[componente.codigo] || '';
@@ -378,7 +408,8 @@ export default function ConselhoClasseModule() {
                   />
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

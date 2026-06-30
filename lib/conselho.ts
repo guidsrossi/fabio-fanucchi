@@ -4,7 +4,13 @@ import {
   ensureSheetWithHeaders,
   getRows,
 } from '@/lib/sheets';
+import { frequenciaAnualConselho } from '@/lib/conselho-frequencia';
 import { fonteDigitalizada, situacaoInicialDaFicha } from '@/lib/conselho-seed';
+import {
+  calcularSituacaoPorMarcacoes,
+  type CategoriaConselho,
+  type SituacaoConselho,
+} from '@/lib/conselho-regras';
 
 export const ABA_CONSELHOS = 'conselhos_classe';
 
@@ -25,9 +31,6 @@ export const CONSELHOS_HEADERS = [
 export const CATEGORIAS = ['A', 'E', 'D', 'T'] as const;
 export const SITUACOES = ['azul', 'rosa', 'verde', 'sem_classificacao'] as const;
 
-export type CategoriaConselho = (typeof CATEGORIAS)[number];
-export type SituacaoConselho = (typeof SITUACOES)[number];
-
 export type ComponenteCurricular = {
   codigo: string;
   nome: string;
@@ -41,8 +44,8 @@ const NOMES_COMPONENTES: Record<string, string> = {
   FIS: 'Física',
   MAT: 'Matemática',
   FIL: 'Filosofia',
-  QEM: 'Química',
-  QE: 'Química',
+  OEP: 'Orientação de Estudos - Língua Portuguesa',
+  OEM: 'Orientação de Estudos - Matemática',
   BIO: 'Biologia',
   PV: 'Projeto de Vida',
   PE: 'Práticas Experimentais',
@@ -58,9 +61,9 @@ const NOMES_COMPONENTES: Record<string, string> = {
   ORA: 'Oratória',
   GEP: 'Componente GEP',
   SOC: 'Sociologia',
+  ATU: 'Atualidades',
   BITC: 'Componente BITC',
   EMP: 'Empreendedorismo',
-  ACV: 'Componente ACV',
   IA: 'Inteligência Artificial',
   AEDI: 'Componente AEDI',
   MECD: 'Componente MECD',
@@ -68,33 +71,44 @@ const NOMES_COMPONENTES: Record<string, string> = {
   PM: 'Projeto Multidisciplinar',
   AM: 'Componente AM',
   BDCN: 'Componente BDCN',
-  ATU: 'Atualidades',
-  QEP: 'Componente QEP',
+  LLP: 'Componente LLP',
+  RDE: 'Componente RDE',
+  CCMT: 'Componente CCMT',
+  PDS: 'Componente PDS',
+  ROB: 'Robótica',
   QAPL: 'Componente QAPL',
 };
 
 const COMPONENTES_1 = [
-  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'FIL', 'QEM', 'PV', 'PE', 'ING', 'EMA',
-  'EDFN', 'RED', 'TROB', 'ART', 'BIO', 'QUI',
+  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'FIL', 'OEP', 'OEM', 'PV', 'PE', 'ING',
+  'EMA', 'EDFN', 'RED', 'TROB', 'ART', 'BIO', 'QUI',
 ];
-const COMPONENTES_2_AB = [
-  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'QEM', 'PV', 'PE', 'ING', 'EMA',
-  'EDFN', 'RED', 'ATM', 'LID', 'ORA', 'GEP', 'SOC', 'QUI',
+const COMPONENTES_2_A_D = [
+  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'ING', 'EDFN', 'RED', 'ATM', 'LID',
+  'ORA', 'GEP', 'SOC', 'QUI', 'LLP', 'RDE', 'CCMT', 'PDS',
+];
+const COMPONENTES_2_B = [
+  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'OEP', 'OEM', 'PV', 'PE', 'ING',
+  'EMA', 'EDFN', 'RED', 'ATM', 'LID', 'ORA', 'GEP', 'SOC', 'QUI', 'ROB',
 ];
 const COMPONENTES_2_CDE = [
-  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'QEM', 'PV', 'PE', 'ING', 'EMA',
-  'EDFN', 'RED', 'TROB', 'BITC', 'EMP', 'SOC', 'QUI',
+  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'OEP', 'OEM', 'PV', 'PE', 'ING',
+  'EMA', 'EDFN', 'RED', 'TROB', 'BITC', 'EMP', 'SOC', 'QUI',
 ];
 const COMPONENTES_3_A = [
   'POR', 'EDF', 'HIS', 'FIS', 'MAT', 'ING', 'RED', 'IA', 'AEDI', 'MECD', 'ERIA', 'PM', 'AM',
   'BDCN',
 ];
-const COMPONENTES_3_BC = [
-  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'QEM', 'PV', 'PE', 'ING', 'EMA',
-  'EDFN', 'RED', 'ATM', 'LID', 'ORA', 'GEP', 'SOC', 'QUI',
+const COMPONENTES_3_B = [
+  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'OEP', 'OEM', 'PV', 'PE', 'ING',
+  'EMA', 'EDFN', 'RED', 'ATM', 'SOC', 'ATU', 'GEP', 'FIL', 'LID',
+];
+const COMPONENTES_3_C = [
+  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'BIO', 'OEP', 'OEM', 'PV', 'PE', 'ING',
+  'EMA', 'EDFN', 'RED', 'ATM', 'LID', 'SOC', 'ATU', 'GEP', 'FIL',
 ];
 const COMPONENTES_3_DE = [
-  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'ACV', 'QEM', 'PV', 'PE', 'ING', 'EMA',
+  'POR', 'EDF', 'GEO', 'HIS', 'FIS', 'MAT', 'OEP', 'OEM', 'PV', 'PE', 'ING', 'EMA',
   'EDFN', 'RED', 'TROB', 'BITC', 'EMP', 'QAPL',
 ];
 
@@ -109,10 +123,12 @@ export function componentesDaTurma(turma: string): ComponenteCurricular[] {
   const turmaNormalizada = String(turma || '').trim().toUpperCase();
 
   if (turmaNormalizada.startsWith('1')) return montarComponentes(COMPONENTES_1);
-  if (/^2[AB]$/.test(turmaNormalizada)) return montarComponentes(COMPONENTES_2_AB);
+  if (/^2[AD]$/.test(turmaNormalizada)) return montarComponentes(COMPONENTES_2_A_D);
+  if (turmaNormalizada === '2B') return montarComponentes(COMPONENTES_2_B);
   if (turmaNormalizada.startsWith('2')) return montarComponentes(COMPONENTES_2_CDE);
   if (turmaNormalizada === '3A') return montarComponentes(COMPONENTES_3_A);
-  if (/^3[BC]$/.test(turmaNormalizada)) return montarComponentes(COMPONENTES_3_BC);
+  if (turmaNormalizada === '3B') return montarComponentes(COMPONENTES_3_B);
+  if (turmaNormalizada === '3C') return montarComponentes(COMPONENTES_3_C);
   if (turmaNormalizada.startsWith('3')) return montarComponentes(COMPONENTES_3_DE);
 
   return montarComponentes(COMPONENTES_1);
@@ -208,7 +224,9 @@ export async function listarConselho(ano: number, bimestre: number, turma: strin
               turmaNormalizada,
               String(estudante.id || '').trim()
             ),
-        frequencia: String(registro?.frequencia || '').trim(),
+        frequencia:
+          String(registro?.frequencia || '').trim() ||
+          frequenciaAnualConselho(ano, bimestre, turmaNormalizada, estudante.nome || ''),
         observacao: registro?.observacao || '',
         atualizado_em: registro?.atualizado_em || '',
       };
@@ -268,7 +286,7 @@ export async function salvarConselho(
     if (!estudantesPermitidos.has(estudanteId)) continue;
 
     const marcacoes = parseMarcacoes(recebido.marcacoes || {}, componentesPermitidos);
-    const situacao = normalizarSituacao(recebido.situacao);
+    const situacao = calcularSituacaoPorMarcacoes(marcacoes);
     const frequencia = String(recebido.frequencia || '').trim().slice(0, 20);
     const observacao = String(recebido.observacao || '').trim().slice(0, 500);
     const indiceExistente = registros.findIndex(
