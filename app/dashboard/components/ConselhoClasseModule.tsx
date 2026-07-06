@@ -342,19 +342,19 @@ export default function ConselhoClasseModule() {
       {mensagem && <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700">{mensagem}</div>}
       {erro && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700">{erro}</div>}
 
-      <div className="mt-5 overflow-auto rounded-2xl border border-slate-200 dark:border-white/10">
-        <table className="min-w-max border-collapse text-xs">
-          <thead className="sticky top-0 z-20 bg-amber-300 text-slate-950">
+      <div className="mt-5 max-h-[72vh] overflow-auto rounded-2xl border border-slate-200 dark:border-white/10">
+        <table className="min-w-max border-separate border-spacing-0 text-xs">
+          <thead className="bg-amber-300 text-slate-950">
             <tr>
-              <th className="sticky left-0 z-30 min-w-72 border border-slate-500 bg-amber-300 p-2 text-left">Nome do aluno</th>
-              <th className="w-20 border border-slate-500 p-2">Cor auto</th>
+              <th className="sticky left-0 top-0 z-40 min-w-72 border border-slate-500 bg-amber-300 p-2 text-left">Nome do aluno</th>
+              <th className="sticky top-0 z-30 w-20 border border-slate-500 bg-amber-300 p-2">Cor auto</th>
               {componentes.map((componente) => (
-                <th key={componente.codigo} title={componente.nome} className="w-12 border border-slate-500 p-2">
+                <th key={componente.codigo} title={componente.nome} className="sticky top-0 z-30 w-12 border border-slate-500 bg-amber-300 p-2">
                   {componente.codigo}
                 </th>
               ))}
-              <th className="w-20 border border-slate-500 p-2">Freq.</th>
-              <th className="min-w-52 border border-slate-500 p-2">Observação</th>
+              <th className="sticky top-0 z-30 w-20 border border-slate-500 bg-amber-300 p-2">Freq.</th>
+              <th className="sticky top-0 z-30 min-w-52 border border-slate-500 bg-amber-300 p-2">Observação</th>
             </tr>
           </thead>
           <tbody>

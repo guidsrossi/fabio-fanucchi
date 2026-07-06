@@ -1,0 +1,20 @@
+
+> dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://54.232.189.113:3000
+- Environments: .env.local
+✓ Ready in 1546ms
+Creating turbopack project { dir: 'C:\\Projetos Escola\\apoio-tutoria', testMode: true }
+
+ GET / 200 in 937ms (next.js: 695ms, application-code: 242ms)
+ POST /api/login 200 in 8.0s (next.js: 6.6s, application-code: 1357ms)
+ GET /dashboard 200 in 742ms (next.js: 117ms, application-code: 624ms)
+ GET /api/me 200 in 210ms (next.js: 160ms, application-code: 50ms)
+ GET /api/perguntas 200 in 2.5s (next.js: 129ms, application-code: 2.4s)
+ GET /api/apoios 200 in 3.5s (next.js: 264ms, application-code: 3.3s)
+ GET /api/estudantes 200 in 890ms (next.js: 153ms, application-code: 737ms)
+ GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 2.3s (next.js: 243ms, application-code: 2.0s)
+ GET /api/conselho/ficha?ano=2026&bimestre=1&turma=1A 200 in 185ms (next.js: 146ms, application-code: 39ms)
