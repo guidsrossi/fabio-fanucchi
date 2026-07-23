@@ -24,6 +24,14 @@ type EstudanteConselho = {
   atualizado_em?: string;
 };
 
+type EstatisticaBimestre = {
+  bimestre: number;
+  totalEstudantes: number;
+  totalMarcacoes: number;
+  frequenciaMedia: number | null;
+  situacoes: Record<Situacao, number>;
+};
+
 const CATEGORIAS: Categoria[] = ['', 'A', 'E', 'D', 'T'];
 const LEGENDA_CATEGORIAS: Record<Exclude<Categoria, ''>, string> = {
   A: 'Assiduidade',
@@ -61,6 +69,78 @@ function situacaoDaLinha(estudante: EstudanteConselho): Situacao {
     : situacaoCalculada;
 }
 
+function lerFrequencia(valor: string) {
+  const numero = Number(String(valor || '').replace(',', '.').replace(/[^\d.-]/g, ''));
+  return Number.isFinite(numero) && numero >= 0 && numero <= 100 ? numero : null;
+}
+
+function resumirBimestre(bimestre: number, estudantes: EstudanteConselho[]): EstatisticaBimestre {
+  const frequencias = estudantes
+    .map((estudante) => lerFrequencia(estudante.frequencia))
+    .filter((valor): valor is number => valor !== null);
+
+  return {
+    bimestre,
+    totalEstudantes: estudantes.length,
+    totalMarcacoes: estudantes.reduce(
+      (total, estudante) => total + Object.keys(estudante.marcacoes || {}).length,
+      0
+    ),
+    frequenciaMedia: frequencias.length
+      ? frequencias.reduce((total, valor) => total + valor, 0) / frequencias.length
+      : null,
+    situacoes: estudantes.reduce<Record<Situacao, number>>(
+      (totais, estudante) => {
+        totais[situacaoDaLinha(estudante)] += 1;
+        return totais;
+      },
+      { sem_classificacao: 0, azul: 0, rosa: 0, verde: 0 }
+    ),
+  };
+}
+
+function GraficoBarras({
+  estatisticas,
+  obterValor,
+  formatarValor,
+  cor = 'bg-blue-600 dark:bg-blue-400',
+}: {
+  estatisticas: EstatisticaBimestre[];
+  obterValor: (estatistica: EstatisticaBimestre) => number | null;
+  formatarValor: (valor: number | null) => string;
+  cor?: string;
+}) {
+  const valores = estatisticas.map(obterValor);
+  const maximo = Math.max(1, ...valores.map((valor) => valor || 0));
+
+  return (
+    <div className="grid h-52 grid-cols-4 gap-3" role="img" aria-label="Gráfico comparativo por bimestre">
+      {estatisticas.map((estatistica, indice) => {
+        const valor = valores[indice];
+        const altura = valor === null ? 0 : Math.max(4, (valor / maximo) * 100);
+
+        return (
+          <div key={estatistica.bimestre} className="flex min-w-0 flex-col items-center justify-end">
+            <span className="mb-2 text-xs font-bold text-slate-700 dark:text-slate-200">
+              {formatarValor(valor)}
+            </span>
+            <div className="flex h-36 w-full max-w-16 items-end rounded-t-xl bg-slate-100 dark:bg-white/5">
+              <div
+                className={`w-full rounded-t-xl transition-[height] duration-500 ${cor}`}
+                style={{ height: `${altura}%` }}
+                title={`${estatistica.bimestre}º bimestre: ${formatarValor(valor)}`}
+              />
+            </div>
+            <span className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              {estatistica.bimestre}º bim.
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function ConselhoClasseModule() {
   const [ano, setAno] = useState(2026);
   const [bimestre, setBimestre] = useState(1);
@@ -72,7 +152,36 @@ export default function ConselhoClasseModule() {
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
   const [alterado, setAlterado] = useState(false);
+  const [estatisticas, setEstatisticas] = useState<EstatisticaBimestre[]>([]);
+  const [carregandoEstatisticas, setCarregandoEstatisticas] = useState(false);
+  const [erroEstatisticas, setErroEstatisticas] = useState('');
   const { loading, loadingMessage, runWithLoading } = useLoadingAction();
+
+  async function carregarEstatisticas() {
+    setCarregandoEstatisticas(true);
+    setErroEstatisticas('');
+
+    try {
+      const resultados = await Promise.all(
+        [1, 2, 3, 4].map(async (item) => {
+          const params = new URLSearchParams({
+            ano: String(ano),
+            bimestre: String(item),
+            turma,
+          });
+          const response = await fetch(`/api/conselho?${params}`);
+          const data = await response.json();
+          if (!response.ok || !data.success) throw new Error(data.error);
+          return resumirBimestre(item, data.estudantes || []);
+        })
+      );
+      setEstatisticas(resultados);
+    } catch {
+      setErroEstatisticas('Não foi possível carregar a comparação dos bimestres.');
+    } finally {
+      setCarregandoEstatisticas(false);
+    }
+  }
 
   async function carregar() {
     await runWithLoading('Carregando conselho de classe...', async () => {
@@ -124,6 +233,12 @@ export default function ConselhoClasseModule() {
     // A consulta deve acompanhar apenas os filtros selecionados.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ano, bimestre, turma]);
+
+  useEffect(() => {
+    carregarEstatisticas();
+    // A comparação muda apenas com o ano ou a turma.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ano, turma]);
 
   function atualizarEstudante(
     estudanteId: string,
@@ -183,6 +298,7 @@ export default function ConselhoClasseModule() {
 
         setMensagem('Conselho salvo com sucesso.');
         setAlterado(false);
+        await carregarEstatisticas();
       } catch {
         setErro('Não foi possível salvar o conselho');
       }
@@ -341,6 +457,101 @@ export default function ConselhoClasseModule() {
 
       {mensagem && <div className="mt-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700">{mensagem}</div>}
       {erro && <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700">{erro}</div>}
+
+      <section className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700 dark:text-blue-300">
+              Estatísticas
+            </p>
+            <h3 className="text-lg font-bold text-slate-950 dark:text-white">
+              Comparativo dos bimestres
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Evolução da turma {turma} em {ano}. Bimestres sem registros aparecem zerados.
+            </p>
+          </div>
+          {carregandoEstatisticas && (
+            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+              Atualizando gráficos...
+            </span>
+          )}
+        </div>
+
+        {erroEstatisticas ? (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            {erroEstatisticas}
+          </div>
+        ) : (
+          <div className={`mt-4 grid gap-4 lg:grid-cols-3 ${carregandoEstatisticas ? 'opacity-60' : ''}`}>
+            <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-900/70">
+              <h4 className="font-bold text-slate-900 dark:text-white">Marcações registradas</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Total de células A, E, D ou T</p>
+              <GraficoBarras
+                estatisticas={estatisticas}
+                obterValor={(item) => item.totalMarcacoes}
+                formatarValor={(valor) => String(valor || 0)}
+              />
+            </article>
+
+            <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-900/70">
+              <h4 className="font-bold text-slate-900 dark:text-white">Frequência média</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Média dos percentuais preenchidos</p>
+              <GraficoBarras
+                estatisticas={estatisticas}
+                obterValor={(item) => item.frequenciaMedia}
+                formatarValor={(valor) => valor === null ? '—' : `${valor.toFixed(1)}%`}
+                cor="bg-emerald-600 dark:bg-emerald-400"
+              />
+            </article>
+
+            <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-900/70">
+              <h4 className="font-bold text-slate-900 dark:text-white">Classificação dos estudantes</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Distribuição proporcional por situação</p>
+              <div className="mt-5 space-y-5">
+                {estatisticas.map((item) => {
+                  const total = Math.max(1, item.totalEstudantes);
+                  return (
+                    <div key={item.bimestre}>
+                      <div className="mb-1 flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        <span>{item.bimestre}º bimestre</span>
+                        <span>{item.totalEstudantes} estudantes</span>
+                      </div>
+                      <div className="flex h-7 overflow-hidden rounded-lg bg-slate-100 dark:bg-white/5">
+                        {(['azul', 'rosa', 'verde', 'sem_classificacao'] as Situacao[]).map((situacao) => {
+                          const quantidade = item.situacoes[situacao];
+                          const cores: Record<Situacao, string> = {
+                            azul: 'bg-cyan-400',
+                            rosa: 'bg-pink-400',
+                            verde: 'bg-emerald-400',
+                            sem_classificacao: 'bg-slate-300 dark:bg-slate-600',
+                          };
+                          return quantidade ? (
+                            <div
+                              key={situacao}
+                              className={`flex items-center justify-center text-[0.65rem] font-black text-slate-900 ${cores[situacao]}`}
+                              style={{ width: `${(quantidade / total) * 100}%` }}
+                              title={`${ROTULOS_SITUACAO[situacao]}: ${quantidade}`}
+                            >
+                              {quantidade}
+                            </div>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2 text-[0.65rem] font-semibold">
+                <span className="rounded-full bg-cyan-100 px-2 py-1 text-cyan-900">Azul</span>
+                <span className="rounded-full bg-pink-100 px-2 py-1 text-pink-900">Rosa</span>
+                <span className="rounded-full bg-emerald-100 px-2 py-1 text-emerald-900">Verde</span>
+                <span className="rounded-full bg-slate-200 px-2 py-1 text-slate-700">Sem classificação</span>
+              </div>
+            </article>
+          </div>
+        )}
+      </section>
 
       <div className="mt-5 max-h-[72vh] overflow-auto rounded-2xl border border-slate-200 dark:border-white/10">
         <table className="min-w-max border-separate border-spacing-0 text-xs">

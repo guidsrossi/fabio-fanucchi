@@ -9,7 +9,7 @@ Projeto em Next.js para Vercel usando Google Planilhas como banco de dados.
 - Registro de tutorias mensais: permite que professores lancem a quantidade mensal de tutorias por estudante.
 - Relatorios e graficos: dashboard da gestao com totais, medias, rankings, filtros e graficos de acompanhamento.
 - Gestao escolar: cadastros, vinculos professor/estudante e perguntas pre-definidas.
-- Conselho de classe: matriz por ano, bimestre e turma, com categorias A/E/D/T e PDF em paisagem.
+- Conselho de classe: matriz por ano, bimestre e turma, com categorias A/E/D/T, PDF em paisagem e gráficos estatísticos comparando os quatro bimestres.
 
 ## Perfis
 
