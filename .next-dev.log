@@ -1,20 +1,85 @@
-
-> dev
-> next dev
-
 ▲ Next.js 16.2.6 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://54.232.189.113:3000
-- Environments: .env.local
-✓ Ready in 1546ms
-Creating turbopack project { dir: 'C:\\Projetos Escola\\apoio-tutoria', testMode: true }
+- Local:         http://127.0.0.1:3000
+- Network:       http://127.0.0.1:3000
+- Environments: .env
+✓ Ready in 455ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
 
- GET / 200 in 937ms (next.js: 695ms, application-code: 242ms)
- POST /api/login 200 in 8.0s (next.js: 6.6s, application-code: 1357ms)
- GET /dashboard 200 in 742ms (next.js: 117ms, application-code: 624ms)
- GET /api/me 200 in 210ms (next.js: 160ms, application-code: 50ms)
- GET /api/perguntas 200 in 2.5s (next.js: 129ms, application-code: 2.4s)
- GET /api/apoios 200 in 3.5s (next.js: 264ms, application-code: 3.3s)
- GET /api/estudantes 200 in 890ms (next.js: 153ms, application-code: 737ms)
- GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 2.3s (next.js: 243ms, application-code: 2.0s)
- GET /api/conselho/ficha?ano=2026&bimestre=1&turma=1A 200 in 185ms (next.js: 146ms, application-code: 39ms)
+Creating turbopack project { dir: 'C:\\Projetos\\fabio-fanucchi', testMode: true }
+
+ GET / 200 in 2.3s (next.js: 2.2s, application-code: 138ms)
+ GET / 200 in 97ms (next.js: 9ms, application-code: 89ms)
+○ Compiling /api/login ...
+ POST /api/login 200 in 6.6s (next.js: 5.2s, application-code: 1419ms)
+ GET /dashboard 500 in 2.4s (next.js: 2.2s, application-code: 128ms)
+ GET /dashboard 500 in 176ms (next.js: 79ms, application-code: 97ms)
+✓ Compiled in 1ms
+ GET /dashboard 200 in 79ms (next.js: 11ms, application-code: 69ms)
+ GET /dashboard 200 in 88ms (next.js: 28ms, application-code: 60ms)
+ GET /api/me 200 in 320ms (next.js: 286ms, application-code: 33ms)
+○ Compiling /api/apoios ...
+ GET /api/perguntas 200 in 4.4s (next.js: 3.2s, application-code: 1192ms)
+ GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 3.4s (next.js: 1104ms, application-code: 2.3s)
+ GET /api/conselho?ano=2026&bimestre=3&turma=1A 200 in 3.5s (next.js: 1125ms, application-code: 2.4s)
+ GET /api/conselho?ano=2026&bimestre=4&turma=1A 200 in 3.5s (next.js: 1107ms, application-code: 2.4s)
+ GET /api/apoios 200 in 7.8s (next.js: 3.1s, application-code: 4.7s)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1A 200 in 4.6s (next.js: 1118ms, application-code: 3.4s)
+ GET /api/conselho?ano=2026&bimestre=4&turma=1A 200 in 1412ms (next.js: 16ms, application-code: 1396ms)
+ GET /api/conselho?ano=2026&bimestre=3&turma=1A 200 in 1510ms (next.js: 5ms, application-code: 1505ms)
+ GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 1871ms (next.js: 5ms, application-code: 1865ms)
+ GET /api/conselho/ficha?ano=2026&bimestre=1&turma=1A 200 in 536ms (next.js: 520ms, application-code: 16ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1A 200 in 1189ms (next.js: 5ms, application-code: 1185ms)
+ GET /dashboard 200 in 36ms (next.js: 3ms, application-code: 33ms)
+ GET /api/estudantes 200 in 2.3s (next.js: 1441ms, application-code: 870ms)
+ GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 1443ms (next.js: 10ms, application-code: 1432ms)
+✓ Compiled in 93ms
+ GET /dashboard 200 in 143ms (next.js: 85ms, application-code: 58ms)
+✓ Compiled in 78ms
+ GET /dashboard 200 in 109ms (next.js: 76ms, application-code: 34ms)
+ GET /dashboard 200 in 149ms (next.js: 3ms, application-code: 146ms)
+✓ Compiled in 1346ms
+ GET /dashboard 500 in 123ms (next.js: 57ms, application-code: 66ms)
+ GET /dashboard 500 in 433ms (next.js: 413ms, application-code: 20ms)
+ GET /dashboard 500 in 339ms (next.js: 324ms, application-code: 15ms)
+ GET /dashboard 500 in 391ms (next.js: 370ms, application-code: 20ms)
+✓ Compiled in 244ms
+ GET /dashboard 200 in 55ms (next.js: 5ms, application-code: 51ms)
+ GET /dashboard 200 in 324ms (next.js: 72ms, application-code: 252ms)
+ GET /api/me 200 in 64ms (next.js: 50ms, application-code: 13ms)
+ GET /api/perguntas 200 in 2.1s (next.js: 1181ms, application-code: 930ms)
+ GET /api/apoios 200 in 3.1s (next.js: 1147ms, application-code: 1909ms)
+ GET /api/estudantes 200 in 963ms (next.js: 35ms, application-code: 927ms)
+ GET / 200 in 217ms (next.js: 96ms, application-code: 120ms)
+ POST /api/login 200 in 886ms (next.js: 69ms, application-code: 816ms)
+ GET /dashboard 200 in 77ms (next.js: 7ms, application-code: 70ms)
+ GET /api/me 200 in 36ms (next.js: 5ms, application-code: 31ms)
+ GET /api/perguntas 200 in 888ms (next.js: 18ms, application-code: 870ms)
+ GET /api/apoios 200 in 2.3s (next.js: 8ms, application-code: 2.3s)
+ GET /api/estudantes 200 in 735ms (next.js: 6ms, application-code: 729ms)
+ GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 2.1s (next.js: 73ms, application-code: 2.0s)
+ GET /api/conselho?ano=2026&bimestre=4&turma=1A 200 in 1917ms (next.js: 5ms, application-code: 1911ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1A 200 in 2.2s (next.js: 83ms, application-code: 2.2s)
+ GET /api/conselho?ano=2026&bimestre=3&turma=1A 200 in 2.4s (next.js: 91ms, application-code: 2.4s)
+ GET /api/conselho/ficha?ano=2026&bimestre=1&turma=1A 200 in 100ms (next.js: 82ms, application-code: 17ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1A 200 in 1593ms (next.js: 86ms, application-code: 1507ms)
+ GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 1755ms (next.js: 22ms, application-code: 1733ms)
+ GET /api/conselho?ano=2026&bimestre=4&turma=1A 200 in 1633ms (next.js: 50ms, application-code: 1582ms)
+ GET /api/conselho?ano=2026&bimestre=3&turma=1A 200 in 1749ms (next.js: 3ms, application-code: 1746ms)
+ GET /api/conselho?ano=2026&bimestre=1&turma=1A 200 in 1052ms (next.js: 4ms, application-code: 1048ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1A 200 in 1548ms (next.js: 3ms, application-code: 1545ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1B 200 in 1777ms (next.js: 3ms, application-code: 1774ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1E 200 in 1587ms (next.js: 39ms, application-code: 1548ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=2B 200 in 1625ms (next.js: 55ms, application-code: 1570ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1C 200 in 1841ms (next.js: 16ms, application-code: 1825ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=1D 200 in 1911ms (next.js: 29ms, application-code: 1882ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=2A 200 in 1918ms (next.js: 44ms, application-code: 1874ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=2C 200 in 1482ms (next.js: 9ms, application-code: 1473ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=3A 200 in 1392ms (next.js: 13ms, application-code: 1378ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=2D 200 in 1720ms (next.js: 14ms, application-code: 1706ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=3B 200 in 1506ms (next.js: 11ms, application-code: 1495ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=3C 200 in 1506ms (next.js: 13ms, application-code: 1493ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=3D 200 in 1814ms (next.js: 31ms, application-code: 1783ms)
+ GET /api/conselho?ano=2026&bimestre=2&turma=3E 200 in 1057ms (next.js: 11ms, application-code: 1046ms)

@@ -310,70 +310,127 @@ export default function ConselhoClasseModule() {
     [estudantes]
   );
 
-  function gerarPdf() {
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
-    const cabecalho = [
-      'NOME DO ALUNO',
-      ...componentes.map((componente) => componente.codigo),
-      'FREQ.',
-    ];
-    const linhas = estudantes.map((estudante) => [
-      estudante.nome,
-      ...componentes.map((componente) => estudante.marcacoes[componente.codigo] || ''),
-      estudante.frequencia,
-    ]);
+  async function gerarPdf() {
+    await runWithLoading('Gerando PDF de todas as turmas...', async () => {
+      setErro('');
 
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('ESCOLA ESTADUAL PROF. FABIO FANUCCHI', 14, 12);
-    doc.setFontSize(11);
-    doc.text(`CONSELHO DE CLASSE — ${turma} — ${bimestre}º BIMESTRE DE ${ano}`, 14, 19);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text('A = Assiduidade   E = Engajamento   D = Dificuldade   T = Todos', 14, 25);
-    doc.text('Azul = dificuldade   Rosa = dificuldade + assiduidade   Verde = outras marcacoes', 180, 25);
+      try {
+        const turmasParaExportar = turmas.length ? turmas : [turma];
+        const dadosDasTurmas = await Promise.all(
+          turmasParaExportar.map(async (turmaPdf) => {
+            // Mantém no PDF as alterações ainda não salvas da turma aberta.
+            if (turmaPdf === turma) {
+              return { turma: turmaPdf, componentes, estudantes };
+            }
 
-    autoTable(doc, {
-      startY: 29,
-      head: [cabecalho],
-      body: linhas,
-      theme: 'grid',
-      margin: { left: 10, right: 10, bottom: 12 },
-      styles: {
-        font: 'helvetica',
-        fontSize: 6.5,
-        cellPadding: 1.1,
-        halign: 'center',
-        valign: 'middle',
-        lineColor: [30, 41, 59],
-        lineWidth: 0.15,
-      },
-      headStyles: {
-        fillColor: [250, 204, 21],
-        textColor: [15, 23, 42],
-        fontStyle: 'bold',
-      },
-      columnStyles: {
-        0: { cellWidth: 70, halign: 'left', fontStyle: 'bold' },
-        [cabecalho.length - 1]: { cellWidth: 14 },
-      },
-      didParseCell: (data) => {
-        if (data.section !== 'body') return;
-        data.cell.styles.fillColor = corPdf(
-          estudantes[data.row.index] ? situacaoDaLinha(estudantes[data.row.index]) : 'sem_classificacao'
+            const params = new URLSearchParams({
+              ano: String(ano),
+              bimestre: String(bimestre),
+              turma: turmaPdf,
+            });
+            const response = await fetch(`/api/conselho?${params}`);
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+              throw new Error(data.error || `Não foi possível carregar a turma ${turmaPdf}`);
+            }
+
+            return {
+              turma: turmaPdf,
+              componentes: (data.componentes || []) as Componente[],
+              estudantes: (data.estudantes || []) as EstudanteConselho[],
+            };
+          })
         );
-      },
-      didDrawPage: () => {
-        doc.setFontSize(7);
-        doc.text(
-          `Gerado em ${new Date().toLocaleString('pt-BR')}`,
-          10,
-          doc.internal.pageSize.getHeight() - 5
-        );
-      },
+
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
+        const geradoEm = new Date().toLocaleString('pt-BR');
+
+        dadosDasTurmas.forEach((dados, indiceTurma) => {
+          if (indiceTurma > 0) doc.addPage('a3', 'landscape');
+
+          const cabecalho = [
+            'NOME DO ALUNO',
+            ...dados.componentes.map((componente) => componente.codigo),
+            'FREQ.',
+          ];
+          const linhas = dados.estudantes.map((estudante) => [
+            estudante.nome,
+            ...dados.componentes.map(
+              (componente) => estudante.marcacoes?.[componente.codigo] || ''
+            ),
+            estudante.frequencia,
+          ]);
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(17);
+          doc.text('ESCOLA ESTADUAL PROF. FABIO FANUCCHI', 14, 13);
+          doc.setFontSize(14);
+          doc.text(
+            `CONSELHO DE CLASSE — ${dados.turma} — ${bimestre}º BIMESTRE DE ${ano}`,
+            14,
+            21
+          );
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.text('A = Assiduidade   E = Engajamento   D = Dificuldade   T = Todos', 14, 28);
+          doc.text(
+            'Azul = dificuldade   Rosa = dificuldade + assiduidade   Verde = outras marcações',
+            205,
+            28
+          );
+
+          autoTable(doc, {
+            startY: 33,
+            head: [cabecalho],
+            body: linhas,
+            theme: 'grid',
+            margin: { top: 12, left: 10, right: 10, bottom: 14 },
+            styles: {
+              font: 'helvetica',
+              fontSize: 9,
+              cellPadding: 1.5,
+              halign: 'center',
+              valign: 'middle',
+              lineColor: [30, 41, 59],
+              lineWidth: 0.15,
+              overflow: 'linebreak',
+            },
+            headStyles: {
+              fillColor: [250, 204, 21],
+              textColor: [15, 23, 42],
+              fontSize: 9.5,
+              fontStyle: 'bold',
+            },
+            columnStyles: {
+              0: { cellWidth: 72, halign: 'left', fontStyle: 'bold' },
+              [cabecalho.length - 1]: { cellWidth: 17 },
+            },
+            didParseCell: (data) => {
+              if (data.section !== 'body') return;
+              const estudante = dados.estudantes[data.row.index];
+              data.cell.styles.fillColor = corPdf(
+                estudante ? situacaoDaLinha(estudante) : 'sem_classificacao'
+              );
+            },
+            didDrawPage: () => {
+              doc.setFont('helvetica', 'normal');
+              doc.setFontSize(9);
+              doc.text(
+                `Turma ${dados.turma} · Gerado em ${geradoEm}`,
+                10,
+                doc.internal.pageSize.getHeight() - 6
+              );
+            },
+          });
+        });
+
+        doc.save(`conselho-${ano}-${bimestre}b-todas-as-turmas.pdf`);
+        setMensagem(`PDF gerado com ${dadosDasTurmas.length} turmas.`);
+      } catch (error) {
+        setErro(error instanceof Error ? error.message : 'Não foi possível gerar o PDF');
+      }
     });
-
-    doc.save(`conselho-${ano}-${bimestre}b-${turma}.pdf`);
   }
 
   return (
@@ -640,7 +697,7 @@ export default function ConselhoClasseModule() {
             disabled={loading || estudantes.length === 0}
             className="rounded-xl border border-blue-200 px-4 py-3 font-semibold text-blue-700 transition hover:bg-blue-50 disabled:opacity-50 dark:border-blue-400/30 dark:text-blue-200 dark:hover:bg-blue-500/10"
           >
-            Gerar PDF
+            Gerar PDF de todas as turmas
           </button>
           <button
             type="button"
