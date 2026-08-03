@@ -343,11 +343,11 @@ export default function ConselhoClasseModule() {
           })
         );
 
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
         const geradoEm = new Date().toLocaleString('pt-BR');
 
         dadosDasTurmas.forEach((dados, indiceTurma) => {
-          if (indiceTurma > 0) doc.addPage('a3', 'landscape');
+          if (indiceTurma > 0) doc.addPage('a4', 'landscape');
 
           const cabecalho = [
             'NOME DO ALUNO',
@@ -361,6 +361,7 @@ export default function ConselhoClasseModule() {
             ),
             estudante.frequencia,
           ]);
+          const larguraColunaNome = dados.componentes.length <= 18 ? 76 : 68;
 
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(17);
@@ -373,23 +374,23 @@ export default function ConselhoClasseModule() {
           );
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(10);
-          doc.text('A = Assiduidade   E = Engajamento   D = Dificuldade   T = Todos', 14, 28);
+          doc.text('A = Assiduidade   E = Engajamento   D = Dificuldade   T = Todos', 10, 27);
           doc.text(
             'Azul = dificuldade   Rosa = dificuldade + assiduidade   Verde = outras marcações',
-            205,
-            28
+            202,
+            27
           );
 
           autoTable(doc, {
-            startY: 33,
+            startY: 30,
             head: [cabecalho],
             body: linhas,
             theme: 'grid',
-            margin: { top: 12, left: 10, right: 10, bottom: 14 },
+            margin: { top: 10, left: 4, right: 4, bottom: 10 },
             styles: {
               font: 'helvetica',
-              fontSize: 9,
-              cellPadding: 1.5,
+              fontSize: 7.5,
+              cellPadding: 1.2,
               halign: 'center',
               valign: 'middle',
               lineColor: [30, 41, 59],
@@ -399,12 +400,18 @@ export default function ConselhoClasseModule() {
             headStyles: {
               fillColor: [250, 204, 21],
               textColor: [15, 23, 42],
-              fontSize: 9.5,
+              fontSize: 8,
               fontStyle: 'bold',
             },
             columnStyles: {
-              0: { cellWidth: 72, halign: 'left', fontStyle: 'bold' },
-              [cabecalho.length - 1]: { cellWidth: 17 },
+              0: {
+                cellWidth: larguraColunaNome,
+                halign: 'left',
+                fontSize: 10,
+                fontStyle: 'bold',
+                cellPadding: { top: 1.5, right: 2, bottom: 1.5, left: 2 },
+              },
+              [cabecalho.length - 1]: { cellWidth: 13 },
             },
             didParseCell: (data) => {
               if (data.section !== 'body') return;
@@ -418,8 +425,8 @@ export default function ConselhoClasseModule() {
               doc.setFontSize(9);
               doc.text(
                 `Turma ${dados.turma} · Gerado em ${geradoEm}`,
-                10,
-                doc.internal.pageSize.getHeight() - 6
+                6,
+                doc.internal.pageSize.getHeight() - 4
               );
             },
           });
