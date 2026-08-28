@@ -6,6 +6,7 @@ import { useLoadingAction } from '../hooks/useLoadingAction';
 import ApoioEstudanteModule from './components/ApoioEstudanteModule';
 import GestaoEscolarModule from './components/GestaoEscolarModule';
 import ConselhoClasseModule from './components/ConselhoClasseModule';
+import NotasBimestraisModule from './components/NotasBimestraisModule';
 import ModuleSelector, {
   defaultModuleForUser,
   moduleIsAvailable,
@@ -123,12 +124,16 @@ export default function DashboardPage() {
   function renderModule() {
     if (!user) return null;
 
-    if (activeModule === 'tutorias' && isProfessor(user.perfil)) {
-      return <TutoriasMensaisModule />;
+    if (activeModule === 'tutorias' && (isProfessor(user.perfil) || isGestao(user.perfil))) {
+      return <TutoriasMensaisModule user={user} />;
     }
 
     if (activeModule === 'conselho' && isCoordenador(user.perfil)) {
       return <ConselhoClasseModule />;
+    }
+
+    if (activeModule === 'notas-bimestrais') {
+      return <NotasBimestraisModule />;
     }
 
     if (activeModule === 'relatorios' && isGestao(user.perfil)) {

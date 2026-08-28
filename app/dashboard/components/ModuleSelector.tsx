@@ -13,8 +13,9 @@ const baseButton =
 
 export function moduleIsAvailable(user: Usuario, moduleId: DashboardModuleId) {
   if (moduleId === 'apoio') return !isGestao(user.perfil);
-  if (moduleId === 'tutorias') return isProfessor(user.perfil);
+  if (moduleId === 'tutorias') return isProfessor(user.perfil) || isGestao(user.perfil);
   if (moduleId === 'conselho') return isCoordenador(user.perfil);
+  if (moduleId === 'notas-bimestrais') return true;
   if (moduleId === 'relatorios' || moduleId === 'gestao') return isGestao(user.perfil);
 
   return true;
@@ -44,9 +45,9 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
     {
       id: 'tutorias',
       title: 'Registro de tutorias mensais',
-      description: 'Lancamento mensal de quantidades por estudante.',
-      roles: 'Professor',
-      enabled: isProfessor(user.perfil),
+      description: 'Fichas de atendimento e contagem mensal automática.',
+      roles: 'Professor e gestão',
+      enabled: isProfessor(user.perfil) || isGestao(user.perfil),
     },
     {
       id: 'conselho',
@@ -54,6 +55,13 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
       description: 'Marcações por turma, ano e bimestre, com geração de PDF.',
       roles: 'Coordenador',
       enabled: isCoordenador(user.perfil),
+    },
+    {
+      id: 'notas-bimestrais',
+      title: 'Notas Bimestrais',
+      description: 'Apresentação de notas, frequência e fotos por estudante.',
+      roles: 'Todos os usuários',
+      enabled: true,
     },
     {
       id: 'relatorios',

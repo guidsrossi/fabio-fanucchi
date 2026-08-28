@@ -1,4 +1,4 @@
-export type DashboardModuleId = 'apoio' | 'tutorias' | 'conselho' | 'relatorios' | 'gestao';
+export type DashboardModuleId = 'apoio' | 'tutorias' | 'conselho' | 'notas-bimestrais' | 'relatorios' | 'gestao';
 
 export type Usuario = {
   id: string;

@@ -9,6 +9,8 @@ import {
   salvarTutoriasDoProfessor,
 } from '@/lib/tutorias';
 
+const FIM_LANCAMENTO_MANUAL = new Date('2026-09-01T00:00:00-03:00').getTime();
+
 export async function GET(req: NextRequest) {
   const user: any = await getUserFromCookie();
 
@@ -52,6 +54,16 @@ async function salvar(req: NextRequest) {
 
   if (!user || !isProfessor(user.perfil)) {
     return NextResponse.json({ success: false, error: 'Acesso negado' });
+  }
+
+  if (Date.now() >= FIM_LANCAMENTO_MANUAL) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'O lançamento manual foi encerrado em 01/09/2026. Registre uma ficha de tutoria.',
+      },
+      { status: 410 }
+    );
   }
 
   const body = await req.json();
