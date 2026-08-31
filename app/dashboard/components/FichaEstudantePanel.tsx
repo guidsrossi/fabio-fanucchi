@@ -27,8 +27,67 @@ function fichaVazia(turma = ''): Ficha {
 
 function normalizar(valor: string) { return valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
 
+const ALIASES_DISCIPLINAS: Record<string, string> = {
+  arte: 'esporte musica arte',
+  bio: 'biologia',
+  'ed fin': 'educacao financeira',
+  'edu fin': 'educacao financeira',
+  'ed fis': 'educacao fisica',
+  edfis: 'educacao fisica',
+  'educ fis': 'educacao fisica',
+  elet: 'eletiva',
+  eletivas: 'eletiva',
+  fil: 'filosofia',
+  fis: 'fisica',
+  geo: 'geografia',
+  hist: 'historia',
+  ingl: 'ingles',
+  inglesa: 'ingles',
+  'lingua inglesa': 'ingles',
+  lp: 'lingua portuguesa',
+  mat: 'matematica',
+  oept: 'orientacao portugues',
+  'oe portugues': 'orientacao portugues',
+  'orientacao de portugues': 'orientacao portugues',
+  oemt: 'orientacao matematica',
+  oemat: 'orientacao matematica',
+  'oe matematica': 'orientacao matematica',
+  'orientacao de matematica': 'orientacao matematica',
+  pe: 'praticas experimentais',
+  pv: 'projeto vida',
+  quim: 'quimica',
+  red: 'redacao leitura',
+  'redacao e leitura': 'redacao leitura',
+  rob: 'robotica',
+  'tecnologia e robotica': 'robotica',
+  ccmt: 'carreira competencias',
+  'carreira e competencias': 'carreira competencias',
+  llp: 'logica linguagem programacao',
+  'logica e linguagem de programacao': 'logica linguagem programacao',
+  metod: 'processos desenvolvimento',
+  'processos de desenvolvimento': 'processos desenvolvimento',
+  redes: 'rede computadores seguranca',
+  'rede de computadores e seguranca': 'rede computadores seguranca',
+  soc: 'sociologia',
+  soci: 'sociologia',
+  socio: 'sociologia',
+  lider: 'lideranca',
+  empreend: 'empreendedorismo',
+  empreen: 'empreendedorismo',
+  progr: 'programacao',
+  prog: 'programacao',
+  atua: 'atualidades',
+  adin: 'analise dados inteligencia negocios',
+  am: 'aprendizagem maquina',
+  bdcn: 'banco dados computacao',
+  etica: 'etica responsabilidade',
+  ia: 'inteligencia artificial',
+  mecd: 'matematica estatistica',
+};
+
 function chaveDisciplina(valor: string) {
-  return normalizar(valor).replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((palavra) => palavra && !['a', 'e', 'de', 'da', 'do', 'das', 'dos', 'para'].includes(palavra)).join(' ');
+  const chave = normalizar(valor).replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((palavra) => palavra && !['a', 'e', 'de', 'da', 'do', 'das', 'dos', 'para'].includes(palavra)).join(' ');
+  return ALIASES_DISCIPLINAS[chave] || chave;
 }
 
 function similaridadeDisciplina(a: string, b: string) {
