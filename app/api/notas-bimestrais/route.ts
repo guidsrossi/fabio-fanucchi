@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromCookie } from '@/lib/auth';
 import { listarFichas } from '@/lib/fichas-tutoria';
 import { isGestao, isProfessor } from '@/lib/permissions';
+import notasPrimeiroBimestre from '@/data/notas-primeiro-bimestre.json';
 
 const NOTAS_API_URL =
   'https://script.google.com/macros/s/AKfycbw0paUzVSySRSNOh_tFv26DKMYfwXwjVsjttvT3xhXtxWAKwmjnaJKI1BqIlfKjlPis/exec';
@@ -60,42 +61,54 @@ export async function GET(request: NextRequest) {
       cache: String(Date.now()),
     });
     const podeConsultarFichas = isProfessor(user.perfil) || isGestao(user.perfil);
-    const [response, dadosFichas] = await Promise.all([
-      fetch(`${NOTAS_API_URL}?${params}`, {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(30_000),
-      }),
+    const [dadosRemotos, dadosFichas] = await Promise.all([
+      fetch(`${NOTAS_API_URL}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30_000) })
+        .then(async (response) => {
+          if (!response.ok) throw new Error(`A fonte de dados respondeu com HTTP ${response.status}`);
+          const data = await response.json();
+          if (!data.success) throw new Error(data.error || 'Não foi possível carregar os estudantes');
+          return data;
+        })
+        .catch((error) => {
+          if (bimestre === 1) return { success: true, students: [] };
+          throw error;
+        }),
       podeConsultarFichas
-        ? listarFichas(user)
+        ? listarFichas(user).catch(() => ({ fichas: [], estudantes: [], professores: [], podeEditar: false }))
         : Promise.resolve({ fichas: [], estudantes: [], professores: [], podeEditar: false }),
     ]);
 
-    if (!response.ok) {
-      throw new Error(`A fonte de dados respondeu com HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.error || 'Não foi possível carregar os estudantes');
-    }
+    const estudantesRemotos = Array.isArray(dadosRemotos.students) ? dadosRemotos.students : [];
+    const remotosPorChave = new Map(
+      estudantesRemotos.map((estudante: any) => [chaveEstudante(estudante.nome, estudante.turma), estudante])
+    );
+    const estudantesFonte = bimestre === 1
+      ? notasPrimeiroBimestre.map((estudante: any) => {
+          const remoto: any = remotosPorChave.get(chaveEstudante(estudante.nome, estudante.turma));
+          return {
+            ...estudante,
+            tutor: remoto?.tutor || remoto?.professor || '',
+            foto: remoto?.foto || null,
+          };
+        })
+      : estudantesRemotos;
 
     const periodo = BIMESTRES_2026[bimestre];
-    const estudantesInternos = new Map(
-      dadosFichas.estudantes.map((estudante: any) => [
+    const estudantesInternos = new Map<string, string>(
+      (dadosFichas.estudantes as any[]).map((estudante: any): [string, string] => [
         chaveEstudante(estudante.nome, estudante.turma),
         String(estudante.id || '').trim(),
       ])
     );
-    const contagemPorEstudante = dadosFichas.fichas.reduce((acc: Record<string, number>, ficha: any) => {
+    const contagemPorEstudante = (dadosFichas.fichas as any[]).reduce((acc: Record<string, number>, ficha: any) => {
       const dataFicha = String(ficha.data || '');
       if (dataFicha >= periodo.inicio && dataFicha <= periodo.fim) {
         const estudanteId = String(ficha.estudante_id || '').trim();
         acc[estudanteId] = (acc[estudanteId] || 0) + 1;
       }
       return acc;
-    }, {});
-    const students = (Array.isArray(data.students) ? data.students : []).map((estudante: any) => {
+    }, {} as Record<string, number>);
+    const students = estudantesFonte.map((estudante: any) => {
       const estudanteInternoId = estudantesInternos.get(chaveEstudante(estudante.nome, estudante.turma));
       return {
         ...estudante,
