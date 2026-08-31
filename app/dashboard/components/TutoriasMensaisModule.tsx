@@ -170,7 +170,7 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
   }
 
   return (
-    <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
+    <section className="rounded-[1.5rem] border border-white/70 bg-white/90 p-3 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 sm:p-6">
       <LoadingOverlay show={salvando} message={loadingMessage} />
 
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
