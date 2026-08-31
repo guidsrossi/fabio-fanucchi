@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { useLoadingAction } from '../hooks/useLoadingAction';
-import ApoioEstudanteModule from './components/ApoioEstudanteModule';
 import GestaoEscolarModule from './components/GestaoEscolarModule';
 import ConselhoClasseModule from './components/ConselhoClasseModule';
 import NotasBimestraisModule from './components/NotasBimestraisModule';
@@ -31,7 +30,7 @@ const ESCOLA = 'Escola Estadual Prof. Fabio Fanucchi';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<Usuario | null>(null);
-  const [activeModule, setActiveModule] = useState<DashboardModuleId>('apoio');
+  const [activeModule, setActiveModule] = useState<DashboardModuleId>('notas-bimestrais');
   const [apoios, setApoios] = useState<Apoio[]>([]);
   const [estudantes, setEstudantes] = useState<Estudante[]>([]);
   const [perguntas, setPerguntas] = useState<Pergunta[]>([]);
@@ -83,23 +82,24 @@ export default function DashboardPage() {
       return;
     }
 
-    const [apoiosResp, perguntasResp] = await Promise.all([
-      fetch('/api/apoios').then((r) => r.json()),
-      fetch('/api/perguntas').then((r) => r.json()),
-    ]);
-
-    setApoios(apoiosResp.apoios || []);
-    setPerguntas(perguntasResp.perguntas || []);
-
     if (isGestao(usuario.perfil)) {
-      const professoresResp = await fetch('/api/professores').then((r) => r.json());
+      const [apoiosResp, perguntasResp, professoresResp] = await Promise.all([
+        fetch('/api/apoios').then((r) => r.json()),
+        fetch('/api/perguntas').then((r) => r.json()),
+        fetch('/api/professores').then((r) => r.json()),
+      ]);
 
+      setApoios(apoiosResp.apoios || []);
+      setPerguntas(perguntasResp.perguntas || []);
       setProfessores(professoresResp.professores || []);
       setEstudantesVinculo(professoresResp.estudantes || []);
       setVinculosPorProfessor(professoresResp.vinculosPorProfessor || {});
       setEstudantes([]);
       return;
     }
+
+    setApoios([]);
+    setPerguntas([]);
 
     if (isProfessor(usuario.perfil)) {
       const estudantesResp = await fetch('/api/estudantes').then((r) => r.json());
@@ -153,15 +153,7 @@ export default function DashboardPage() {
       );
     }
 
-    return (
-      <ApoioEstudanteModule
-        user={user}
-        apoios={apoios}
-        estudantes={estudantes}
-        perguntas={perguntas}
-        onReload={carregar}
-      />
-    );
+    return <NotasBimestraisModule />;
   }
 
   if (!user) {

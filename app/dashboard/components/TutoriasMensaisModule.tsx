@@ -5,6 +5,8 @@ import LoadingOverlay from '../../components/LoadingOverlay';
 import { useLoadingAction } from '../../hooks/useLoadingAction';
 import { Usuario, isGestao } from '../types';
 import LancamentoManualTutorias from './LancamentoManualTutorias';
+import FichaEstudantePanel from './FichaEstudantePanel';
+import { gerarPdfFichaCompleta } from '@/lib/gerar-pdf-ficha-tutoria';
 
 type EstudanteOpcao = { id: string; nome: string; turma: string };
 type ProfessorOpcao = { id: string; nome: string };
@@ -110,62 +112,25 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
     setGerandoPdfId(estudante.id);
     setErro('');
     try {
-      const response = await fetch(
-        `/api/fichas-tutoria?estudante_id=${encodeURIComponent(estudante.id)}`
+      const [respostaRegistros, respostaFicha] = await Promise.all([
+        fetch(`/api/fichas-tutoria?estudante_id=${encodeURIComponent(estudante.id)}`),
+        fetch(`/api/ficha-tutoria-estudante?estudante_id=${encodeURIComponent(estudante.id)}`),
+      ]);
+      const [resultadoRegistros, resultadoFicha] = await Promise.all([
+        respostaRegistros.json(),
+        respostaFicha.json(),
+      ]);
+      if (!respostaRegistros.ok || !resultadoRegistros.success) {
+        throw new Error(resultadoRegistros.error || 'Não foi possível carregar os registros');
+      }
+      if (!respostaFicha.ok || !resultadoFicha.success) {
+        throw new Error(resultadoFicha.error || 'Não foi possível carregar a ficha do estudante');
+      }
+      await gerarPdfFichaCompleta(
+        estudante,
+        resultadoFicha.ficha || {},
+        Array.isArray(resultadoRegistros.fichas) ? resultadoRegistros.fichas : []
       );
-      const resultado = await response.json();
-      if (!response.ok || !resultado.success) {
-        throw new Error(resultado.error || 'Não foi possível carregar as fichas');
-      }
-
-      const fichasDoEstudante = Array.isArray(resultado.fichas) ? resultado.fichas : [];
-      const { jsPDF } = await import('jspdf');
-      const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
-      const margem = 16;
-      const largura = 210 - margem * 2;
-      let y = 18;
-      const cabecalho = () => {
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(15);
-        pdf.text('Fichas de Tutoria', margem, y);
-        y += 8;
-        pdf.setFontSize(11);
-        pdf.text(estudante.nome, margem, y);
-        y += 6;
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(`Turma: ${estudante.turma} | Total de fichas: ${fichasDoEstudante.length}`, margem, y);
-        y += 10;
-      };
-
-      cabecalho();
-      fichasDoEstudante.forEach((ficha: FichaTutoria, index: number) => {
-        const linhasRelato = pdf.splitTextToSize(String(ficha.relato || ''), largura - 6);
-        if (y + 18 + linhasRelato.length * 5 > 280) {
-          pdf.addPage();
-          y = 18;
-          cabecalho();
-        }
-        pdf.setDrawColor(203, 213, 225);
-        pdf.line(margem, y, 210 - margem, y);
-        y += 6;
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(10);
-        pdf.text(`${index + 1}. ${formatarData(ficha.data)} - ${ficha.professor_nome || 'Tutor'}`, margem, y);
-        y += 6;
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(linhasRelato, margem + 3, y);
-        y += linhasRelato.length * 5 + 7;
-      });
-      if (!fichasDoEstudante.length) {
-        pdf.text('Nenhuma ficha de tutoria registrada para este estudante.', margem, y);
-      }
-      const nomeArquivo = estudante.nome
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-zA-Z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-        .toLowerCase();
-      pdf.save(`fichas-tutoria-${nomeArquivo}.pdf`);
     } catch (error) {
       setErro(error instanceof Error ? error.message : 'Erro ao gerar o PDF das tutorias.');
     } finally {
@@ -230,6 +195,8 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
 
       {mensagem ? <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">{mensagem}</div> : null}
       {erro ? <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">{erro}</div> : null}
+
+      <FichaEstudantePanel estudantes={estudantes} somenteLeitura={gestao} />
 
       {!gestao ? <LancamentoManualTutorias /> : null}
 

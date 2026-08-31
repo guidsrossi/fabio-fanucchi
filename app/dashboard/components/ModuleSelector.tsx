@@ -12,7 +12,7 @@ const baseButton =
   'rounded-xl border p-4 text-left transition focus:outline-none focus:ring-4 focus:ring-blue-500/15';
 
 export function moduleIsAvailable(user: Usuario, moduleId: DashboardModuleId) {
-  if (moduleId === 'apoio') return !isGestao(user.perfil);
+  if (moduleId === 'apoio') return false;
   if (moduleId === 'tutorias') return isProfessor(user.perfil) || isGestao(user.perfil);
   if (moduleId === 'conselho') return isCoordenador(user.perfil);
   if (moduleId === 'notas-bimestrais') return true;
@@ -23,8 +23,9 @@ export function moduleIsAvailable(user: Usuario, moduleId: DashboardModuleId) {
 
 export function defaultModuleForUser(user: Usuario): DashboardModuleId {
   if (isGestao(user.perfil)) return 'relatorios';
+  if (isProfessor(user.perfil)) return 'tutorias';
 
-  return 'apoio';
+  return 'notas-bimestrais';
 }
 
 export default function ModuleSelector({ activeModule, user, onChange }: Props) {
@@ -40,7 +41,7 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
       title: 'Apoio ao estudante',
       description: 'Registros, validacoes e historico da funcionalidade atual.',
       roles: 'Professor e estudante',
-      enabled: !isGestao(user.perfil),
+      enabled: false,
     },
     {
       id: 'tutorias',
@@ -98,7 +99,7 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
       </div>
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-        {modules.map((module) => {
+        {modules.filter((module) => module.enabled && module.id !== 'futuras').map((module) => {
           const active = module.id === activeModule;
           const enabled = module.enabled && module.id !== 'futuras';
 
