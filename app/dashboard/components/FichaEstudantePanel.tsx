@@ -27,6 +27,55 @@ function fichaVazia(turma = ''): Ficha {
 
 function normalizar(valor: string) { return valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
 
+function chaveDisciplina(valor: string) {
+  return normalizar(valor).replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((palavra) => palavra && !['a', 'e', 'de', 'da', 'do', 'das', 'dos', 'para'].includes(palavra)).join(' ');
+}
+
+function similaridadeDisciplina(a: string, b: string) {
+  const palavrasA = new Set(chaveDisciplina(a).split(' ').filter(Boolean));
+  const palavrasB = new Set(chaveDisciplina(b).split(' ').filter(Boolean));
+  if (!palavrasA.size || !palavrasB.size) return 0;
+  let comuns = 0;
+  palavrasA.forEach((palavra) => { if (palavrasB.has(palavra)) comuns += 1; });
+  return comuns / Math.max(palavrasA.size, palavrasB.size);
+}
+
+function formatarFrequenciaAutomatica(valor: unknown) {
+  const numero = Number(String(valor ?? '').replace('%', '').replace(',', '.'));
+  if (!Number.isFinite(numero)) return '';
+  const percentual = numero <= 1 ? numero * 100 : numero;
+  return `${Number.isInteger(percentual) ? percentual : percentual.toFixed(1).replace('.', ',')}%`;
+}
+
+function aplicarNotasAutomaticas(ficha: Ficha, resultados: any[]) {
+  const copia: Ficha = {
+    ...ficha,
+    gerais: ficha.gerais.map((linha) => ({ ...linha, bimestres: linha.bimestres.map((item) => ({ ...item })) })),
+    tecnicas: ficha.tecnicas.map((linha) => ({ ...linha, bimestres: linha.bimestres.map((item) => ({ ...item })) })),
+    plataformas: ficha.plataformas.map((linha) => ({ ...linha, bimestres: linha.bimestres.map((item) => ({ ...item })) })),
+  };
+  resultados.forEach((resultado, indiceBimestre) => {
+    const estudante = resultado?.students?.[0];
+    if (!estudante) return;
+    const notas = Array.isArray(estudante.notas) ? estudante.notas : [];
+    const frequencia = formatarFrequenciaAutomatica(estudante.frequencia);
+    [...copia.gerais, ...copia.tecnicas, ...copia.plataformas].forEach((linha) => {
+      const exata = notas.find((nota: any) => chaveDisciplina(nota.disciplina || nota.materia || nota.nome || '') === chaveDisciplina(linha.disciplina));
+      const aproximada = exata || notas
+        .map((nota: any) => ({ nota, similaridade: similaridadeDisciplina(linha.disciplina, nota.disciplina || nota.materia || nota.nome || '') }))
+        .sort((a: any, b: any) => b.similaridade - a.similaridade)[0];
+      const notaEncontrada: any = exata || (aproximada?.similaridade >= 0.5 ? aproximada.nota : null);
+      const bimestre = linha.bimestres[indiceBimestre];
+      if (!bimestre) return;
+      if (!bimestre.nota && notaEncontrada?.nota !== null && notaEncontrada?.nota !== undefined && notaEncontrada?.nota !== '') {
+        bimestre.nota = String(notaEncontrada.nota).replace('.', ',');
+      }
+      if (!bimestre.frequencia && frequencia) bimestre.frequencia = frequencia;
+    });
+  });
+  return copia;
+}
+
 function reconciliar(modelo: Linha[], salvas?: Linha[]) {
   const porNome = new Map((salvas || []).map((linha) => [normalizar(linha.disciplina), linha]));
   return modelo.map((linha) => porNome.get(normalizar(linha.disciplina)) || linha);
@@ -103,11 +152,30 @@ export default function FichaEstudantePanel({ estudantes, somenteLeitura }: { es
     if (!estudanteId) return;
     let ativo = true;
     setCarregando(true); setMensagem('');
-    fetch(`/api/ficha-tutoria-estudante?estudante_id=${encodeURIComponent(estudanteId)}`)
-      .then(async (r) => { const j = await r.json(); if (!r.ok || !j.success) throw new Error(j.error); return j; })
-      .then((j) => { if (ativo) setFicha(mesclarFicha(j.ficha || {}, j.estudante?.turma || '')); })
-      .catch((e) => { if (ativo) setMensagem(e instanceof Error ? e.message : 'Erro ao carregar ficha'); })
-      .finally(() => { if (ativo) setCarregando(false); });
+    (async () => {
+      try {
+        const respostaFicha = await fetch(`/api/ficha-tutoria-estudante?estudante_id=${encodeURIComponent(estudanteId)}`);
+        const dadosFicha = await respostaFicha.json();
+        if (!respostaFicha.ok || !dadosFicha.success) throw new Error(dadosFicha.error || 'Erro ao carregar ficha');
+        const fichaBase = mesclarFicha(dadosFicha.ficha || {}, dadosFicha.estudante?.turma || '');
+        if (!fichaBase.ra) fichaBase.ra = dadosFicha.estudante?.ra || '';
+        if (!fichaBase.dataNascimento) fichaBase.dataNascimento = dadosFicha.estudante?.data_nascimento || '';
+        const parametros = new URLSearchParams({
+          nome: dadosFicha.estudante?.nome || '', turma: dadosFicha.estudante?.turma || '',
+          incluir_tutorias: '0', incluir_enriquecimento: '0',
+        });
+        const respostasNotas = await Promise.all([1, 2].map(async (bimestre) => {
+          const resposta = await fetch(`/api/notas-bimestrais?bimestre=${bimestre}&${parametros}`);
+          const dados = await resposta.json();
+          return resposta.ok && dados.success ? dados : { students: [] };
+        }));
+        if (ativo) setFicha(aplicarNotasAutomaticas(fichaBase, respostasNotas));
+      } catch (e) {
+        if (ativo) setMensagem(e instanceof Error ? e.message : 'Erro ao carregar ficha');
+      } finally {
+        if (ativo) setCarregando(false);
+      }
+    })();
     return () => { ativo = false; };
   }, [estudanteId]);
 

@@ -38,6 +38,10 @@ export async function GET(request: NextRequest) {
 
   const bimestre = Number(request.nextUrl.searchParams.get('bimestre') || 1);
   const ano = Number(request.nextUrl.searchParams.get('ano') || 2026);
+  const nomeFiltro = request.nextUrl.searchParams.get('nome') || '';
+  const turmaFiltro = request.nextUrl.searchParams.get('turma') || '';
+  const incluirTutorias = request.nextUrl.searchParams.get('incluir_tutorias') !== '0';
+  const incluirEnriquecimento = request.nextUrl.searchParams.get('incluir_enriquecimento') !== '0';
 
   if (!Number.isInteger(bimestre) || bimestre < 1 || bimestre > 4) {
     return NextResponse.json(
@@ -60,9 +64,9 @@ export async function GET(request: NextRequest) {
       bimestre: String(bimestre),
       cache: String(Date.now()),
     });
-    const podeConsultarFichas = isProfessor(user.perfil) || isGestao(user.perfil);
+    const podeConsultarFichas = incluirTutorias && (isProfessor(user.perfil) || isGestao(user.perfil));
     const [dadosRemotos, dadosFichas] = await Promise.all([
-      fetch(`${NOTAS_API_URL}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30_000) })
+      (!incluirEnriquecimento && bimestre === 1 ? Promise.resolve({ success: true, students: [] }) : fetch(`${NOTAS_API_URL}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30_000) })
         .then(async (response) => {
           if (!response.ok) throw new Error(`A fonte de dados respondeu com HTTP ${response.status}`);
           const data = await response.json();
@@ -72,7 +76,7 @@ export async function GET(request: NextRequest) {
         .catch((error) => {
           if (bimestre === 1) return { success: true, students: [] };
           throw error;
-        }),
+        })),
       podeConsultarFichas
         ? listarFichas(user).catch(() => ({ fichas: [], estudantes: [], professores: [], podeEditar: false }))
         : Promise.resolve({ fichas: [], estudantes: [], professores: [], podeEditar: false }),
@@ -120,7 +124,10 @@ export async function GET(request: NextRequest) {
             }
           : {}),
       };
-    });
+    }).filter((estudante: any) =>
+      (!nomeFiltro || chaveEstudante(estudante.nome, estudante.turma) === chaveEstudante(nomeFiltro, turmaFiltro || estudante.turma)) &&
+      (!turmaFiltro || String(estudante.turma || '').trim().toUpperCase() === turmaFiltro.trim().toUpperCase())
+    );
 
     return NextResponse.json(
       { success: true, ano, bimestre, periodo, students },

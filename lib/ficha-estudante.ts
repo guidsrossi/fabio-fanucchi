@@ -1,5 +1,6 @@
 import { appendRow, ensureSheetWithHeaders, getRows, updateRow } from '@/lib/sheets';
 import { estaAtivo, isGestao, isProfessor } from '@/lib/permissions';
+import dadosCadastrais from '@/data/dados-cadastrais-estudantes.json';
 
 export const ABA_FICHA_ESTUDANTE = 'ficha_tutoria_estudante';
 const HEADERS = ['estudante_id', 'dados_json', 'atualizado_por', 'atualizado_em'];
@@ -31,6 +32,11 @@ function lerJson(valor: unknown) {
   }
 }
 
+function chaveCadastro(nome: unknown, turma: unknown) {
+  const nomeNormalizado = String(nome || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  return `${String(turma || '').trim().toUpperCase()}|${nomeNormalizado}`;
+}
+
 function limparDados(valor: unknown) {
   if (!valor || typeof valor !== 'object' || Array.isArray(valor)) return {};
   const json = JSON.stringify(valor);
@@ -50,9 +56,18 @@ export async function obterFichaEstudante(user: any, estudanteIdRecebido: string
     return { success: false, error: 'Você não pode acessar a ficha deste estudante' };
   }
   const registro = dadosBase.fichas.find((item: any) => String(item.estudante_id || '').trim() === estudanteId);
+  const cadastro: any = dadosCadastrais.find((item: any) =>
+    chaveCadastro(item.nome, item.turma) === chaveCadastro(estudante.nome, estudante.turma)
+  );
   return {
     success: true,
-    estudante: { id: estudante.id, nome: estudante.nome, turma: estudante.turma || '' },
+    estudante: {
+      id: estudante.id,
+      nome: estudante.nome,
+      turma: estudante.turma || '',
+      ra: String(estudante.ra || cadastro?.ra || '').trim(),
+      data_nascimento: String(estudante.data_nascimento || cadastro?.data_nascimento || '').trim(),
+    },
     ficha: lerJson(registro?.dados_json),
     atualizado_em: registro?.atualizado_em || '',
     podeEditar: !isGestao(user.perfil) && isProfessor(user.perfil),
