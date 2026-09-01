@@ -158,11 +158,11 @@ function Tabela({ titulo, dados, onChange, disabled }: { titulo: string; dados: 
       {rotulo}
       <input
         aria-label={`${linha.disciplina}, ${bimestreMobile + 1}º bimestre, ${rotulo}`}
-        disabled={disabled}
+        disabled={disabled || campo !== 'meta'}
         inputMode="decimal"
         value={linha.bimestres[bimestreMobile]?.[campo] || ''}
-        onChange={(event) => alterar(indiceLinha, bimestreMobile, campo, event.target.value)}
-        className="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-950 disabled:opacity-70 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+        onChange={(event) => { if (campo === 'meta') alterar(indiceLinha, bimestreMobile, campo, event.target.value); }}
+        className={`min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-base text-slate-950 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-100 dark:border-white/10 dark:bg-slate-900 dark:text-white dark:disabled:bg-slate-950 ${campo === 'nota' ? 'font-bold' : ''}`}
       />
     </label>
   );
@@ -192,7 +192,7 @@ function Tabela({ titulo, dados, onChange, disabled }: { titulo: string; dados: 
     <div className="hidden overflow-x-auto md:block">
     <table className="min-w-[920px] w-full text-sm">
       <thead className="bg-slate-100 dark:bg-white/5"><tr><th className="p-3 text-left" rowSpan={2}>{titulo}</th>{BIMESTRES.map((b) => <th key={b} className="p-2 text-center" colSpan={3}>{b}º bimestre</th>)}</tr><tr>{BIMESTRES.flatMap((b) => ['Meta', 'Nota', 'Freq.'].map((campo) => <th key={`${b}-${campo}`} className="p-2 text-center text-xs">{campo}</th>))}</tr></thead>
-      <tbody>{dados.map((linha, i) => <tr key={`${linha.disciplina}-${i}`} className="border-t border-slate-200 dark:border-white/10"><td className="p-3 font-medium">{linha.disciplina}</td>{linha.bimestres.flatMap((b, bi) => (['meta', 'nota', 'frequencia'] as const).map((campo) => <td key={`${bi}-${campo}`} className="p-1"><input aria-label={`${linha.disciplina}, ${bi + 1}º bimestre, ${campo}`} disabled={disabled} value={b[campo] || ''} onChange={(e) => alterar(i, bi, campo, e.target.value)} className="w-16 rounded-lg border border-slate-200 bg-white px-2 py-2 text-center disabled:opacity-70 dark:border-white/10 dark:bg-slate-900" /></td>))}</tr>)}</tbody>
+      <tbody>{dados.map((linha, i) => <tr key={`${linha.disciplina}-${i}`} className="border-t border-slate-200 dark:border-white/10"><td className="p-3 font-medium">{linha.disciplina}</td>{linha.bimestres.flatMap((b, bi) => (['meta', 'nota', 'frequencia'] as const).map((campo) => <td key={`${bi}-${campo}`} className="p-1"><input aria-label={`${linha.disciplina}, ${bi + 1}º bimestre, ${campo}`} disabled={disabled || campo !== 'meta'} value={b[campo] || ''} onChange={(e) => { if (campo === 'meta') alterar(i, bi, campo, e.target.value); }} className={`w-16 rounded-lg border border-slate-200 bg-white px-2 py-2 text-center disabled:cursor-not-allowed disabled:bg-slate-100 disabled:opacity-100 dark:border-white/10 dark:bg-slate-900 dark:disabled:bg-slate-950 ${campo === 'nota' ? 'font-bold' : ''}`} /></td>))}</tr>)}</tbody>
     </table>
     </div>
   </div>;
