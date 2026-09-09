@@ -196,7 +196,12 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
       {mensagem ? <div className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">{mensagem}</div> : null}
       {erro ? <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">{erro}</div> : null}
 
-      <FichaEstudantePanel estudantes={estudantes} somenteLeitura={gestao} />
+      <FichaEstudantePanel
+        estudantes={estudantes}
+        somenteLeitura={gestao}
+        estudanteId={estudanteId}
+        onEstudanteChange={setEstudanteId}
+      />
 
       {!gestao ? <LancamentoManualTutorias /> : null}
 
