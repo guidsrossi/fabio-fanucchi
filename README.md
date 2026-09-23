@@ -78,7 +78,7 @@ Exemplo:
 ```txt
 1 | Gestao Escolar | Gestao Escolar | 123456 | gestao | | nao
 2 | Prof. Joao | Prof. Joao | 123456 | professor | | sim
-3 | Maria Silva | 000123456789-0/SP | 123456 | estudante | 2A | nao | 000123456789-0/SP | 2010-05-10
+3 | Maria Silva | 1234567890 | 123456 | estudante | 2A | nao | 000123456789-0/SP | 2010-05-10
 ```
 
 Quando a gestao cadastra um professor pelo sistema, ele entra automaticamente na aba `usuarios` assim:

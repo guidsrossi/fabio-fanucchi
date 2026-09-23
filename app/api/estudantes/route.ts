@@ -73,7 +73,7 @@ export async function POST(req: Request) {
   const turma = String(body.turma || '').trim();
   const ra = String(body.ra || '').trim();
   const raNormalizado = normalizarRa(ra);
-  const login = ra;
+  const login = raNormalizado;
 
   if (!nome || !turma || !/^\d{7,}$/.test(raNormalizado)) {
     return NextResponse.json({
