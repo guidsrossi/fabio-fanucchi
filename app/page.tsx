@@ -104,15 +104,19 @@ export default function LoginPage() {
             )}
 
             <label className="mb-2 block font-medium text-slate-700 dark:text-slate-200">
-              Login
+              RA do estudante ou login
             </label>
             <input
               className="mb-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-950 transition dark:border-white/10 dark:bg-slate-900 dark:text-white"
               type="text"
               value={loginUsuario}
               onChange={(e) => setLoginUsuario(e.target.value)}
-              placeholder="Digite seu nome"
+              placeholder="Aluno: números do RA, sem zeros iniciais"
             />
+
+            <p className="-mt-2 mb-4 text-xs text-slate-500 dark:text-slate-400">
+              Alunos devem informar somente os números, sem zeros no começo, SP, barra, ponto ou hífen.
+            </p>
 
             <label className="mb-2 block font-medium text-slate-700 dark:text-slate-200">
               Senha

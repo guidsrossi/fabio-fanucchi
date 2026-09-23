@@ -1,6 +1,6 @@
 'use client';
 
-import { DashboardModuleId, Usuario, isCoordenador, isGestao, isProfessor } from '../types';
+import { DashboardModuleId, Usuario, isCoordenador, isEstudante, isGestao, isProfessor } from '../types';
 
 type Props = {
   activeModule: DashboardModuleId;
@@ -13,7 +13,7 @@ const baseButton =
 
 export function moduleIsAvailable(user: Usuario, moduleId: DashboardModuleId) {
   if (moduleId === 'apoio') return false;
-  if (moduleId === 'tutorias') return isProfessor(user.perfil) || isGestao(user.perfil);
+  if (moduleId === 'tutorias') return isProfessor(user.perfil) || isGestao(user.perfil) || isEstudante(user.perfil);
   if (moduleId === 'conselho') return isCoordenador(user.perfil);
   if (moduleId === 'notas-bimestrais') return true;
   if (moduleId === 'relatorios' || moduleId === 'gestao') return isGestao(user.perfil);
@@ -24,6 +24,7 @@ export function moduleIsAvailable(user: Usuario, moduleId: DashboardModuleId) {
 export function defaultModuleForUser(user: Usuario): DashboardModuleId {
   if (isGestao(user.perfil)) return 'relatorios';
   if (isProfessor(user.perfil)) return 'tutorias';
+  if (isEstudante(user.perfil)) return 'tutorias';
 
   return 'notas-bimestrais';
 }
@@ -45,10 +46,12 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
     },
     {
       id: 'tutorias',
-      title: 'Registro de tutorias mensais',
-      description: 'Fichas de atendimento e contagem mensal automática.',
-      roles: 'Professor e gestão',
-      enabled: isProfessor(user.perfil) || isGestao(user.perfil),
+      title: isEstudante(user.perfil) ? 'Minhas tutorias' : 'Registro de tutorias mensais',
+      description: isEstudante(user.perfil)
+        ? 'Consulte e confirme as tutorias registradas pelo professor.'
+        : 'Fichas de atendimento e contagem mensal automática.',
+      roles: isEstudante(user.perfil) ? 'Estudante' : 'Professor e gestão',
+      enabled: isProfessor(user.perfil) || isGestao(user.perfil) || isEstudante(user.perfil),
     },
     {
       id: 'conselho',

@@ -52,6 +52,7 @@ export default function GestaoEscolarModule({
   });
   const [estudanteForm, setEstudanteForm] = useState({
     nome: '',
+    ra: '',
     turma: '',
   });
   const [perguntaForm, setPerguntaForm] = useState({
@@ -167,8 +168,8 @@ export default function GestaoEscolarModule({
         const data = await response.json();
 
         if (data.success) {
-          setEstudanteMensagem(`Estudante cadastrado. Senha inicial: ${data.senha_temporaria}`);
-          setEstudanteForm({ nome: '', turma: '' });
+          setEstudanteMensagem(`Estudante cadastrado com o RA ${data.estudante.ra}. Senha inicial: ${data.senha_temporaria}`);
+          setEstudanteForm({ nome: '', ra: '', turma: '' });
           await onReload();
           return;
         }
@@ -391,12 +392,21 @@ export default function GestaoEscolarModule({
           </div>
         )}
 
-        <form onSubmit={cadastrarEstudante} className="grid gap-4 md:grid-cols-[1fr_220px_auto]">
+        <form onSubmit={cadastrarEstudante} className="grid gap-4 md:grid-cols-[1fr_220px_180px_auto]">
           <input
             className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
             placeholder="Nome do estudante"
             value={estudanteForm.nome}
             onChange={(e) => setEstudanteForm({ ...estudanteForm, nome: e.target.value })}
+            disabled={loading}
+            required
+          />
+
+          <input
+            className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+            placeholder="RA do estudante"
+            value={estudanteForm.ra}
+            onChange={(e) => setEstudanteForm({ ...estudanteForm, ra: e.target.value })}
             disabled={loading}
             required
           />
@@ -427,7 +437,7 @@ export default function GestaoEscolarModule({
         </form>
 
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          O estudante entra usando o proprio nome como login, com a senha 123456, e troca a senha no primeiro acesso.
+          O estudante entra usando o RA como login, com a senha 123456, e troca a senha no primeiro acesso.
         </p>
       </div>
 

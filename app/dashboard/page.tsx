@@ -13,6 +13,7 @@ import ModuleSelector, {
 import PasswordChangePanel from './components/PasswordChangePanel';
 import RelatoriosTutoriasModule from './components/RelatoriosTutoriasModule';
 import TutoriasMensaisModule from './components/TutoriasMensaisModule';
+import MinhasTutoriasModule from './components/MinhasTutoriasModule';
 import {
   Apoio,
   DashboardModuleId,
@@ -22,6 +23,7 @@ import {
   Usuario,
   VinculosPorProfessor,
   isCoordenador,
+  isEstudante,
   isGestao,
   isProfessor,
 } from './types';
@@ -124,8 +126,9 @@ export default function DashboardPage() {
   function renderModule() {
     if (!user) return null;
 
-    if (activeModule === 'tutorias' && (isProfessor(user.perfil) || isGestao(user.perfil))) {
-      return <TutoriasMensaisModule user={user} />;
+    if (activeModule === 'tutorias') {
+      if (isEstudante(user.perfil)) return <MinhasTutoriasModule />;
+      if (isProfessor(user.perfil) || isGestao(user.perfil)) return <TutoriasMensaisModule user={user} />;
     }
 
     if (activeModule === 'conselho' && isCoordenador(user.perfil)) {

@@ -14,6 +14,7 @@ type FichaTutoria = {
   id: string; data: string; mes: string; estudante_id: string; estudante_nome: string;
   professor_id: string; professor_nome: string; turma: string; relato: string;
   criado_em: string; atualizado_em: string;
+  status_confirmacao: 'pendente' | 'confirmada'; confirmado_em: string;
 };
 
 function hojeLocal() {
@@ -87,7 +88,9 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
   const quantidades = useMemo(
     () => estudantes.map((estudante) => ({
       ...estudante,
-      quantidade: fichas.filter((ficha) => ficha.estudante_id === estudante.id).length,
+      quantidade: fichas.filter(
+        (ficha) => ficha.estudante_id === estudante.id && ficha.status_confirmacao === 'confirmada'
+      ).length,
     })),
     [estudantes, fichas]
   );
@@ -160,7 +163,11 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
         const estavaEditando = Boolean(edicaoId);
         const mesDaFicha = data.slice(0, 7);
         limparFormulario();
-        setMensagem(estavaEditando ? 'Ficha atualizada e contagem mensal recalculada.' : 'Ficha salva e contabilizada no mês.');
+        setMensagem(
+          estavaEditando
+            ? 'Ficha atualizada. O estudante deverá confirmá-la novamente.'
+            : 'Ficha salva. Ela será contabilizada após a confirmação do estudante.'
+        );
         if (mesDaFicha !== mes) setMes(mesDaFicha);
         else await carregar(mes);
       } catch (error) {
@@ -178,7 +185,7 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">Registro mensal</p>
           <h2 className="text-xl font-bold text-slate-950 dark:text-white">Fichas de tutoria</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {gestao ? 'Consulte as fichas registradas por todos os professores.' : 'Registre o que foi conversado. Cada ficha conta como uma tutoria no mês da data informada.'}
+            {gestao ? 'Consulte as fichas registradas por todos os professores.' : 'Registre o que foi conversado. A ficha entra na contagem após a confirmação do estudante.'}
           </p>
         </div>
         <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -266,7 +273,12 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
             <article key={ficha.id} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-900/70">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div><p className="font-bold text-slate-950 dark:text-white">{ficha.estudante_nome}</p><p className="text-sm text-slate-500 dark:text-slate-400">{ficha.turma} • {formatarData(ficha.data)}{gestao ? ` • ${ficha.professor_nome}` : ''}</p></div>
-                {!gestao ? <button type="button" onClick={() => iniciarEdicao(ficha)} className="rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 dark:border-blue-400/30 dark:text-blue-200">Editar</button> : null}
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${ficha.status_confirmacao === 'pendente' ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-200' : 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-200'}`}>
+                    {ficha.status_confirmacao === 'pendente' ? 'Aguardando confirmação' : 'Confirmada pelo estudante'}
+                  </span>
+                  {!gestao ? <button type="button" onClick={() => iniciarEdicao(ficha)} className="rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 dark:border-blue-400/30 dark:text-blue-200">Editar</button> : null}
+                </div>
               </div>
               <p className="mt-3 whitespace-pre-wrap leading-7 text-slate-700 dark:text-slate-200">{ficha.relato}</p>
             </article>

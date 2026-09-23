@@ -1,5 +1,5 @@
 import { appendRow, ensureSheetWithHeaders, getRows, updateRow } from '@/lib/sheets';
-import { estaAtivo, isGestao, isProfessor } from '@/lib/permissions';
+import { estaAtivo, isEstudante, isGestao, isProfessor } from '@/lib/permissions';
 import { ABA_TUTORIAS_MENSAIS, TUTORIAS_MENSAIS_HEADERS, quantidadeSegura } from '@/lib/tutorias';
 
 export const ABA_FICHAS_TUTORIA = 'fichas_tutoria';
@@ -13,7 +13,15 @@ export const FICHAS_TUTORIA_HEADERS = [
   'relato',
   'criado_em',
   'atualizado_em',
+  'status_confirmacao',
+  'confirmado_em',
 ];
+
+function statusConfirmacao(ficha: any) {
+  const status = String(ficha.status_confirmacao || '').trim().toLowerCase();
+  // Fichas anteriores à implantação da confirmação continuam válidas.
+  return status === 'pendente' ? 'pendente' : 'confirmada';
+}
 
 function dataValida(valor: unknown) {
   const data = String(valor || '').trim();
@@ -68,6 +76,8 @@ function hidratarFicha(ficha: any, usuariosPorId: Record<string, any>) {
     relato: ficha.relato || '',
     criado_em: ficha.criado_em || '',
     atualizado_em: ficha.atualizado_em || '',
+    status_confirmacao: statusConfirmacao(ficha),
+    confirmado_em: ficha.confirmado_em || '',
   };
 }
 
@@ -84,7 +94,8 @@ async function sincronizarQuantidade(
     (ficha: any) =>
       String(ficha.professor_id || '').trim() === professorId &&
       String(ficha.estudante_id || '').trim() === estudanteId &&
-      String(ficha.mes || ficha.data || '').slice(0, 7) === mes
+      String(ficha.mes || ficha.data || '').slice(0, 7) === mes &&
+      statusConfirmacao(ficha) === 'confirmada'
   ).length;
   const indice = tutorias.findIndex(
     (registro: any) =>
@@ -117,13 +128,18 @@ export async function listarFichas(user: any, mesRecebido = '', estudanteFiltro 
   const { fichas, usuarios, vinculos } = await dadosBase();
   const usuarioId = String(user.id || '').trim();
   const gestao = isGestao(user.perfil);
-  const permitidos = gestao ? null : estudanteIdsDoProfessor(vinculos, usuarioId);
+  const estudante = isEstudante(user.perfil);
+  const permitidos = gestao || estudante ? null : estudanteIdsDoProfessor(vinculos, usuarioId);
   const usuariosPorId = Object.fromEntries(
     usuarios.map((usuario: any) => [String(usuario.id || '').trim(), usuario])
   );
   const estudantes = usuarios
     .filter((usuario: any) => usuario.perfil === 'estudante')
-    .filter((estudante: any) => gestao || permitidos?.includes(String(estudante.id || '').trim()))
+    .filter((item: any) =>
+      gestao ||
+      (estudante && String(item.id || '').trim() === usuarioId) ||
+      permitidos?.includes(String(item.id || '').trim())
+    )
     .map((estudante: any) => ({ id: estudante.id, nome: estudante.nome, turma: estudante.turma }))
     .sort((a: any, b: any) => String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
   const professores = gestao
@@ -141,13 +157,21 @@ export async function listarFichas(user: any, mesRecebido = '', estudanteFiltro 
     .filter((ficha: any) =>
       gestao
         ? true
-        : String(ficha.professor_id || '').trim() === usuarioId &&
-          permitidos?.includes(String(ficha.estudante_id || '').trim())
+        : estudante
+          ? String(ficha.estudante_id || '').trim() === usuarioId
+          : String(ficha.professor_id || '').trim() === usuarioId &&
+            permitidos?.includes(String(ficha.estudante_id || '').trim())
     )
     .map((ficha: any) => hidratarFicha(ficha, usuariosPorId))
     .sort((a: any, b: any) => b.data.localeCompare(a.data) || b.id.localeCompare(a.id));
 
-  return { fichas: registros, estudantes, professores, podeEditar: !gestao && isProfessor(user.perfil) };
+  return {
+    fichas: registros,
+    estudantes,
+    professores,
+    podeEditar: !gestao && isProfessor(user.perfil),
+    podeConfirmar: estudante,
+  };
 }
 
 export async function criarFicha(user: any, dados: any) {
@@ -171,7 +195,7 @@ export async function criarFicha(user: any, dados: any) {
   const agora = new Date().toISOString();
   const valores = [
     proximoId(base.fichas), data, data.slice(0, 7), estudanteId, professorId,
-    estudante.turma || '', relato, agora, agora,
+    estudante.turma || '', relato, agora, agora, 'pendente', '',
   ];
   await appendRow(ABA_FICHAS_TUTORIA, valores);
   const novaFicha = Object.fromEntries(FICHAS_TUTORIA_HEADERS.map((header, i) => [header, valores[i]]));
@@ -204,7 +228,7 @@ export async function editarFicha(user: any, dados: any) {
   const turma = atual.turma || '';
   const valores = [
     atual.id, data, data.slice(0, 7), estudanteId, professorId, turma, relato,
-    atual.criado_em || new Date().toISOString(), new Date().toISOString(),
+    atual.criado_em || new Date().toISOString(), new Date().toISOString(), 'pendente', '',
   ];
   await updateRow(ABA_FICHAS_TUTORIA, indice + 2, valores);
   base.fichas[indice] = Object.fromEntries(FICHAS_TUTORIA_HEADERS.map((header, i) => [header, valores[i]]));
@@ -213,4 +237,52 @@ export async function editarFicha(user: any, dados: any) {
     await sincronizarQuantidade(professorId, estudanteId, data.slice(0, 7), base.fichas, base.tutorias, turma);
   }
   return { success: true };
+}
+
+export async function confirmarFicha(user: any, dados: any) {
+  if (!isEstudante(user.perfil)) return { success: false, error: 'Acesso negado' };
+
+  const base = await dadosBase();
+  const estudanteId = String(user.id || '').trim();
+  const fichaId = String(dados.id || '').trim();
+  const indice = base.fichas.findIndex(
+    (ficha: any) =>
+      String(ficha.id || '').trim() === fichaId &&
+      String(ficha.estudante_id || '').trim() === estudanteId
+  );
+
+  if (indice < 0) return { success: false, error: 'Ficha de tutoria não encontrada' };
+
+  const ficha = base.fichas[indice];
+  if (statusConfirmacao(ficha) === 'confirmada') return { success: true };
+
+  const agora = new Date().toISOString();
+  const valores = [
+    ficha.id,
+    ficha.data,
+    ficha.mes || String(ficha.data || '').slice(0, 7),
+    ficha.estudante_id,
+    ficha.professor_id,
+    ficha.turma,
+    ficha.relato,
+    ficha.criado_em,
+    ficha.atualizado_em,
+    'confirmada',
+    agora,
+  ];
+
+  await updateRow(ABA_FICHAS_TUTORIA, indice + 2, valores);
+  base.fichas[indice] = Object.fromEntries(
+    FICHAS_TUTORIA_HEADERS.map((header, i) => [header, valores[i]])
+  );
+  await sincronizarQuantidade(
+    String(ficha.professor_id || '').trim(),
+    estudanteId,
+    String(ficha.mes || ficha.data || '').slice(0, 7),
+    base.fichas,
+    base.tutorias,
+    ficha.turma || ''
+  );
+
+  return { success: true, confirmado_em: agora };
 }

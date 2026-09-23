@@ -13,6 +13,7 @@ export type Estudante = {
   id: string;
   nome: string;
   login?: string;
+  ra?: string;
   turma: string;
   professor_id?: string;
 };
@@ -73,4 +74,8 @@ export function isProfessor(perfil: string) {
   const perfilNormalizado = normalizarTexto(perfil);
 
   return perfilNormalizado === 'professor' || perfilNormalizado === 'coordenador';
+}
+
+export function isEstudante(perfil: string) {
+  return normalizarTexto(perfil) === 'estudante';
 }

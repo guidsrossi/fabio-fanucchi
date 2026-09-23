@@ -52,7 +52,7 @@ conselhos_classe
 #### usuarios
 
 ```txt
-id | nome | login | senha | perfil | turma | precisa_trocar_senha
+id | nome | login | senha | perfil | turma | precisa_trocar_senha | ra | data_nascimento
 ```
 
 Perfis aceitos:
@@ -78,7 +78,7 @@ Exemplo:
 ```txt
 1 | Gestao Escolar | Gestao Escolar | 123456 | gestao | | nao
 2 | Prof. Joao | Prof. Joao | 123456 | professor | | sim
-3 | Maria Silva | Maria Silva | 123456 | estudante | 2A | nao
+3 | Maria Silva | 000123456789-0/SP | 123456 | estudante | 2A | nao | 000123456789-0/SP | 2010-05-10
 ```
 
 Quando a gestao cadastra um professor pelo sistema, ele entra automaticamente na aba `usuarios` assim:
@@ -91,6 +91,16 @@ Professor nao tem turma fixa na aba `usuarios`. O vinculo com estudantes atendid
 O coordenador tambem nao tem turma fixa e pode receber vinculos da mesma forma que um professor.
 
 No primeiro login, o professor usa a senha `123456` e o sistema mostra a tela de troca obrigatoria de senha. Depois que ele troca, a coluna `precisa_trocar_senha` muda para `nao`.
+
+O estudante usa somente os números do RA como login, sem os zeros iniciais, `SP`, barra, ponto ou hífen. Por exemplo, o RA `000113871727-7/SP` é digitado como `1138717277`.
+
+#### fichas_tutoria
+
+```txt
+id | data | mes | estudante_id | professor_id | turma | relato | criado_em | atualizado_em | status_confirmacao | confirmado_em
+```
+
+Uma ficha nova fica com `status_confirmacao` igual a `pendente`. Ela aparece no perfil do estudante e só entra na contagem mensal depois que o próprio estudante a confirma. Fichas anteriores à implantação desse fluxo permanecem confirmadas para preservar o histórico.
 
 #### professor_estudantes
 

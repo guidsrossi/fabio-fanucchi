@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { appendRow, getRows } from '@/lib/sheets';
 import { getUserFromCookie } from '@/lib/auth';
 import { isProfessor } from '@/lib/permissions';
+import { normalizarRa, obterRaDoEstudante } from '@/lib/estudantes';
 
 const SENHA_INICIAL_ESTUDANTE = '123456';
 
@@ -53,7 +54,8 @@ export async function GET() {
       .map((estudante: any) => ({
         id: estudante.id,
         nome: estudante.nome,
-        login: estudante.login || estudante.nome,
+        login: obterRaDoEstudante(estudante),
+        ra: obterRaDoEstudante(estudante),
         turma: estudante.turma,
       })),
   });
@@ -69,22 +71,25 @@ export async function POST(req: Request) {
   const body = await req.json();
   const nome = String(body.nome || '').trim();
   const turma = String(body.turma || '').trim();
-  const login = nome;
+  const ra = String(body.ra || '').trim();
+  const raNormalizado = normalizarRa(ra);
+  const login = ra;
 
-  if (!nome || !turma) {
+  if (!nome || !turma || !/^\d{7,}$/.test(raNormalizado)) {
     return NextResponse.json({
       success: false,
-      error: 'Informe nome e turma do estudante',
+      error: 'Informe nome, RA válido e turma do estudante',
     });
   }
 
   const usuarios = await getRows('usuarios');
-  const loginJaExiste = usuarios.some(
-    (usuario: any) =>
-      [usuario.login, usuario.nome]
-        .map((valor) => normalizarLogin(valor))
-        .filter(Boolean)
-        .includes(normalizarLogin(login))
+  const loginJaExiste = usuarios.some((usuario: any) =>
+    usuario.perfil === 'estudante'
+      ? normalizarRa(obterRaDoEstudante(usuario)) === raNormalizado
+      : [usuario.login, usuario.nome]
+          .map((valor) => normalizarLogin(valor))
+          .filter(Boolean)
+          .includes(normalizarLogin(login))
   );
 
   if (loginJaExiste) {
@@ -107,6 +112,8 @@ export async function POST(req: Request) {
     'estudante',
     turma,
     'sim',
+    ra,
+    '',
   ]);
 
   return NextResponse.json({
@@ -115,6 +122,7 @@ export async function POST(req: Request) {
       id: estudanteId,
       nome,
       login,
+      ra,
       turma,
       perfil: 'estudante',
       precisa_trocar_senha: true,

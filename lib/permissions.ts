@@ -22,6 +22,10 @@ export function isProfessor(perfil?: string) {
   return perfilNormalizado === 'professor' || perfilNormalizado === 'coordenador';
 }
 
+export function isEstudante(perfil?: string) {
+  return normalizarTexto(perfil) === 'estudante';
+}
+
 export function estaAtivo(valor: unknown) {
   return !['nao', 'false', '0'].includes(String(valor || '').trim().toLowerCase());
 }
