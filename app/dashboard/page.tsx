@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { useLoadingAction } from '../hooks/useLoadingAction';
 import GestaoEscolarModule from './components/GestaoEscolarModule';
@@ -40,6 +40,7 @@ export default function DashboardPage() {
   const [estudantesVinculo, setEstudantesVinculo] = useState<Estudante[]>([]);
   const [vinculosPorProfessor, setVinculosPorProfessor] = useState<VinculosPorProfessor>({});
   const [temaEscuro, setTemaEscuro] = useState(false);
+  const moduloInicializado = useRef(false);
   const { loading, loadingMessage, runWithLoading } = useLoadingAction();
 
   useEffect(() => {
@@ -70,9 +71,16 @@ export default function DashboardPage() {
 
     const usuario = me.user as Usuario;
     setUser(usuario);
-    setActiveModule((moduloAtual) =>
-      moduleIsAvailable(usuario, moduloAtual) ? moduloAtual : defaultModuleForUser(usuario)
-    );
+    setActiveModule((moduloAtual) => {
+      if (!moduloInicializado.current) {
+        moduloInicializado.current = true;
+        return defaultModuleForUser(usuario);
+      }
+
+      return moduleIsAvailable(usuario, moduloAtual)
+        ? moduloAtual
+        : defaultModuleForUser(usuario);
+    });
 
     if (usuario.precisa_trocar_senha) {
       setApoios([]);

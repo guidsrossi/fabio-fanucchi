@@ -25,7 +25,7 @@ function formatarData(data: string) {
 }
 
 export default function MinhasTutoriasModule() {
-  const [mes, setMes] = useState(mesAtual());
+  const [mes, setMes] = useState('');
   const [fichas, setFichas] = useState<FichaTutoria[]>([]);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
@@ -84,9 +84,15 @@ export default function MinhasTutoriasModule() {
           <h2 className="text-xl font-bold text-slate-950 dark:text-white">Minhas tutorias</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Confira o registro feito pelo professor e confirme a realização da tutoria.</p>
         </div>
-        <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">Mês de referência
-          <input type="month" value={mes} onChange={(event) => setMes(event.target.value)} className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white" />
-        </label>
+        <div className="flex flex-col gap-2 sm:items-end">
+          <label className="grid gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">Filtrar por mês
+            <input type="month" value={mes} onChange={(event) => setMes(event.target.value)} className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white" />
+          </label>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => setMes('')} className="text-xs font-semibold text-blue-700 dark:text-blue-300">Ver todas</button>
+            <button type="button" onClick={() => setMes(mesAtual())} className="text-xs font-semibold text-blue-700 dark:text-blue-300">Mês atual</button>
+          </div>
+        </div>
       </div>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2">
@@ -112,7 +118,7 @@ export default function MinhasTutoriasModule() {
           );
         })}
         {carregando ? <p className="text-slate-500">Carregando tutorias...</p> : null}
-        {!carregando && fichas.length === 0 ? <p className="rounded-xl bg-slate-50 p-4 text-slate-500 dark:bg-white/[0.03]">Nenhuma tutoria registrada neste mês.</p> : null}
+        {!carregando && fichas.length === 0 ? <p className="rounded-xl bg-slate-50 p-4 text-slate-500 dark:bg-white/[0.03]">Nenhuma tutoria registrada no período selecionado.</p> : null}
       </div>
     </section>
   );

@@ -100,7 +100,7 @@ O estudante usa somente os números do RA como login, sem os zeros iniciais, `SP
 id | data | mes | estudante_id | professor_id | turma | relato | criado_em | atualizado_em | status_confirmacao | confirmado_em
 ```
 
-Uma ficha nova fica com `status_confirmacao` igual a `pendente`. Ela aparece no perfil do estudante e só entra na contagem mensal depois que o próprio estudante a confirma. Fichas anteriores à implantação desse fluxo permanecem confirmadas para preservar o histórico.
+Uma ficha nova fica com `status_confirmacao` igual a `pendente`. Ela aparece no perfil do estudante e só entra na contagem mensal depois que o próprio estudante a confirma. Fichas antigas sem confirmação explícita também aparecem como pendentes para o estudante confirmar.
 
 #### professor_estudantes
 

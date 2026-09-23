@@ -19,8 +19,7 @@ export const FICHAS_TUTORIA_HEADERS = [
 
 function statusConfirmacao(ficha: any) {
   const status = String(ficha.status_confirmacao || '').trim().toLowerCase();
-  // Fichas anteriores à implantação da confirmação continuam válidas.
-  return status === 'pendente' ? 'pendente' : 'confirmada';
+  return status === 'confirmada' ? 'confirmada' : 'pendente';
 }
 
 function dataValida(valor: unknown) {
