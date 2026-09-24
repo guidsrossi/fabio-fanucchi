@@ -143,7 +143,7 @@ export default function DashboardPage() {
       return <ConselhoClasseModule />;
     }
 
-    if (activeModule === 'notas-bimestrais') {
+    if (activeModule === 'notas-bimestrais' && !isEstudante(user.perfil)) {
       return <NotasBimestraisModule />;
     }
 
@@ -163,6 +163,8 @@ export default function DashboardPage() {
         />
       );
     }
+
+    if (isEstudante(user.perfil)) return <MinhasTutoriasModule />;
 
     return <NotasBimestraisModule />;
   }

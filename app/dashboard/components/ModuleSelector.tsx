@@ -15,7 +15,7 @@ export function moduleIsAvailable(user: Usuario, moduleId: DashboardModuleId) {
   if (moduleId === 'apoio') return false;
   if (moduleId === 'tutorias') return isProfessor(user.perfil) || isGestao(user.perfil) || isEstudante(user.perfil);
   if (moduleId === 'conselho') return isCoordenador(user.perfil);
-  if (moduleId === 'notas-bimestrais') return true;
+  if (moduleId === 'notas-bimestrais') return !isEstudante(user.perfil);
   if (moduleId === 'relatorios' || moduleId === 'gestao') return isGestao(user.perfil);
 
   return true;
@@ -64,8 +64,8 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
       id: 'notas-bimestrais',
       title: 'Notas Bimestrais',
       description: 'Apresentação de notas, frequência e fotos por estudante.',
-      roles: 'Todos os usuários',
-      enabled: true,
+      roles: 'Professor e gestão',
+      enabled: !isEstudante(user.perfil),
     },
     {
       id: 'relatorios',
