@@ -1,35 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import LoadingOverlay from './components/LoadingOverlay';
 import { useLoadingAction } from './hooks/useLoadingAction';
-
-const ESCOLA = 'Escola Estadual Prof. Fabio Fanucchi';
 
 export default function LoginPage() {
   const [loginUsuario, setLoginUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-  const [temaEscuro, setTemaEscuro] = useState(false);
   const { loading, loadingMessage, runWithLoading } = useLoadingAction();
-
-  useEffect(() => {
-    const temaSalvo = localStorage.getItem('tema');
-    const usarEscuro =
-      temaSalvo === 'dark' ||
-      (!temaSalvo && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-    setTemaEscuro(usarEscuro);
-    document.documentElement.classList.toggle('dark', usarEscuro);
-  }, []);
-
-  function alternarTema() {
-    const proximoTema = !temaEscuro;
-
-    setTemaEscuro(proximoTema);
-    localStorage.setItem('tema', proximoTema ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', proximoTema);
-  }
 
   async function login(e: React.FormEvent) {
     e.preventDefault();
@@ -59,85 +38,75 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-8 sm:px-6">
+    <main className="flex min-h-screen items-center justify-center px-4 py-8">
       <LoadingOverlay show={loading} message={loadingMessage} />
-      <div className="w-full max-w-md">
-        <div className="mb-5 flex justify-end">
-          <button
-            type="button"
-            onClick={alternarTema}
-            className="rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-300 hover:text-blue-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-blue-400"
-          >
-            {temaEscuro ? 'Tema claro' : 'Tema dark'}
-          </button>
+
+      <form
+        onSubmit={login}
+        className="w-full max-w-sm rounded-3xl border border-white/70 bg-white/90 p-6 shadow-2xl shadow-blue-950/10 backdrop-blur sm:p-8 dark:border-white/10 dark:bg-slate-950/88 dark:shadow-black/30"
+      >
+        <div className="mb-7 text-center">
+          <img
+            src="/school-logo.jpg"
+            alt="Escola Estadual Prof. Fabio Fanucchi"
+            className="mx-auto h-20 w-20 rounded-2xl border border-slate-200 bg-white object-contain p-2 shadow-sm"
+          />
+          <h1 className="mt-3 text-lg font-semibold leading-tight text-slate-900 dark:text-white">
+            Escola Estadual Prof. Fabio Fanucchi
+          </h1>
         </div>
 
-        <section className="overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/92 shadow-2xl shadow-blue-950/10 backdrop-blur dark:border-white/10 dark:bg-slate-950/88 dark:shadow-black/30">
-          <div className="border-b border-slate-200 bg-gradient-to-br from-blue-50 to-white p-6 text-center dark:border-white/10 dark:from-slate-900 dark:to-slate-950">
-            <img
-              src="/school-logo.jpg"
-              alt={ESCOLA}
-              className="mx-auto h-24 w-24 rounded-3xl border border-slate-200 bg-white object-contain p-2 shadow-sm dark:border-white/10 dark:bg-white"
-            />
-            <p className="mt-4 text-sm font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-blue-300">
-              Plataforma de Tutoria
-            </p>
-            <h1 className="mt-2 text-2xl font-bold leading-tight text-slate-950 dark:text-white">
-              {ESCOLA}
-            </h1>
+        {erro && (
+          <div
+            role="alert"
+            className="mb-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200"
+          >
+            {erro}
           </div>
+        )}
 
-          <form onSubmit={login} className="p-6 sm:p-8">
-            <div className="mb-7">
-              <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
-                Entrar no sistema
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                Acesse os modulos de apoio, tutorias mensais e acompanhamento escolar.
-              </p>
-            </div>
+        <label
+          htmlFor="login"
+          className="mb-2 block font-medium text-slate-700 dark:text-slate-200"
+        >
+          Login
+        </label>
+        <input
+          id="login"
+          name="login"
+          className="mb-5 w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-950 transition dark:border-white/10 dark:bg-slate-900 dark:text-white"
+          type="text"
+          value={loginUsuario}
+          onChange={(e) => setLoginUsuario(e.target.value)}
+          autoComplete="username"
+          required
+        />
 
-            {erro && (
-              <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
-                {erro}
-              </div>
-            )}
+        <label
+          htmlFor="senha"
+          className="mb-2 block font-medium text-slate-700 dark:text-slate-200"
+        >
+          Senha
+        </label>
+        <input
+          id="senha"
+          name="senha"
+          className="mb-6 w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-950 transition dark:border-white/10 dark:bg-slate-900 dark:text-white"
+          type="password"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          autoComplete="current-password"
+          required
+        />
 
-            <label className="mb-2 block font-medium text-slate-700 dark:text-slate-200">
-              RA do estudante ou login
-            </label>
-            <input
-              className="mb-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-950 transition dark:border-white/10 dark:bg-slate-900 dark:text-white"
-              type="text"
-              value={loginUsuario}
-              onChange={(e) => setLoginUsuario(e.target.value)}
-              placeholder="Aluno: números do RA, sem zeros iniciais"
-            />
-
-            <p className="-mt-2 mb-4 text-xs text-slate-500 dark:text-slate-400">
-              Alunos devem informar somente os números, sem zeros no começo, SP, barra, ponto ou hífen.
-            </p>
-
-            <label className="mb-2 block font-medium text-slate-700 dark:text-slate-200">
-              Senha
-            </label>
-            <input
-              className="mb-6 w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-950 transition dark:border-white/10 dark:bg-slate-900 dark:text-white"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              placeholder="Digite sua senha"
-            />
-
-            <button
-              disabled={loading}
-              className="w-full rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
-            >
-              {loading ? 'Entrando...' : 'Entrar'}
-            </button>
-          </form>
-        </section>
-      </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-xl bg-blue-700 p-3 font-semibold text-white shadow-lg shadow-blue-700/20 transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300 dark:bg-blue-500 dark:hover:bg-blue-400 dark:disabled:bg-white/10"
+        >
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
+      </form>
     </main>
   );
 }
