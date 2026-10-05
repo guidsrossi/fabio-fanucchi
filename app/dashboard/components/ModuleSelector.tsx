@@ -48,7 +48,7 @@ export default function ModuleSelector({ activeModule, user, onChange }: Props) 
       id: 'tutorias',
       title: isEstudante(user.perfil) ? 'Minhas tutorias' : 'Registro de tutorias mensais',
       description: isEstudante(user.perfil)
-        ? 'Consulte e confirme as tutorias registradas pelo professor.'
+        ? 'Consulte as tutorias registradas pelo professor.'
         : 'Fichas de atendimento e contagem mensal automática.',
       roles: isEstudante(user.perfil) ? 'Estudante' : 'Professor e gestão',
       enabled: isProfessor(user.perfil) || isGestao(user.perfil) || isEstudante(user.perfil),

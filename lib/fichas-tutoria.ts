@@ -17,11 +17,6 @@ export const FICHAS_TUTORIA_HEADERS = [
   'confirmado_em',
 ];
 
-function statusConfirmacao(ficha: any) {
-  const status = String(ficha.status_confirmacao || '').trim().toLowerCase();
-  return status === 'confirmada' ? 'confirmada' : 'pendente';
-}
-
 function dataValida(valor: unknown) {
   const data = String(valor || '').trim();
   if (!/^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/.test(data)) return '';
@@ -75,7 +70,7 @@ function hidratarFicha(ficha: any, usuariosPorId: Record<string, any>) {
     relato: ficha.relato || '',
     criado_em: ficha.criado_em || '',
     atualizado_em: ficha.atualizado_em || '',
-    status_confirmacao: statusConfirmacao(ficha),
+    status_confirmacao: ficha.status_confirmacao || 'registrada',
     confirmado_em: ficha.confirmado_em || '',
   };
 }
@@ -93,8 +88,7 @@ async function sincronizarQuantidade(
     (ficha: any) =>
       String(ficha.professor_id || '').trim() === professorId &&
       String(ficha.estudante_id || '').trim() === estudanteId &&
-      String(ficha.mes || ficha.data || '').slice(0, 7) === mes &&
-      statusConfirmacao(ficha) === 'confirmada'
+      String(ficha.mes || ficha.data || '').slice(0, 7) === mes
   ).length;
   const indice = tutorias.findIndex(
     (registro: any) =>
@@ -169,7 +163,6 @@ export async function listarFichas(user: any, mesRecebido = '', estudanteFiltro 
     estudantes,
     professores,
     podeEditar: !gestao && isProfessor(user.perfil),
-    podeConfirmar: estudante,
   };
 }
 
@@ -194,7 +187,7 @@ export async function criarFicha(user: any, dados: any) {
   const agora = new Date().toISOString();
   const valores = [
     proximoId(base.fichas), data, data.slice(0, 7), estudanteId, professorId,
-    estudante.turma || '', relato, agora, agora, 'pendente', '',
+    estudante.turma || '', relato, agora, agora, 'registrada', '',
   ];
   await appendRow(ABA_FICHAS_TUTORIA, valores);
   const novaFicha = Object.fromEntries(FICHAS_TUTORIA_HEADERS.map((header, i) => [header, valores[i]]));
@@ -227,7 +220,7 @@ export async function editarFicha(user: any, dados: any) {
   const turma = atual.turma || '';
   const valores = [
     atual.id, data, data.slice(0, 7), estudanteId, professorId, turma, relato,
-    atual.criado_em || new Date().toISOString(), new Date().toISOString(), 'pendente', '',
+    atual.criado_em || new Date().toISOString(), new Date().toISOString(), 'registrada', '',
   ];
   await updateRow(ABA_FICHAS_TUTORIA, indice + 2, valores);
   base.fichas[indice] = Object.fromEntries(FICHAS_TUTORIA_HEADERS.map((header, i) => [header, valores[i]]));
@@ -236,52 +229,4 @@ export async function editarFicha(user: any, dados: any) {
     await sincronizarQuantidade(professorId, estudanteId, data.slice(0, 7), base.fichas, base.tutorias, turma);
   }
   return { success: true };
-}
-
-export async function confirmarFicha(user: any, dados: any) {
-  if (!isEstudante(user.perfil)) return { success: false, error: 'Acesso negado' };
-
-  const base = await dadosBase();
-  const estudanteId = String(user.id || '').trim();
-  const fichaId = String(dados.id || '').trim();
-  const indice = base.fichas.findIndex(
-    (ficha: any) =>
-      String(ficha.id || '').trim() === fichaId &&
-      String(ficha.estudante_id || '').trim() === estudanteId
-  );
-
-  if (indice < 0) return { success: false, error: 'Ficha de tutoria não encontrada' };
-
-  const ficha = base.fichas[indice];
-  if (statusConfirmacao(ficha) === 'confirmada') return { success: true };
-
-  const agora = new Date().toISOString();
-  const valores = [
-    ficha.id,
-    ficha.data,
-    ficha.mes || String(ficha.data || '').slice(0, 7),
-    ficha.estudante_id,
-    ficha.professor_id,
-    ficha.turma,
-    ficha.relato,
-    ficha.criado_em,
-    ficha.atualizado_em,
-    'confirmada',
-    agora,
-  ];
-
-  await updateRow(ABA_FICHAS_TUTORIA, indice + 2, valores);
-  base.fichas[indice] = Object.fromEntries(
-    FICHAS_TUTORIA_HEADERS.map((header, i) => [header, valores[i]])
-  );
-  await sincronizarQuantidade(
-    String(ficha.professor_id || '').trim(),
-    estudanteId,
-    String(ficha.mes || ficha.data || '').slice(0, 7),
-    base.fichas,
-    base.tutorias,
-    ficha.turma || ''
-  );
-
-  return { success: true, confirmado_em: agora };
 }
