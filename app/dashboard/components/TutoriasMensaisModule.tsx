@@ -108,6 +108,28 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  async function excluirFicha(ficha: FichaTutoria) {
+    if (!window.confirm(`Excluir a tutoria de ${ficha.estudante_nome} realizada em ${formatarData(ficha.data)}? Ela deixará de aparecer nos registros e na contagem mensal.`)) return;
+    await runWithLoading('Excluindo ficha...', async () => {
+      setErro('');
+      setMensagem('');
+      try {
+        const response = await fetch('/api/fichas-tutoria', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: ficha.id }),
+        });
+        const resultado = await response.json();
+        if (!response.ok || !resultado.success) throw new Error(resultado.error || 'Erro ao excluir ficha');
+        if (edicaoId === ficha.id) limparFormulario();
+        setMensagem('Ficha excluída e contagem mensal recalculada.');
+        await carregar(mes);
+      } catch (error) {
+        setErro(error instanceof Error ? error.message : 'Erro ao excluir ficha de tutoria');
+      }
+    });
+  }
+
   async function gerarPdfTutorias(estudante: EstudanteOpcao) {
     setGerandoPdfId(estudante.id);
     setErro('');
@@ -266,7 +288,10 @@ export default function TutoriasMensaisModule({ user }: { user: Usuario }) {
             <article key={ficha.id} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-white/10 dark:bg-slate-900/70">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div><p className="font-bold text-slate-950 dark:text-white">{ficha.estudante_nome}</p><p className="text-sm text-slate-500 dark:text-slate-400">{ficha.turma} • {formatarData(ficha.data)}{gestao ? ` • ${ficha.professor_nome}` : ''}</p></div>
-                {!gestao ? <button type="button" onClick={() => iniciarEdicao(ficha)} className="rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 dark:border-blue-400/30 dark:text-blue-200">Editar</button> : null}
+                {!gestao ? <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={() => iniciarEdicao(ficha)} disabled={salvando || carregando} className="rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-700 disabled:opacity-50 dark:border-blue-400/30 dark:text-blue-200">Editar</button>
+                  <button type="button" onClick={() => excluirFicha(ficha)} disabled={salvando || carregando} className="rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 disabled:opacity-50 dark:border-red-400/30 dark:text-red-200">Excluir</button>
+                </div> : null}
               </div>
               <p className="mt-3 whitespace-pre-wrap leading-7 text-slate-700 dark:text-slate-200">{ficha.relato}</p>
             </article>

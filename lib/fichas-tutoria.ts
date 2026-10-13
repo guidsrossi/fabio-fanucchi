@@ -17,6 +17,10 @@ export const FICHAS_TUTORIA_HEADERS = [
   'confirmado_em',
 ];
 
+function fichaExcluida(ficha: any) {
+  return String(ficha.status_confirmacao || '').trim().toLowerCase() === 'excluida';
+}
+
 function dataValida(valor: unknown) {
   const data = String(valor || '').trim();
   if (!/^\d{4}-(0[1-9]|1[0-2])-([0-2]\d|3[01])$/.test(data)) return '';
@@ -86,6 +90,7 @@ async function sincronizarQuantidade(
   if (!mes) return;
   const quantidade = fichas.filter(
     (ficha: any) =>
+      !fichaExcluida(ficha) &&
       String(ficha.professor_id || '').trim() === professorId &&
       String(ficha.estudante_id || '').trim() === estudanteId &&
       String(ficha.mes || ficha.data || '').slice(0, 7) === mes
@@ -142,6 +147,7 @@ export async function listarFichas(user: any, mesRecebido = '', estudanteFiltro 
     : [];
   const mes = /^\d{4}-(0[1-9]|1[0-2])$/.test(mesRecebido) ? mesRecebido : '';
   const registros = fichas
+    .filter((ficha: any) => !fichaExcluida(ficha))
     .filter((ficha: any) => !mes || String(ficha.mes || ficha.data || '').slice(0, 7) === mes)
     .filter(
       (ficha: any) =>
@@ -205,6 +211,7 @@ export async function editarFicha(user: any, dados: any) {
   if (indice < 0) return { success: false, error: 'Ficha não encontrada' };
 
   const atual = base.fichas[indice];
+  if (fichaExcluida(atual)) return { success: false, error: 'Ficha não encontrada' };
   const estudanteId = String(atual.estudante_id || '').trim();
   const permitidos = estudanteIdsDoProfessor(base.vinculos, professorId);
   if (String(atual.professor_id || '').trim() !== professorId || !permitidos.includes(estudanteId)) {
@@ -228,5 +235,33 @@ export async function editarFicha(user: any, dados: any) {
   if (data.slice(0, 7) !== mesAnterior) {
     await sincronizarQuantidade(professorId, estudanteId, data.slice(0, 7), base.fichas, base.tutorias, turma);
   }
+  return { success: true };
+}
+
+export async function excluirFicha(user: any, dados: any) {
+  if (!isProfessor(user.perfil)) return { success: false, error: 'Acesso negado', status: 403 };
+  const fichaId = String(dados?.id || '').trim();
+  if (!fichaId) return { success: false, error: 'Informe a ficha a excluir', status: 400 };
+
+  const base = await dadosBase();
+  const professorId = String(user.id || '').trim();
+  const indice = base.fichas.findIndex((ficha: any) => String(ficha.id || '').trim() === fichaId);
+  if (indice < 0) return { success: false, error: 'Ficha não encontrada', status: 404 };
+
+  const atual = base.fichas[indice];
+  const estudanteId = String(atual.estudante_id || '').trim();
+  const permitidos = estudanteIdsDoProfessor(base.vinculos, professorId);
+  if (String(atual.professor_id || '').trim() !== professorId || !permitidos.includes(estudanteId)) {
+    return { success: false, error: 'Você não pode excluir esta ficha', status: 403 };
+  }
+
+  // Preserva o registro e seu ID para evitar deslocamentos das linhas da planilha.
+  // Uma nova tentativa também refaz a contagem, caso a sincronização tenha falhado.
+  if (!fichaExcluida(atual)) {
+    const excluida = { ...atual, status_confirmacao: 'excluida', atualizado_em: new Date().toISOString() };
+    await updateRow(ABA_FICHAS_TUTORIA, indice + 2, FICHAS_TUTORIA_HEADERS.map((header) => excluida[header] || ''));
+    base.fichas[indice] = excluida;
+  }
+  await sincronizarQuantidade(professorId, estudanteId, String(atual.mes || atual.data || '').slice(0, 7), base.fichas, base.tutorias, atual.turma || '');
   return { success: true };
 }
