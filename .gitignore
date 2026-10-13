@@ -3,3 +3,4 @@ node_modules
 json.txt
 .next
 .env
+private/importacoes/

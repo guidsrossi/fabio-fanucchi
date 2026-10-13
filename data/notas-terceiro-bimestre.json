@@ -1,0 +1,3595 @@
+[
+  {
+    "nome": "ARTHUR LORENTE BORGES",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "96%",
+    "frequencia_anual": "93%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 10.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "CONRADO ELIAS CLAUDIO",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "80%",
+    "frequencia_anual": "78%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 7.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "FELIPE GABRIEL MUNIZ DE ASSIS",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "78%",
+    "frequencia_anual": "75%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "GEOVANNA DA SILVA MONTEIRO",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "83%",
+    "frequencia_anual": "79%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "GIOVANNI MONTEIRO GUIMARÃES",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "76%",
+    "frequencia_anual": "78%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 5.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "GUILHERME ANTUNES DE SOUZA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "96%",
+    "frequencia_anual": "96%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 7.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "HANANDA LOUISE DE LIMA SANTOS",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "78%",
+    "frequencia_anual": "70%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 10.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 8.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "HELENA SOUZA BARBOSA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "91%",
+    "frequencia_anual": "92%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "HENRIQUE GABRIEL SANTOS GARCIA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "59%",
+    "frequencia_anual": "62%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 1.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 1.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 1.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 3.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "ISAQUE DA SILVA MORAIS",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "89%",
+    "frequencia_anual": "83%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 5.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "JOÃO VITOR D'ANBROSIO SILVA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "96%",
+    "frequencia_anual": "94%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 5.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "KEVIN CANQUERINI PADRE",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "89%",
+    "frequencia_anual": "91%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 8.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "LIVIA CUNHA DE ANDRADE",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "93%",
+    "frequencia_anual": "93%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 10.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 10.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 9.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "LORENA VITORIA IGNACIO DE OLIVEIRA ROCHA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "63%",
+    "frequencia_anual": "70%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 4.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "MARIA CLARA ALVES DA COSTA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "83%",
+    "frequencia_anual": "76%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 9.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "MARIA EDUARDA TENORIO SILVA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "96%",
+    "frequencia_anual": "96%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "MARIANNY NATHALYE MEDEIROS",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "86%",
+    "frequencia_anual": "76%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "MURILO MARTINS THEODORO",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "96%",
+    "frequencia_anual": "95%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 5.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "NICOLAS BARBOSA SCARPONI",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "90%",
+    "frequencia_anual": "89%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 7.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "NICOLLY ALMEIDA GUILHERME",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "74%",
+    "frequencia_anual": "80%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 8.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "PEDRO HENRIQUE DE OLIVEIRA RIOS",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "97%",
+    "frequencia_anual": "96%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 8.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "PHERNANDA KAUANNE SOARES FEIJÓ",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "75%",
+    "frequencia_anual": "83%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "RAUL FERREIRA VASCONCELOS",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "79%",
+    "frequencia_anual": "82%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 10.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 9.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "RAYSSA DELGADO DE AGOSTINI TRINDADE",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "96%",
+    "frequencia_anual": "94%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 10.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 8.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "RYAN CUSTODIO PEREIRA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "95%",
+    "frequencia_anual": "93%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 10.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 7.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "RYANA VALENTINA DO CARMO BATISTA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "47%",
+    "frequencia_anual": "51%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 1.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 1.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 1.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "TAYNA VIEIRA BRASSOLIM",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "92%",
+    "frequencia_anual": "85%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 8.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "THAYSSA VITORIA MENDES CARLOS DE SOUZA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "78%",
+    "frequencia_anual": "85%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 7.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "VICTOR RIAN MESQUITA BARBOSA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "95%",
+    "frequencia_anual": "88%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 5.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "WALLACE RIBEIRO LIMA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "87%",
+    "frequencia_anual": "87%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 9.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 8.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 8.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "YASMIN DO MONTE GUIMARÃES",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "86%",
+    "frequencia_anual": "76%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "YASMIN SANTOS MUNIZ",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "83%",
+    "frequencia_anual": "81%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 7.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 6.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ES"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "YURI FELIPE JERONIMO SANTOS",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "63%",
+    "frequencia_anual": "65%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 1.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 1.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 1.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "EP"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  },
+  {
+    "nome": "MURILO MOREIRA BERLIM FERREIRA",
+    "turma": "1A",
+    "serie": "1ª série",
+    "situacao": "Ativo",
+    "frequencia": "81%",
+    "frequencia_anual": "80%",
+    "notas": [
+      {
+        "disciplina": "ARTE",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "BIOLOGIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCAÇAO FINANCEIRA",
+        "nota": 2.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "EDUCACAO FISICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ELETIVAS",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FILOSOFIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "FISICA",
+        "nota": 3.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "GEOGRAFIA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "HISTORIA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA INGLESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "MATEMATICA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - LINGUA PORTUGUESA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ORIENTAÇAO DE ESTUDO - MATEMATICA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "PROJETO DE VIDA",
+        "nota": 5.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "QUIMICA",
+        "nota": 4.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "REDAÇAO E LEITURA",
+        "nota": 6.0,
+        "bimestre": 3
+      },
+      {
+        "disciplina": "ROBOTICA",
+        "nota": 5.0,
+        "bimestre": 3
+      }
+    ],
+    "mencoes": [
+      {
+        "disciplina": "ESPORTE-MUSICA-ARTE",
+        "mencao": "ET"
+      }
+    ],
+    "fonte": "MAPAO_FABIO_FANUCCHI_PROFESSOR_1ª_SERIE_A_INTEGRAL_9H_ANUAL_CONSELHO_TERCEIRO_BIMESTRE_13102026_0723.xlsx"
+  }
+]

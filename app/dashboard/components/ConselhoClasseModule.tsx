@@ -22,6 +22,9 @@ type EstudanteConselho = {
   frequencia: string;
   observacao: string;
   atualizado_em?: string;
+  notas?: Array<{ disciplina: string; nota: number }>;
+  frequencia_bimestral?: string;
+  mencoes?: Array<{ disciplina: string; mencao: string }>;
 };
 
 type EstatisticaBimestre = {
@@ -220,7 +223,7 @@ export default function ConselhoClasseModule() {
         setFonteDigitalizada(data.fonte_digitalizada || '');
         setAlterado(Boolean(data.preenchimento_inicial));
         if (data.preenchimento_inicial) {
-          setMensagem('Pré-carga do 1º bimestre de 2026 pronta para revisão e salvamento.');
+          setMensagem(`Pré-carga do ${bimestre}º bimestre de ${ano} pronta para revisão e salvamento.`);
         }
       } catch {
         setErro('Não foi possível carregar o conselho');
@@ -430,6 +433,21 @@ export default function ConselhoClasseModule() {
               );
             },
           });
+          if (ano === 2026 && bimestre === 3 && dados.turma === '1A') {
+            doc.addPage();
+            doc.setFontSize(14);
+            doc.text('1A — Notas do 3º bimestre de 2026', 14, 16);
+            autoTable(doc, {
+              startY: 22,
+              head: [['Estudante', 'Disciplina', 'Nota / menção', 'Freq. bimestral', 'Freq. anual']],
+              body: dados.estudantes.flatMap((estudante) => [
+                ...(estudante.notas || []).map((nota) => [estudante.nome, nota.disciplina, nota.nota.toLocaleString('pt-BR'), estudante.frequencia_bimestral || '', estudante.frequencia]),
+                ...(estudante.mencoes || []).map((item) => [estudante.nome, item.disciplina, item.mencao, estudante.frequencia_bimestral || '', estudante.frequencia]),
+              ]),
+              styles: { fontSize: 8 },
+              headStyles: { fillColor: [30, 64, 175] },
+            });
+          }
         });
 
         doc.save(`conselho-${ano}-${bimestre}b-todas-as-turmas.pdf`);
@@ -512,6 +530,8 @@ export default function ConselhoClasseModule() {
           <a href={fonteDigitalizada} target="_blank" rel="noreferrer">
             <img
               src={fonteDigitalizada}
+              loading="lazy"
+              decoding="async"
               alt={`Ficha original do conselho da turma ${turma}`}
               className="mt-4 max-h-[44rem] w-full rounded-xl border border-slate-200 bg-white object-contain dark:border-white/10"
             />
@@ -623,6 +643,7 @@ export default function ConselhoClasseModule() {
             <tr>
               <th className="sticky left-0 top-0 z-40 min-w-72 border border-slate-500 bg-amber-300 p-2 text-left">Nome do aluno</th>
               <th className="sticky top-0 z-30 w-20 border border-slate-500 bg-amber-300 p-2">Cor auto</th>
+              {bimestre === 3 && ano === 2026 && turma === '1A' && <th className="sticky top-0 z-30 border border-slate-500 bg-amber-300 p-2">Notas do mapão · 3º bimestre</th>}
               {componentes.map((componente) => (
                 <th key={componente.codigo} title={componente.nome} className="sticky top-0 z-30 w-12 border border-slate-500 bg-amber-300 p-2">
                   {componente.codigo}
@@ -646,6 +667,15 @@ export default function ConselhoClasseModule() {
                     {ROTULOS_SITUACAO[situacao]}
                   </span>
                 </td>
+                {bimestre === 3 && ano === 2026 && turma === '1A' && (
+                  <td className="max-w-72 border border-slate-300 p-2 align-top dark:border-white/10">
+                    {estudante.notas?.length ? <details>
+                      <summary className="cursor-pointer font-semibold">{estudante.notas.length} notas · Freq. bimestral: {estudante.frequencia_bimestral}</summary>
+                      <ul className="mt-2 space-y-1">{estudante.notas.map((nota) => <li key={nota.disciplina} className={nota.nota < 7 ? 'font-bold text-red-700 dark:text-red-300' : ''}>{nota.disciplina}: {nota.nota.toLocaleString('pt-BR')}</li>)}</ul>
+                      {estudante.mencoes?.map((item) => <p key={item.disciplina}>{item.disciplina}: {item.mencao}</p>)}
+                    </details> : 'Sem notas no mapão'}
+                  </td>
+                )}
                 {componentes.map((componente) => {
                   const categoria = estudante.marcacoes[componente.codigo] || '';
                   return (

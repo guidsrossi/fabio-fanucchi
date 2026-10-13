@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import LoadingOverlay from './components/LoadingOverlay';
 import { useLoadingAction } from './hooks/useLoadingAction';
 
@@ -82,7 +83,7 @@ export default function LoginPage() {
 
           <div className="relative z-10 flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white p-1.5 shadow-lg shadow-blue-950/20">
-              <img src="/school-logo.jpg" alt="" className="h-full w-full rounded-xl object-cover" />
+              <Image src="/school-logo.jpg" alt="" width={64} height={64} className="h-full w-full rounded-xl object-cover" />
             </div>
             <div>
               <p className="text-sm font-semibold leading-tight">Escola Estadual</p>
@@ -118,7 +119,7 @@ export default function LoginPage() {
           <form onSubmit={login} className="w-full">
             <div className="mb-8">
               <div className="mb-5 flex items-center gap-3 lg:hidden">
-                <img src="/school-logo.jpg" alt="Escola Estadual Prof. Fabio Fanucchi" className="h-14 w-14 rounded-2xl border border-slate-200 bg-white object-cover p-1 shadow-sm" />
+                <Image src="/school-logo.jpg" alt="Escola Estadual Prof. Fabio Fanucchi" width={56} height={56} className="h-14 w-14 rounded-2xl border border-slate-200 bg-white object-cover p-1 shadow-sm" />
                 <div>
                   <p className="text-sm font-semibold text-slate-900 dark:text-white">Escola Estadual</p>
                   <p className="text-sm text-slate-500 dark:text-slate-400">Prof. Fabio Fanucchi</p>

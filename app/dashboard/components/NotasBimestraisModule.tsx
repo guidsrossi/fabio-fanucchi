@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { podeOtimizarFoto, urlFotoEstudante } from '@/lib/foto-estudante';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type Nota = {
@@ -216,7 +217,7 @@ export default function NotasBimestraisModule() {
               <h3 className="break-words text-4xl font-black leading-none sm:text-5xl xl:text-6xl">{estudante.nome}</h3>
             </div>
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-white/15 bg-white/10 md:[grid-area:photo]">
-              {estudante.foto?.url ? <Image loader={({ src }) => src} unoptimized fill sizes="(max-width: 768px) 100vw, 32vw" src={estudante.foto.url} alt={`Foto de ${estudante.nome}`} className="object-contain" /> : <div className="flex h-full items-center justify-center p-4 text-center text-3xl font-black uppercase text-white/50">Sem foto</div>}
+              {estudante.foto?.url ? <Image key={estudante.id} unoptimized={!podeOtimizarFoto(urlFotoEstudante(estudante.foto.url))} loading="eager" fill sizes="(max-width: 768px) 100vw, 32vw" src={urlFotoEstudante(estudante.foto.url)} alt={`Foto de ${estudante.nome}`} className="object-contain" /> : <div className="flex h-full items-center justify-center p-4 text-center text-3xl font-black uppercase text-white/50">Sem foto</div>}
             </div>
             <div className="min-w-0 md:[grid-area:info]">
               <p className="text-3xl font-black text-blue-100">Turma {estudante.turma}</p>

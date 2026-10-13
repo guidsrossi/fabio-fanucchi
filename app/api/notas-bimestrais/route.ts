@@ -3,6 +3,7 @@ import { getUserFromCookie } from '@/lib/auth';
 import { listarFichas } from '@/lib/fichas-tutoria';
 import { isGestao, isProfessor } from '@/lib/permissions';
 import notasPrimeiroBimestre from '@/data/notas-primeiro-bimestre.json';
+import notasTerceiroBimestre from '@/data/notas-terceiro-bimestre.json';
 
 const NOTAS_API_URL =
   'https://script.google.com/macros/s/AKfycbw0paUzVSySRSNOh_tFv26DKMYfwXwjVsjttvT3xhXtxWAKwmjnaJKI1BqIlfKjlPis/exec';
@@ -62,11 +63,10 @@ export async function GET(request: NextRequest) {
       action: 'students',
       ano: String(ano),
       bimestre: String(bimestre),
-      cache: String(Date.now()),
     });
     const podeConsultarFichas = incluirTutorias && (isProfessor(user.perfil) || isGestao(user.perfil));
     const [dadosRemotos, dadosFichas] = await Promise.all([
-      (!incluirEnriquecimento && bimestre === 1 ? Promise.resolve({ success: true, students: [] }) : fetch(`${NOTAS_API_URL}?${params}`, { cache: 'no-store', signal: AbortSignal.timeout(30_000) })
+      (!incluirEnriquecimento && bimestre === 1 ? Promise.resolve({ success: true, students: [] }) : fetch(`${NOTAS_API_URL}?${params}`, { next: { revalidate: 120 }, signal: AbortSignal.timeout(30_000) })
         .then(async (response) => {
           if (!response.ok) throw new Error(`A fonte de dados respondeu com HTTP ${response.status}`);
           const data = await response.json();
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
           return data;
         })
         .catch((error) => {
-          if (bimestre === 1) return { success: true, students: [] };
+          if (bimestre === 1 || bimestre === 3) return { success: true, students: [] };
           throw error;
         })),
       podeConsultarFichas
@@ -95,7 +95,15 @@ export async function GET(request: NextRequest) {
             foto: remoto?.foto || null,
           };
         })
-      : estudantesRemotos;
+      : bimestre === 3
+        ? [
+            ...estudantesRemotos.filter((item: any) => String(item.turma || '').trim().toUpperCase() !== '1A'),
+            ...notasTerceiroBimestre.map((item, index) => {
+              const remoto: any = remotosPorChave.get(chaveEstudante(item.nome, item.turma));
+              return { ...item, id: remoto?.id || `1A-3-${index + 1}`, tutor: remoto?.tutor || remoto?.professor || '', foto: remoto?.foto || null };
+            }),
+          ]
+        : estudantesRemotos;
 
     const periodo = BIMESTRES_2026[bimestre];
     const estudantesInternos = new Map<string, string>(

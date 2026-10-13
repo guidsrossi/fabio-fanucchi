@@ -6,6 +6,7 @@ import {
 } from '@/lib/sheets';
 import { frequenciaAnualConselho } from '@/lib/conselho-frequencia';
 import { fonteDigitalizada, situacaoInicialDaFicha } from '@/lib/conselho-seed';
+import { notasIniciaisConselho } from '@/lib/notas-conselho';
 import {
   calcularSituacaoPorMarcacoes,
   type CategoriaConselho,
@@ -209,11 +210,15 @@ export async function listarConselho(ano: number, bimestre: number, turma: strin
       const registro = registrosDaTurma.find(
         (item: any) => String(item.estudante_id || '').trim() === String(estudante.id || '').trim()
       );
+      const notasFonte = notasIniciaisConselho(ano, bimestre, turmaNormalizada, estudante.nome || '');
 
       return {
         id: String(estudante.id || '').trim(),
         nome: estudante.nome || '',
         turma: turmaNormalizada,
+        notas: notasFonte?.notas || [],
+        mencoes: notasFonte?.mencoes || [],
+        frequencia_bimestral: notasFonte?.frequencia || '',
         registro_id: registro?.id || '',
         marcacoes: parseMarcacoes(registro?.marcacoes_json || '{}', componentesPermitidos),
         situacao: registro
@@ -226,6 +231,7 @@ export async function listarConselho(ano: number, bimestre: number, turma: strin
             ),
         frequencia:
           String(registro?.frequencia || '').trim() ||
+          notasFonte?.frequencia_anual ||
           frequenciaAnualConselho(ano, bimestre, turmaNormalizada, estudante.nome || ''),
         observacao: registro?.observacao || '',
         atualizado_em: registro?.atualizado_em || '',
@@ -248,7 +254,7 @@ export async function listarConselho(ano: number, bimestre: number, turma: strin
     estudantes,
     fonte_digitalizada: fonteDigitalizada(ano, bimestre, turmaNormalizada),
     preenchimento_inicial:
-      ano === 2026 && bimestre === 1 && registrosDaTurma.length === 0,
+      ano === 2026 && (bimestre === 1 || (bimestre === 3 && turmaNormalizada === '1A')) && registrosDaTurma.length === 0,
   };
 }
 

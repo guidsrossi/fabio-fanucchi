@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { useLoadingAction } from '../hooks/useLoadingAction';
 import GestaoEscolarModule from './components/GestaoEscolarModule';
@@ -185,8 +186,10 @@ export default function DashboardPage() {
         <header className="mb-6 rounded-[1.75rem] border border-white/70 bg-white/90 p-5 shadow-xl shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-slate-950/80 dark:shadow-black/20 sm:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-4">
-              <img
+              <Image
                 src="/school-logo.jpg"
+                width={64}
+                height={64}
                 alt={ESCOLA}
                 className="h-16 w-16 flex-none rounded-2xl border border-slate-200 object-cover shadow-sm dark:border-white/10"
               />
