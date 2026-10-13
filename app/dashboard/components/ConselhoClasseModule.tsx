@@ -13,6 +13,7 @@ import {
 type Categoria = '' | 'A' | 'E' | 'D' | 'T';
 
 type Componente = { codigo: string; nome: string };
+type NotasSemCadastro = { nome: string; frequencia: string; frequencia_anual: string; notas: Array<{ disciplina: string; nota: number }>; mencoes: Array<{ disciplina: string; mencao: string }> };
 type EstudanteConselho = {
   id: string;
   nome: string;
@@ -151,6 +152,7 @@ export default function ConselhoClasseModule() {
   const [turmas, setTurmas] = useState<string[]>([]);
   const [componentes, setComponentes] = useState<Componente[]>([]);
   const [estudantes, setEstudantes] = useState<EstudanteConselho[]>([]);
+  const [notasSemCadastro, setNotasSemCadastro] = useState<NotasSemCadastro[]>([]);
   const [fonteDigitalizada, setFonteDigitalizada] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
@@ -207,6 +209,7 @@ export default function ConselhoClasseModule() {
 
         setTurmas(data.turmas || []);
         setComponentes(data.componentes || []);
+        setNotasSemCadastro(data.notas_sem_cadastro || []);
         setEstudantes(
           (data.estudantes || []).map((estudante: EstudanteConselho) => {
             const situacaoCalculada = calcularSituacaoPorMarcacoes(estudante.marcacoes || {});
@@ -342,6 +345,7 @@ export default function ConselhoClasseModule() {
               turma: turmaPdf,
               componentes: (data.componentes || []) as Componente[],
               estudantes: (data.estudantes || []) as EstudanteConselho[],
+              notasSemCadastro: (data.notas_sem_cadastro || []) as NotasSemCadastro[],
             };
           })
         );
@@ -433,17 +437,20 @@ export default function ConselhoClasseModule() {
               );
             },
           });
-          if (ano === 2026 && bimestre === 3 && dados.turma === '1A') {
+          if (ano === 2026 && bimestre === 3 && dados.estudantes.some((estudante) => estudante.notas?.length)) {
             doc.addPage();
             doc.setFontSize(14);
-            doc.text('1A — Notas do 3º bimestre de 2026', 14, 16);
+            doc.text(`${dados.turma} — Notas do 3º bimestre de 2026`, 14, 16);
             autoTable(doc, {
               startY: 22,
               head: [['Estudante', 'Disciplina', 'Nota / menção', 'Freq. bimestral', 'Freq. anual']],
-              body: dados.estudantes.flatMap((estudante) => [
+              body: [...dados.estudantes.flatMap((estudante) => [
                 ...(estudante.notas || []).map((nota) => [estudante.nome, nota.disciplina, nota.nota.toLocaleString('pt-BR'), estudante.frequencia_bimestral || '', estudante.frequencia]),
                 ...(estudante.mencoes || []).map((item) => [estudante.nome, item.disciplina, item.mencao, estudante.frequencia_bimestral || '', estudante.frequencia]),
-              ]),
+              ]), ...dados.notasSemCadastro.flatMap((item) => [
+                ...item.notas.map((nota) => [item.nome, nota.disciplina, nota.nota.toLocaleString('pt-BR'), item.frequencia, item.frequencia_anual]),
+                ...item.mencoes.map((mencao) => [item.nome, mencao.disciplina, mencao.mencao, item.frequencia, item.frequencia_anual]),
+              ])],
               styles: { fontSize: 8 },
               headStyles: { fillColor: [30, 64, 175] },
             });
@@ -643,7 +650,7 @@ export default function ConselhoClasseModule() {
             <tr>
               <th className="sticky left-0 top-0 z-40 min-w-72 border border-slate-500 bg-amber-300 p-2 text-left">Nome do aluno</th>
               <th className="sticky top-0 z-30 w-20 border border-slate-500 bg-amber-300 p-2">Cor auto</th>
-              {bimestre === 3 && ano === 2026 && turma === '1A' && <th className="sticky top-0 z-30 border border-slate-500 bg-amber-300 p-2">Notas do mapão · 3º bimestre</th>}
+              {bimestre === 3 && ano === 2026 && ['1A', '1B', '1C'].includes(turma) && <th className="sticky top-0 z-30 border border-slate-500 bg-amber-300 p-2">Notas do mapão · 3º bimestre</th>}
               {componentes.map((componente) => (
                 <th key={componente.codigo} title={componente.nome} className="sticky top-0 z-30 w-12 border border-slate-500 bg-amber-300 p-2">
                   {componente.codigo}
@@ -667,7 +674,7 @@ export default function ConselhoClasseModule() {
                     {ROTULOS_SITUACAO[situacao]}
                   </span>
                 </td>
-                {bimestre === 3 && ano === 2026 && turma === '1A' && (
+                {bimestre === 3 && ano === 2026 && ['1A', '1B', '1C'].includes(turma) && (
                   <td className="max-w-72 border border-slate-300 p-2 align-top dark:border-white/10">
                     {estudante.notas?.length ? <details>
                       <summary className="cursor-pointer font-semibold">{estudante.notas.length} notas · Freq. bimestral: {estudante.frequencia_bimestral}</summary>
@@ -718,6 +725,16 @@ export default function ConselhoClasseModule() {
           </tbody>
         </table>
       </div>
+
+      {notasSemCadastro.length > 0 && (
+        <section className="mt-5 rounded-xl border border-slate-200 p-4 dark:border-white/10">
+          <h3 className="font-bold">Notas de estudantes ainda não localizados no cadastro</h3>
+          {notasSemCadastro.map((item) => <details key={item.nome} className="mt-3">
+            <summary className="cursor-pointer font-semibold">{item.nome} · Freq. bimestral: {item.frequencia} · Freq. anual: {item.frequencia_anual}</summary>
+            <ul className="mt-2 space-y-1 text-sm">{item.notas.map((nota) => <li key={nota.disciplina}>{nota.disciplina}: {nota.nota.toLocaleString('pt-BR')}</li>)}{item.mencoes.map((mencao) => <li key={mencao.disciplina}>{mencao.disciplina}: {mencao.mencao}</li>)}</ul>
+          </details>)}
+        </section>
+      )}
 
       {!loading && estudantes.length === 0 && (
         <p className="mt-5 text-slate-500 dark:text-slate-400">Nenhum estudante encontrado nesta turma.</p>

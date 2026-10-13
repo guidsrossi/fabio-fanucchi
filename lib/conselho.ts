@@ -6,7 +6,7 @@ import {
 } from '@/lib/sheets';
 import { frequenciaAnualConselho } from '@/lib/conselho-frequencia';
 import { fonteDigitalizada, situacaoInicialDaFicha } from '@/lib/conselho-seed';
-import { notasIniciaisConselho } from '@/lib/notas-conselho';
+import { carregarNotasMapao, chaveNomeConselho, notasIniciaisConselho } from '@/lib/notas-conselho';
 import {
   calcularSituacaoPorMarcacoes,
   type CategoriaConselho,
@@ -188,7 +188,7 @@ export async function garantirAbaConselhos() {
 export async function listarConselho(ano: number, bimestre: number, turma: string) {
   await garantirAbaConselhos();
 
-  const [usuarios, registros] = await Promise.all([getRows('usuarios'), getRows(ABA_CONSELHOS)]);
+  const [usuarios, registros, fontesMapao] = await Promise.all([getRows('usuarios'), getRows(ABA_CONSELHOS), carregarNotasMapao(ano, bimestre)]);
   const turmaNormalizada = String(turma || '').trim().toUpperCase();
   const componentes = componentesDaTurma(turmaNormalizada);
   const componentesPermitidos = new Set(componentes.map((item) => item.codigo));
@@ -199,18 +199,22 @@ export async function listarConselho(ano: number, bimestre: number, turma: strin
       String(registro.turma || '').trim().toUpperCase() === turmaNormalizada
   );
 
-  const estudantes = usuarios
+  const estudantesCadastrados = usuarios
     .filter(
       (usuario: any) =>
         String(usuario.perfil || '').trim().toLowerCase() === 'estudante' &&
         String(usuario.turma || '').trim().toUpperCase() === turmaNormalizada
-    )
+    );
+  const nomesCadastrados = new Set(estudantesCadastrados.map((estudante: any) => chaveNomeConselho(estudante.nome)));
+  const notasSemCadastro = fontesMapao.filter((item) => item.turma === turmaNormalizada)
+    .filter((item) => !nomesCadastrados.has(chaveNomeConselho(item.nome)));
+  const estudantes = estudantesCadastrados
     .sort((a: any, b: any) => String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'))
     .map((estudante: any) => {
       const registro = registrosDaTurma.find(
         (item: any) => String(item.estudante_id || '').trim() === String(estudante.id || '').trim()
       );
-      const notasFonte = notasIniciaisConselho(ano, bimestre, turmaNormalizada, estudante.nome || '');
+      const notasFonte = notasIniciaisConselho(fontesMapao, turmaNormalizada, estudante.nome || '');
 
       return {
         id: String(estudante.id || '').trim(),
@@ -252,9 +256,10 @@ export async function listarConselho(ano: number, bimestre: number, turma: strin
     turmas,
     componentes,
     estudantes,
+    notas_sem_cadastro: notasSemCadastro,
     fonte_digitalizada: fonteDigitalizada(ano, bimestre, turmaNormalizada),
     preenchimento_inicial:
-      ano === 2026 && (bimestre === 1 || (bimestre === 3 && turmaNormalizada === '1A')) && registrosDaTurma.length === 0,
+      ano === 2026 && (bimestre === 1 || (bimestre === 3 && ['1A', '1B', '1C'].includes(turmaNormalizada))) && registrosDaTurma.length === 0,
   };
 }
 

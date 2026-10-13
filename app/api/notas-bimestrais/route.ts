@@ -3,7 +3,7 @@ import { getUserFromCookie } from '@/lib/auth';
 import { listarFichas } from '@/lib/fichas-tutoria';
 import { isGestao, isProfessor } from '@/lib/permissions';
 import notasPrimeiroBimestre from '@/data/notas-primeiro-bimestre.json';
-import notasTerceiroBimestre from '@/data/notas-terceiro-bimestre.json';
+import { carregarNotasMapao } from '@/lib/notas-conselho';
 
 const NOTAS_API_URL =
   'https://script.google.com/macros/s/AKfycbw0paUzVSySRSNOh_tFv26DKMYfwXwjVsjttvT3xhXtxWAKwmjnaJKI1BqIlfKjlPis/exec';
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       bimestre: String(bimestre),
     });
     const podeConsultarFichas = incluirTutorias && (isProfessor(user.perfil) || isGestao(user.perfil));
-    const [dadosRemotos, dadosFichas] = await Promise.all([
+    const [dadosRemotos, dadosFichas, notasTerceiroBimestre] = await Promise.all([
       (!incluirEnriquecimento && bimestre === 1 ? Promise.resolve({ success: true, students: [] }) : fetch(`${NOTAS_API_URL}?${params}`, { next: { revalidate: 120 }, signal: AbortSignal.timeout(30_000) })
         .then(async (response) => {
           if (!response.ok) throw new Error(`A fonte de dados respondeu com HTTP ${response.status}`);
@@ -80,6 +80,7 @@ export async function GET(request: NextRequest) {
       podeConsultarFichas
         ? listarFichas(user).catch(() => ({ fichas: [], estudantes: [], professores: [], podeEditar: false }))
         : Promise.resolve({ fichas: [], estudantes: [], professores: [], podeEditar: false }),
+      carregarNotasMapao(ano, bimestre),
     ]);
 
     const estudantesRemotos = Array.isArray(dadosRemotos.students) ? dadosRemotos.students : [];
@@ -97,10 +98,10 @@ export async function GET(request: NextRequest) {
         })
       : bimestre === 3
         ? [
-            ...estudantesRemotos.filter((item: any) => String(item.turma || '').trim().toUpperCase() !== '1A'),
+            ...estudantesRemotos.filter((item: any) => !notasTerceiroBimestre.some((fonte) => fonte.turma === String(item.turma || '').trim().toUpperCase())),
             ...notasTerceiroBimestre.map((item, index) => {
               const remoto: any = remotosPorChave.get(chaveEstudante(item.nome, item.turma));
-              return { ...item, id: remoto?.id || `1A-3-${index + 1}`, tutor: remoto?.tutor || remoto?.professor || '', foto: remoto?.foto || null };
+              return { ...item, id: remoto?.id || `${item.turma}-3-${index + 1}`, tutor: remoto?.tutor || remoto?.professor || '', foto: remoto?.foto || null };
             }),
           ]
         : estudantesRemotos;
