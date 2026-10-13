@@ -257,9 +257,10 @@ export async function listarConselho(ano: number, bimestre: number, turma: strin
     componentes,
     estudantes,
     notas_sem_cadastro: notasSemCadastro,
+    tem_notas_mapao: fontesMapao.some((item) => item.turma === turmaNormalizada),
     fonte_digitalizada: fonteDigitalizada(ano, bimestre, turmaNormalizada),
     preenchimento_inicial:
-      ano === 2026 && (bimestre === 1 || (bimestre === 3 && ['1A', '1B', '1C'].includes(turmaNormalizada))) && registrosDaTurma.length === 0,
+      ano === 2026 && (bimestre === 1 || (bimestre === 3 && fontesMapao.some((item) => item.turma === turmaNormalizada))) && registrosDaTurma.length === 0,
   };
 }
 

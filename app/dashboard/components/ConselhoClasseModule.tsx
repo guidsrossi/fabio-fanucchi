@@ -153,6 +153,7 @@ export default function ConselhoClasseModule() {
   const [componentes, setComponentes] = useState<Componente[]>([]);
   const [estudantes, setEstudantes] = useState<EstudanteConselho[]>([]);
   const [notasSemCadastro, setNotasSemCadastro] = useState<NotasSemCadastro[]>([]);
+  const [temNotasMapao, setTemNotasMapao] = useState(false);
   const [fonteDigitalizada, setFonteDigitalizada] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
@@ -210,6 +211,7 @@ export default function ConselhoClasseModule() {
         setTurmas(data.turmas || []);
         setComponentes(data.componentes || []);
         setNotasSemCadastro(data.notas_sem_cadastro || []);
+        setTemNotasMapao(Boolean(data.tem_notas_mapao));
         setEstudantes(
           (data.estudantes || []).map((estudante: EstudanteConselho) => {
             const situacaoCalculada = calcularSituacaoPorMarcacoes(estudante.marcacoes || {});
@@ -437,7 +439,7 @@ export default function ConselhoClasseModule() {
               );
             },
           });
-          if (ano === 2026 && bimestre === 3 && dados.estudantes.some((estudante) => estudante.notas?.length)) {
+          if (ano === 2026 && bimestre === 3 && (dados.estudantes.some((estudante) => estudante.notas?.length) || dados.notasSemCadastro.length > 0)) {
             doc.addPage();
             doc.setFontSize(14);
             doc.text(`${dados.turma} — Notas do 3º bimestre de 2026`, 14, 16);
@@ -650,7 +652,7 @@ export default function ConselhoClasseModule() {
             <tr>
               <th className="sticky left-0 top-0 z-40 min-w-72 border border-slate-500 bg-amber-300 p-2 text-left">Nome do aluno</th>
               <th className="sticky top-0 z-30 w-20 border border-slate-500 bg-amber-300 p-2">Cor auto</th>
-              {bimestre === 3 && ano === 2026 && ['1A', '1B', '1C'].includes(turma) && <th className="sticky top-0 z-30 border border-slate-500 bg-amber-300 p-2">Notas do mapão · 3º bimestre</th>}
+              {temNotasMapao && <th className="sticky top-0 z-30 border border-slate-500 bg-amber-300 p-2">Notas do mapão · 3º bimestre</th>}
               {componentes.map((componente) => (
                 <th key={componente.codigo} title={componente.nome} className="sticky top-0 z-30 w-12 border border-slate-500 bg-amber-300 p-2">
                   {componente.codigo}
@@ -674,7 +676,7 @@ export default function ConselhoClasseModule() {
                     {ROTULOS_SITUACAO[situacao]}
                   </span>
                 </td>
-                {bimestre === 3 && ano === 2026 && ['1A', '1B', '1C'].includes(turma) && (
+                {temNotasMapao && (
                   <td className="max-w-72 border border-slate-300 p-2 align-top dark:border-white/10">
                     {estudante.notas?.length ? <details>
                       <summary className="cursor-pointer font-semibold">{estudante.notas.length} notas · Freq. bimestral: {estudante.frequencia_bimestral}</summary>

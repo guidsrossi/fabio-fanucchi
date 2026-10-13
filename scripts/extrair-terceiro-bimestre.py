@@ -16,7 +16,14 @@ descricao = unicodedata.normalize('NFD', str(ws['B6'].value)).encode('ascii', 'i
 turma_match = re.search(r'([123])\s+SERIE\s+([A-E])', descricao)
 assert turma_match, 'Turma não identificada'
 turma = ''.join(turma_match.groups())
-disciplinas = [(i, str(ws.cell(11, i).value).split('\n')[0]) for i in range(3, 63, 3)]
+subcabecalhos = [cell.value for cell in ws[12]]
+disciplinas = [(i, str(ws.cell(11, i).value).split('\n')[0].strip())
+               for i, valor in enumerate(subcabecalhos, 1) if valor == 'M']
+assert disciplinas and all(nome and nome != 'None' for _, nome in disciplinas), 'Disciplinas não identificadas'
+assert len({nome for _, nome in disciplinas}) == len(disciplinas), 'Disciplinas duplicadas'
+assert subcabecalhos.count('Fre(%)') == 1 and subcabecalhos.count('Fre An(%)') == 1, 'Frequências não identificadas'
+coluna_frequencia = subcabecalhos.index('Fre(%)')
+coluna_frequencia_anual = subcabecalhos.index('Fre An(%)')
 estudantes = []
 for row in ws.iter_rows(min_row=13, values_only=True):
     if str(row[1]).strip().lower() != 'ativo':
@@ -35,8 +42,8 @@ for row in ws.iter_rows(min_row=13, values_only=True):
         assert 0 <= nota <= 10
         notas.append({'disciplina': disciplina, 'nota': nota, 'bimestre': 3})
     estudantes.append({'nome': str(row[0]).strip(), 'turma': turma, 'serie': f'{turma[0]}ª série',
-                       'situacao': 'Ativo', 'frequencia': row[63],
-                       'frequencia_anual': row[65], 'notas': notas, 'mencoes': mencoes,
+                       'situacao': 'Ativo', 'frequencia': row[coluna_frequencia],
+                       'frequencia_anual': row[coluna_frequencia_anual], 'notas': notas, 'mencoes': mencoes,
                        'fonte': args.origem.name})
 destino = Path(__file__).resolve().parents[1] / 'data/notas-terceiro-bimestre.json'
 existentes = json.loads(destino.read_text(encoding='utf-8')) if destino.exists() else []

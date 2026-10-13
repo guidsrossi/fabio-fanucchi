@@ -8,7 +8,12 @@ const auth = new google.auth.JWT({ email: process.env.GOOGLE_CLIENT_EMAIL,
   key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
   scopes: ['https://www.googleapis.com/auth/spreadsheets'] });
 const api = google.sheets({ version: 'v4', auth });
-const source = JSON.parse(await fs.readFile(new URL('../data/notas-terceiro-bimestre.json', import.meta.url), 'utf8'));
+const sourceAll = JSON.parse(await fs.readFile(new URL('../data/notas-terceiro-bimestre.json', import.meta.url), 'utf8'));
+const turmasArg = process.argv.find(arg => arg.startsWith('--turmas='));
+const selecionadas = turmasArg ? turmasArg.slice('--turmas='.length).split(',') : null;
+if (selecionadas?.some(turma => !/^[123][A-E]$/.test(turma) || !sourceAll.some(s => s.turma === turma))) throw new Error('Turma solicitada sem dados de origem');
+const source = sourceAll.filter(student => !selecionadas || selecionadas.includes(student.turma));
+if (!source.length) throw new Error('Nenhum dado selecionado para importar');
 const turmas = new Set(source.map(student => student.turma));
 const response = await api.spreadsheets.values.get({ spreadsheetId: esperado, range: 'notas_bimestrais!A:J' });
 const rows = response.data.values || [];
@@ -43,6 +48,10 @@ if (aplicar) {
   if (additions.length) await api.spreadsheets.values.append({ spreadsheetId: esperado,
     range: 'notas_bimestrais!A:J', valueInputOption: 'RAW', insertDataOption: 'INSERT_ROWS', requestBody: { values: additions } });
   const verify = await api.spreadsheets.values.get({ spreadsheetId: esperado, range: 'notas_bimestrais!A:J' });
+  const updatedRanges = new Set(updates.map(update => update.range));
+  rows.forEach((row, i) => {
+    if (!updatedRanges.has(`notas_bimestrais!A${i + 1}:J${i + 1}`) && JSON.stringify(row) !== JSON.stringify(verify.data.values?.[i])) throw new Error('Um registro fora da importação foi alterado');
+  });
   const target = (verify.data.values || []).slice(1).filter(r => Number(r[1]) === 2026 && Number(r[2]) === 3 && turmas.has(r[4]));
   for (const student of source) for (const nota of student.notas) {
     const matches = target.filter(r => r[4] === student.turma && r[3] === student.nome && r[7] === nota.disciplina);
@@ -73,6 +82,10 @@ if (aplicar) {
   }
   if (mapaoAdditions.length) await api.spreadsheets.values.append({ spreadsheetId: esperado, range: 'notas_mapao!A:K', valueInputOption: 'RAW', insertDataOption: 'INSERT_ROWS', requestBody: { values: mapaoAdditions } });
   const saved = (await api.spreadsheets.values.get({ spreadsheetId: esperado, range: 'notas_mapao!A:K' })).data.values.slice(1);
+  const updatedMapaoRanges = new Set(mapaoUpdates.map(update => update.range));
+  previous.slice(1).forEach((row, i) => {
+    if (!updatedMapaoRanges.has(`notas_mapao!A${i + 2}:K${i + 2}`) && JSON.stringify(row) !== JSON.stringify(saved[i])) throw new Error('Um mapão fora da importação foi alterado');
+  });
   for (const student of source) {
     const matches = saved.filter(r => Number(r[0]) === 2026 && Number(r[1]) === 3 && r[2] === student.nome && r[3] === student.turma);
     if (matches.length !== 1 || matches[0][8] !== JSON.stringify(student.notas) || matches[0][9] !== JSON.stringify(student.mencoes) || matches[0][7] !== student.frequencia_anual) throw new Error('Falha na conferência do mapão');
