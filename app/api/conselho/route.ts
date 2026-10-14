@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromCookie } from '@/lib/auth';
 import {
   listarConselho,
+  listarTodosConselhos,
   normalizarAno,
   normalizarBimestre,
   salvarConselho,
@@ -28,9 +29,20 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const conselho = await listarConselho(ano, bimestre, turma || '1A');
-
-  return NextResponse.json({ success: true, ano, bimestre, ...conselho });
+  try {
+    if (searchParams.get('todas') === '1') {
+      const conselhos = await listarTodosConselhos(ano, bimestre);
+      return NextResponse.json({ success: true, ano, bimestre, conselhos });
+    }
+    const conselho = await listarConselho(ano, bimestre, turma || '1A');
+    return NextResponse.json({ success: true, ano, bimestre, ...conselho });
+  } catch (error) {
+    console.error('Falha ao carregar conselho de classe:', error);
+    return NextResponse.json(
+      { success: false, error: 'Não foi possível consultar a planilha do conselho. Tente novamente em instantes.' },
+      { status: 503 }
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {

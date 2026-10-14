@@ -323,34 +323,24 @@ export default function ConselhoClasseModule() {
       setErro('');
 
       try {
-        const turmasParaExportar = turmas.length ? turmas : [turma];
-        const dadosDasTurmas = await Promise.all(
-          turmasParaExportar.map(async (turmaPdf) => {
-            // Mantém no PDF as alterações ainda não salvas da turma aberta.
-            if (turmaPdf === turma) {
-              return { turma: turmaPdf, componentes, estudantes };
-            }
-
-            const params = new URLSearchParams({
-              ano: String(ano),
-              bimestre: String(bimestre),
-              turma: turmaPdf,
-            });
-            const response = await fetch(`/api/conselho?${params}`);
-            const data = await response.json();
-
-            if (!response.ok || !data.success) {
-              throw new Error(data.error || `Não foi possível carregar a turma ${turmaPdf}`);
-            }
-
-            return {
-              turma: turmaPdf,
-              componentes: (data.componentes || []) as Componente[],
-              estudantes: (data.estudantes || []) as EstudanteConselho[],
-              notasSemCadastro: (data.notas_sem_cadastro || []) as NotasSemCadastro[],
-            };
-          })
-        );
+        const params = new URLSearchParams({
+          ano: String(ano), bimestre: String(bimestre), todas: '1',
+        });
+        const response = await fetch(`/api/conselho?${params}`);
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.success) {
+          throw new Error(data?.error || 'Não foi possível carregar as turmas para o PDF. Tente novamente.');
+        }
+        const dadosDasTurmas = (data.conselhos as Array<{
+          turma: string; componentes: Componente[]; estudantes: EstudanteConselho[];
+          notas_sem_cadastro: NotasSemCadastro[];
+        }>).map((dados) => ({
+          turma: dados.turma,
+          componentes: dados.turma === turma ? componentes : dados.componentes,
+          estudantes: dados.turma === turma ? estudantes : dados.estudantes,
+          notasSemCadastro: dados.turma === turma ? notasSemCadastro : dados.notas_sem_cadastro || [],
+        }));
+        if (!dadosDasTurmas.length) throw new Error('Não há turmas para gerar o PDF.');
 
         const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
         const geradoEm = new Date().toLocaleString('pt-BR');

@@ -181,14 +181,44 @@ function normalizarSituacao(valor: unknown): SituacaoConselho {
     : 'sem_classificacao';
 }
 
+let inicializacaoConselhos: Promise<void> | undefined;
+
 export async function garantirAbaConselhos() {
-  await ensureSheetWithHeaders(ABA_CONSELHOS, CONSELHOS_HEADERS);
+  if (!inicializacaoConselhos) {
+    inicializacaoConselhos = ensureSheetWithHeaders(ABA_CONSELHOS, CONSELHOS_HEADERS)
+      .catch((error) => {
+        inicializacaoConselhos = undefined;
+        throw error;
+      });
+  }
+  await inicializacaoConselhos;
 }
 
 export async function listarConselho(ano: number, bimestre: number, turma: string) {
+  const dados = await carregarDadosConselho(ano, bimestre);
+  return montarConselho(ano, bimestre, turma, dados);
+}
+
+async function carregarDadosConselho(ano: number, bimestre: number) {
   await garantirAbaConselhos();
 
   const [usuarios, registros, fontesMapao] = await Promise.all([getRows('usuarios'), getRows(ABA_CONSELHOS), carregarNotasMapao(ano, bimestre)]);
+  return { usuarios, registros, fontesMapao };
+}
+
+export async function listarTodosConselhos(ano: number, bimestre: number) {
+  const dados = await carregarDadosConselho(ano, bimestre);
+  const turmas = Array.from(new Set(dados.usuarios
+    .filter((usuario: any) => String(usuario.perfil || '').trim().toLowerCase() === 'estudante')
+    .map((usuario: any) => String(usuario.turma || '').trim().toUpperCase())
+    .filter(Boolean))).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  return turmas.map((turma) => montarConselho(ano, bimestre, turma, dados));
+}
+
+function montarConselho(
+  ano: number, bimestre: number, turma: string,
+  { usuarios, registros, fontesMapao }: Awaited<ReturnType<typeof carregarDadosConselho>>
+) {
   const turmaNormalizada = String(turma || '').trim().toUpperCase();
   const componentes = componentesDaTurma(turmaNormalizada);
   const componentesPermitidos = new Set(componentes.map((item) => item.codigo));
