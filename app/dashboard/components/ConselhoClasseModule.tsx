@@ -333,12 +333,10 @@ export default function ConselhoClasseModule() {
         }
         const dadosDasTurmas = (data.conselhos as Array<{
           turma: string; componentes: Componente[]; estudantes: EstudanteConselho[];
-          notas_sem_cadastro: NotasSemCadastro[];
         }>).map((dados) => ({
           turma: dados.turma,
           componentes: dados.turma === turma ? componentes : dados.componentes,
           estudantes: dados.turma === turma ? estudantes : dados.estudantes,
-          notasSemCadastro: dados.turma === turma ? notasSemCadastro : dados.notas_sem_cadastro || [],
         }));
         if (!dadosDasTurmas.length) throw new Error('Não há turmas para gerar o PDF.');
 
@@ -429,24 +427,7 @@ export default function ConselhoClasseModule() {
               );
             },
           });
-          if (ano === 2026 && bimestre === 3 && (dados.estudantes.some((estudante) => estudante.notas?.length) || dados.notasSemCadastro.length > 0)) {
-            doc.addPage();
-            doc.setFontSize(14);
-            doc.text(`${dados.turma} — Notas do 3º bimestre de 2026`, 14, 16);
-            autoTable(doc, {
-              startY: 22,
-              head: [['Estudante', 'Disciplina', 'Nota / menção', 'Freq. bimestral', 'Freq. anual']],
-              body: [...dados.estudantes.flatMap((estudante) => [
-                ...(estudante.notas || []).map((nota) => [estudante.nome, nota.disciplina, nota.nota.toLocaleString('pt-BR'), estudante.frequencia_bimestral || '', estudante.frequencia]),
-                ...(estudante.mencoes || []).map((item) => [estudante.nome, item.disciplina, item.mencao, estudante.frequencia_bimestral || '', estudante.frequencia]),
-              ]), ...dados.notasSemCadastro.flatMap((item) => [
-                ...item.notas.map((nota) => [item.nome, nota.disciplina, nota.nota.toLocaleString('pt-BR'), item.frequencia, item.frequencia_anual]),
-                ...item.mencoes.map((mencao) => [item.nome, mencao.disciplina, mencao.mencao, item.frequencia, item.frequencia_anual]),
-              ])],
-              styles: { fontSize: 8 },
-              headStyles: { fillColor: [30, 64, 175] },
-            });
-          }
+
         });
 
         doc.save(`conselho-${ano}-${bimestre}b-todas-as-turmas.pdf`);
