@@ -11,7 +11,7 @@ const code = ts.transpileModule(source.slice(start, end), { compilerOptions: { t
 let saved = false;
 let requested = 0;
 let failure = '';
-const student = { id: '1', nome: 'Estudante teste', turma: '1A', marcacoes: { POR: 'D' }, situacao: 'verde', frequencia: '95', notas: [], mencoes: [] };
+const student = { id: '1', nome: 'Estudante teste', turma: '1A', marcacoes: { POR: 'D' }, situacao: 'verde', frequencia: '95', observacao: 'Precisa de acompanhamento.', notas: [], mencoes: [] };
 function Pdf(options) {
   const doc = new jsPDF(options);
   doc.save = (name) => {
@@ -21,6 +21,9 @@ function Pdf(options) {
     assert.ok(output.startsWith('%PDF-'));
     assert.ok(output.includes('NOME DO ALUNO'));
     assert.ok(output.includes('FREQ.'));
+    assert.ok(output.includes('Observação'));
+    assert.ok(output.includes('Precisa de'));
+    assert.ok(output.includes('acompanhamento.'));
     assert.ok(output.includes('(D)'));
     assert.ok(!output.includes('Nota /'), 'O PDF nao deve conter a tabela de notas');
     saved = true;

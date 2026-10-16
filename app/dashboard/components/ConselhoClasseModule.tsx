@@ -350,6 +350,7 @@ export default function ConselhoClasseModule() {
             'NOME DO ALUNO',
             ...dados.componentes.map((componente) => componente.codigo),
             'FREQ.',
+            'Observação',
           ];
           const linhas = dados.estudantes.map((estudante) => [
             estudante.nome,
@@ -357,6 +358,7 @@ export default function ConselhoClasseModule() {
               (componente) => estudante.marcacoes?.[componente.codigo] || ''
             ),
             estudante.frequencia,
+            estudante.observacao || '',
           ]);
           const larguraColunaNome = dados.componentes.length <= 18 ? 76 : 68;
 
@@ -408,7 +410,8 @@ export default function ConselhoClasseModule() {
                 fontStyle: 'bold',
                 cellPadding: { top: 1.5, right: 2, bottom: 1.5, left: 2 },
               },
-              [cabecalho.length - 1]: { cellWidth: 13 },
+              [cabecalho.length - 2]: { cellWidth: 13 },
+              [cabecalho.length - 1]: { cellWidth: 48, halign: 'left' },
             },
             didParseCell: (data) => {
               if (data.section !== 'body') return;
