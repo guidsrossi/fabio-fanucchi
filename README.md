@@ -119,6 +119,10 @@ Exemplo:
 Essa aba guarda quais estudantes cada professor pode atender. A gestao altera esses vinculos pelo checklist no sistema. Se um estudante ja estiver vinculado a um professor com `ativo` igual a `sim`, ele nao aparece no checklist dos outros professores. O professor so consegue listar e registrar apoio para estudantes vinculados a ele.
 Os estudantes sao os usuarios com `perfil` igual a `estudante`; nao existe mais uma aba separada de `estudantes`.
 
+Na gestão escolar, **Desvincular** remove somente a associação com o professor. **Excluir estudante** exige confirmação, retira o estudante do cadastro ativo, remove todos os vínculos e bloqueia novos logins e sessões existentes. A opção também está disponível para estudantes sem professor.
+
+A exclusão é lógica: o perfil passa a `estudante_excluido`, login e senha são apagados e os vínculos ficam inativos, em uma única atualização atômica da planilha. O ID permanece reservado para evitar que um novo cadastro herde registros antigos. Nome, RA, turma e histórico escolar são preservados. Não é necessário criar novas abas ou colunas.
+
 #### perguntas
 
 ```txt
@@ -193,6 +197,7 @@ POST /api/apoios
 POST /api/validar-apoio
 GET  /api/estudantes
 POST /api/estudantes
+DELETE /api/estudantes
 GET  /api/professores
 POST /api/professores
 PUT  /api/professores

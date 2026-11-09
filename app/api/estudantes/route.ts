@@ -3,6 +3,7 @@ import { appendRow, getRows } from '@/lib/sheets';
 import { getUserFromCookie } from '@/lib/auth';
 import { isProfessor } from '@/lib/permissions';
 import { normalizarRa, obterRaDoEstudante } from '@/lib/estudantes';
+import { excluirEstudante } from '@/lib/excluir-estudante';
 
 const SENHA_INICIAL_ESTUDANTE = '123456';
 
@@ -129,4 +130,27 @@ export async function POST(req: Request) {
     },
     senha_temporaria: SENHA_INICIAL_ESTUDANTE,
   });
+}
+
+export async function DELETE(req: Request) {
+  const user: any = await getUserFromCookie();
+  if (!user) return NextResponse.json({ success: false, error: 'Não autenticado' }, { status: 401 });
+  if (!isGestao(user.perfil)) {
+    return NextResponse.json({ success: false, error: 'Acesso negado' }, { status: 403 });
+  }
+
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ success: false, error: 'Requisição inválida' }, { status: 400 });
+  }
+
+  try {
+    const result = await excluirEstudante(user, body?.estudante_id);
+    const { status = 200, ...data } = result;
+    return NextResponse.json(data, { status });
+  } catch {
+    return NextResponse.json({ success: false, error: 'Não foi possível excluir o estudante. Tente novamente.' }, { status: 500 });
+  }
 }

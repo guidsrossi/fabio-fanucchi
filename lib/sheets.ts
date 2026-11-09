@@ -64,6 +64,39 @@ export async function updateCell(sheetName: string, cell: string, value: string)
   });
 }
 
+// Atualiza células de abas diferentes na mesma operação atômica.
+export async function batchUpdateCells(
+  cells: Array<{ sheetName: string; rowNumber: number; columnNumber: number; value: string }>
+) {
+  if (!cells.length) return;
+
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId,
+    fields: 'sheets.properties',
+  });
+  const requests = cells.map(({ sheetName, rowNumber, columnNumber, value }) => {
+    const sheet = spreadsheet.data.sheets?.find((item) => item.properties?.title === sheetName);
+    const sheetId = sheet?.properties?.sheetId;
+    if (sheetId == null) throw new Error(`Aba não encontrada: ${sheetName}`);
+
+    return {
+      updateCells: {
+        range: {
+          sheetId,
+          startRowIndex: rowNumber - 1,
+          endRowIndex: rowNumber,
+          startColumnIndex: columnNumber - 1,
+          endColumnIndex: columnNumber,
+        },
+        rows: [{ values: [{ userEnteredValue: { stringValue: value } }] }],
+        fields: 'userEnteredValue',
+      },
+    };
+  });
+
+  await sheets.spreadsheets.batchUpdate({ spreadsheetId, requestBody: { requests } });
+}
+
 export async function updateRow(sheetName: string, rowNumber: number, values: any[]) {
   const lastColumn = columnName(values.length || 1);
 

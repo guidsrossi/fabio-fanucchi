@@ -23,6 +23,7 @@ export async function POST(req: Request) {
 
   const usuarios = await getRows('usuarios');
   const user = usuarios.find((u: any) => {
+    if (u.perfil === 'estudante_excluido') return false;
     const estudante = normalizarLogin(u.perfil) === 'estudante';
     const loginCorresponde = estudante
       ? Boolean(

@@ -38,6 +38,9 @@ export default function GestaoEscolarModule({
 }: Props) {
   const [professorSelecionadoId, setProfessorSelecionadoId] = useState('');
   const [novoEstudanteId, setNovoEstudanteId] = useState('');
+  const [estudanteExcluirId, setEstudanteExcluirId] = useState('');
+  const [exclusaoMensagem, setExclusaoMensagem] = useState('');
+  const [exclusaoErro, setExclusaoErro] = useState('');
   const [professorMensagem, setProfessorMensagem] = useState('');
   const [professorErro, setProfessorErro] = useState('');
   const [estudanteMensagem, setEstudanteMensagem] = useState('');
@@ -239,6 +242,35 @@ export default function GestaoEscolarModule({
       estudantesAtuais.filter((item) => item !== estudanteId),
       'Vinculo removido do professor.'
     );
+  }
+
+  async function excluirEstudante(estudante: Estudante) {
+    if (!window.confirm(
+      `Excluir ${estudante.nome} (${estudante.turma})? O estudante perderá o acesso à plataforma e todos os vínculos com professores serão removidos. O histórico escolar será preservado. Esta ação não pode ser desfeita pela plataforma.`
+    )) return;
+
+    await runWithLoading('Excluindo estudante...', async () => {
+      setExclusaoMensagem('');
+      setExclusaoErro('');
+      try {
+        const response = await fetch('/api/estudantes', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estudante_id: estudante.id }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          setExclusaoErro(data.error || 'Erro ao excluir estudante');
+          return;
+        }
+        setEstudanteExcluirId('');
+        setNovoEstudanteId((id) => id === estudante.id ? '' : id);
+        setExclusaoMensagem(`${estudante.nome} foi excluído do cadastro ativo.`);
+        await onReload();
+      } catch {
+        setExclusaoErro('Não foi possível concluir ou atualizar a exclusão. Atualize a página e tente novamente.');
+      }
+    });
   }
 
   async function salvarPergunta(e: FormEvent) {
@@ -443,6 +475,52 @@ export default function GestaoEscolarModule({
 
       <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">
         <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">
+          Excluir estudante
+        </h3>
+        <p className="mb-4 text-sm text-slate-500 dark:text-slate-400">
+          Exclua estudantes com ou sem professor vinculado. A exclusão remove o acesso e os vínculos, preservando o histórico escolar.
+        </p>
+        {exclusaoMensagem && (
+          <div role="status" className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-green-700 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-200">
+            {exclusaoMensagem}
+          </div>
+        )}
+        {exclusaoErro && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+            {exclusaoErro}
+          </div>
+        )}
+        <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+          <select
+            aria-label="Estudante para excluir"
+            className="rounded-xl border border-slate-200 bg-white p-3 text-slate-950 dark:border-white/10 dark:bg-slate-900 dark:text-white"
+            value={estudanteExcluirId}
+            onChange={(e) => setEstudanteExcluirId(e.target.value)}
+            disabled={loading || estudantes.length === 0}
+          >
+            <option value="">{estudantes.length ? 'Selecione o estudante para excluir' : 'Nenhum estudante cadastrado'}</option>
+            {ordenarEstudantesPorTurmaENome(estudantes).map((estudante) => (
+              <option key={estudante.id} value={estudante.id}>
+                {estudante.turma} - {estudante.nome}{estudante.ra ? ` - RA ${estudante.ra}` : ''}{!estudante.professor_id ? ' (sem professor)' : ''}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={loading || !estudanteExcluirId}
+            onClick={() => {
+              const estudante = estudantes.find((item) => item.id === estudanteExcluirId);
+              if (estudante) return excluirEstudante(estudante);
+            }}
+            className="rounded-xl bg-red-600 px-4 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Excluir estudante
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-8 border-t border-slate-200 pt-8 dark:border-white/10">
+        <h3 className="mb-3 text-lg font-bold text-slate-950 dark:text-white">
           Vincular professor com estudantes
         </h3>
 
@@ -505,14 +583,25 @@ export default function GestaoEscolarModule({
                           </p>
                         </div>
 
-                        <button
-                          type="button"
-                          disabled={loading}
-                          onClick={() => removerEstudanteDoProfessor(estudante.id)}
-                          className="w-fit rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
-                        >
-                          Remover
-                        </button>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            disabled={loading}
+                            onClick={() => removerEstudanteDoProfessor(estudante.id)}
+                            className="w-fit rounded-xl border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/30 dark:text-red-200 dark:hover:bg-red-500/10"
+                          >
+                            Desvincular
+                          </button>
+                          <button
+                            type="button"
+                            disabled={loading}
+                            onClick={() => excluirEstudante(estudante)}
+                            aria-label={`Excluir estudante ${estudante.nome}`}
+                            className="rounded-xl bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            Excluir estudante
+                          </button>
+                        </div>
                       </div>
                     ))}
 
